@@ -1,3 +1,12 @@
+/*
+ * TODO try starting ADC sample manually and wait for it to finish
+ * TODO try to remove floating points
+ * TODO refactoring - module?
+ * TODO comments, attribution
+ * TODO DIDR?
+ * TODO unit tests, Jenkins?
+ */
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +19,7 @@
 
 #define AREF_MV 4850
 #define ADC_OFFSET_MV 7
+#define TMP_OP_OFFSET 441
 
 static const char* lean = "Mager";
 static const char* ideal = "Ideal";
@@ -44,23 +54,23 @@ static const lambdaEntry lambdaTable[] = {
     { 880, 0.8 }
 };
 
-unsigned long previousMillis = 0;
 float lambdaVoltageAvg = 0.0;
-float tempVoltageAvg = 0.0;
+float tempIVoltageAvg = 0.0;
+float tempOVoltageAvg = 0.0;
 
 EMPTY_INTERRUPT(ADC_vect);
 
 void setupADC(void) {
-	ADMUX |= (1 << REFS0); // Use AVCC as reference voltage
+	ADMUX |= (1 << REFS0); // use AVCC as reference voltage
 	// ADCSRA |= (1 << ADPS1) | (1 << ADPS2); // ADC clock prescaler /64
 	ADCSRA |= (1 << ADPS2); // ADC clock prescaler /16
-	ADCSRA |= (1 << ADEN); // Enable ADC
+	ADCSRA |= (1 << ADEN); // enable ADC
 }
 
 void setupSleepMode(void) {
 	set_sleep_mode(SLEEP_MODE_ADC);
-	ADCSRA |= (1 << ADIE); // Enable ADC interrupt
-	sei(); // Enable global interrupts
+	ADCSRA |= (1 << ADIE); // enable ADC interrupt
+	sei(); // enable global interrupts
 }
 
 int main(void) {
@@ -69,16 +79,17 @@ int main(void) {
 	setupADC();
 	setupSleepMode();
 
-	// Disable digital input on ADC0
+	// disable digital input on ADC0
 	// http://www.openmusiclabs.com/learning/digital/atmega-adc/
 	// DIDR0 = 0b00000011;
 
-	// Initial update
-	update(0.0, 0.0);
+	// initial update
+	update(0.0, 0.0, 0.0);
 
-	// Main loop
+	// main loop
 	while (1) {
 		run();
+		_delay_ms(1000);
 	}
 
 	return 0;
@@ -88,40 +99,35 @@ void run(void) {
 	float lambdaVoltage = getVoltage(PC2) / 11.0;
 	lambdaVoltageAvg = (lambdaVoltage + lambdaVoltageAvg * 2) / 3;
 
-	int tempVoltage = getVoltage(PC5);
-	tempVoltageAvg = (tempVoltage + tempVoltageAvg * 2) / 3;
+	int tempIVoltage = getVoltage(PC5);
+	tempIVoltageAvg = (tempIVoltage + tempIVoltageAvg * 2) / 3;
 
-	update(tempVoltageAvg, lambdaVoltageAvg);
+	int tempOVoltage = getVoltage(PC0);
+	tempOVoltageAvg = (tempOVoltage + tempOVoltageAvg * 2) / 3;
 
-//		String tempText = "T val " + String(tempVoltage) + ", T avg: " + tempVoltageAvg;
-//		Serial.println(tempText);
-//		String lambdaText = "L val " + String(lambdaVoltage) + ", L avg: " + lambdaVoltageAvg;
-//		Serial.println(lambdaText);
-
-	_delay_ms(1000);
+	update(tempIVoltageAvg, tempOVoltageAvg, lambdaVoltageAvg);
 }
 
-void update(float tempVoltage, float lambdaVoltage) {
-	int temp = toTemp(tempVoltage);
-	// String tempText = "Temp voltage: " + String(tempVoltage) + ", temp: " + temp + " C";
-	// Serial.println(tempText);
-
+void update(float tempIVoltage, float tempOVoltage, float lambdaVoltage) {
+	int tempI = toTempI(tempIVoltage);
+	int tempO = toTempO(tempOVoltage);
 	float lambda = lookupLambdaInter(lambdaVoltage);
-	// String lambdaText = "Lambda voltage: " + String(lambdaVoltage) + ", lambda: " + lambda + " (" + toInfo(lambda) + ")";
-	// Serial.println(lambdaText);
 
-	display(tempVoltage, temp, lambdaVoltage, lambda);
+	display(tempIVoltage, tempI, tempOVoltage, tempO, lambdaVoltage, lambda);
 }
 
-void display(int tempVoltage, int temp, float lambdaVoltage, float lambda) {
+void display(
+		int tempIVoltage, int tempI,
+		int tempOVoltage, int tempO,
+		float lambdaVoltage, float lambda) {
 	char lambdaStr[13];
 	dtostrf(lambda, 5, 3, lambdaStr);
 	char lambdaVoltageStr[13];
 	dtostrf(lambdaVoltage, 5, 3, lambdaVoltageStr);
 
-	char line0[20];
+	char line0[40];
 	char line1[20];
-	snprintf(line0, sizeof(line0), "T %3d C %d\r\n", temp, tempVoltage);
+	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
 	snprintf(line1, sizeof(line1), "L %s  (%s)\r\n", lambdaStr, lambdaVoltageStr);
 	printString(line0);
 	printString(line1);
@@ -146,12 +152,23 @@ int getVoltage(int port) {
  * amplified with an AD8495 (5 mV/°C). Type K thermocouple voltages are
  * about linear between 0 and 800°C. Returns 0 for negative voltages.
  */
-int toTemp(float mV) {
+int toTempI(float mV) {
 	if (mV < 0) {
 		return 0;
 	}
 
 	int temp = round(mV / 5);
+
+	return temp;
+}
+
+int toTempO(float mV) {
+	if (mV < 0) {
+		return 0;
+	}
+
+	// TODO linearization
+	int temp = round((mV - TMP_OP_OFFSET) / 9.5);
 
 	return temp;
 }
