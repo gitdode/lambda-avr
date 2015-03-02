@@ -4,6 +4,11 @@
  *  Created on: 22.02.2015
  *      Author: dode
  */
+typedef struct {
+    const int mV;
+    const float value;
+} tableEntry;
+
 void run(void);
 
 void update(float tempIVoltage, float tempOVoltage, float lambdaVoltage);
@@ -16,6 +21,6 @@ int toTempI(float mV);
 
 int toTempO(float mV);
 
-float lookupLambdaInter(float mV);
+float lookupLinInter(float mV, const tableEntry table[], int length);
 
 const char* toInfo(float lambda);

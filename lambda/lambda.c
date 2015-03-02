@@ -25,18 +25,13 @@ static const char* lean = "Mager";
 static const char* ideal = "Ideal";
 static const char* rich = "Fett!";
 
-typedef struct {
-    const int mV;
-    const float lambda;
-} lambdaEntry;
-
 /**
  * Table used to look up the lambda value at 12 V heater voltage
  * and 220°C exhaust gas temperature. Most values are approximated
  * from the characteristic curve in the datasheet.
  * TODO equation? real table?
  */
-static const lambdaEntry lambdaTable[] = {
+static const tableEntry lambdaTable[] = {
 	{ 4, 2.0 },
 	{ 5, 1.9 },
 	{ 6, 1.8 },
@@ -52,6 +47,15 @@ static const lambdaEntry lambdaTable[] = {
 	{ 800, 0.98 },
 	{ 860, 0.9 },
     { 880, 0.8 }
+};
+
+static const tableEntry tempOTable[] = {
+	{ -57, 10.22 }, // -50 C
+	{ 455, 9.97 },  // 0 C
+	{ 1403, 9.49 }, // 100 C
+	{ 2264, 9.05 }, // 200 C
+	{ 3047, 8.64 }, // 300 C
+	{ 3762, 8.27 }  // 400 C
 };
 
 float lambdaVoltageAvg = 0.0;
@@ -97,7 +101,7 @@ int main(void) {
 
 void run(void) {
 	float lambdaVoltage = getVoltage(PC2) / 11.0;
-	lambdaVoltageAvg = (lambdaVoltage + lambdaVoltageAvg * 2) / 3;
+	lambdaVoltageAvg = (lambdaVoltage + lambdaVoltageAvg * 8) / 9;
 
 	int tempIVoltage = getVoltage(PC5);
 	tempIVoltageAvg = (tempIVoltage + tempIVoltageAvg * 2) / 3;
@@ -111,7 +115,9 @@ void run(void) {
 void update(float tempIVoltage, float tempOVoltage, float lambdaVoltage) {
 	int tempI = toTempI(tempIVoltage);
 	int tempO = toTempO(tempOVoltage);
-	float lambda = lookupLambdaInter(lambdaVoltage);
+	int length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
+	float lambda = lookupLinInter(lambdaVoltage, lambdaTable, length);
+	// round(lambda * 10) / 10.0;
 
 	display(tempIVoltage, tempI, tempOVoltage, tempO, lambdaVoltage, lambda);
 }
@@ -126,7 +132,7 @@ void display(
 	dtostrf(lambdaVoltage, 5, 3, lambdaVoltageStr);
 
 	char line0[40];
-	char line1[20];
+	char line1[40];
 	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
 	snprintf(line1, sizeof(line1), "L %s  (%s)\r\n", lambdaStr, lambdaVoltageStr);
 	printString(line0);
@@ -167,41 +173,45 @@ int toTempO(float mV) {
 		return 0;
 	}
 
-	// TODO linearization
-	int temp = round((mV - TMP_OP_OFFSET) / 9.5);
+	int length = sizeof(tempOTable) / sizeof(tempOTable[0]);
+	float mVPerC = lookupLinInter(mV, tempOTable, length) / 5000 * AREF_MV;
+	int temp = round((mV - TMP_OP_OFFSET) / mVPerC);
+
+	char buf[13];
+	dtostrf(mVPerC, 5, 2, buf);
+	char str[14];
+	snprintf(str, sizeof(str), "mV/C %s\r\n", buf);
+	printString(str);
 
 	return temp;
 }
 
 /**
- * Returns the lambda value corresponding to the given voltage
+ * Returns the value corresponding to the given voltage
  * from the lookup table using linear interpolation.
  * Thanks to http://stackoverflow.com/a/7091629/709426 and
  * http://en.wikipedia.org/wiki/Linear_interpolation
  */
-float lookupLambdaInter(float mV) {
-	int length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
-
-	if (mV < lambdaTable[0].mV) {
-		return lambdaTable[0].lambda;
-	} else if (mV > lambdaTable[length - 1].mV) {
-		return lambdaTable[length - 1].lambda;
+float lookupLinInter(float mV, const tableEntry table[], int length) {
+	if (mV < table[0].mV) {
+		return table[0].value;
+	} else if (mV > table[length - 1].mV) {
+		return table[length - 1].value;
 	}
 
 	int i = 0;
 	for (; i < length - 1; i++) {
-		if (lambdaTable[i + 1].mV > mV) {
+		if (table[i + 1].mV > mV) {
 			break;
 		}
 	}
 
-	float diffVoltage = lambdaTable[i + 1].mV - lambdaTable[i].mV;
-	float diffLambda = lambdaTable[i + 1].lambda - lambdaTable[i].lambda;
-	float lambda = lambdaTable[i].lambda +
-			(mV - lambdaTable[i].mV) * diffLambda / diffVoltage;
+	float diffVoltage = table[i + 1].mV - table[i].mV;
+	float diffValue = table[i + 1].value - table[i].value;
+	float value = table[i].value +
+			(mV - table[i].mV) * diffValue / diffVoltage;
 
-	// return round(lambda * 10) / 10.0;
-	return lambda;
+	return value;
 }
 
 const char* toInfo(float lambda) {
