@@ -55,8 +55,6 @@ void display(
 	snprintf(line1, sizeof(line1), "L %s  (%s)\r\n", lambdaStr, lambdaVoltageStr);
 	printString(line0);
 	printString(line1);
-
-	int unused = 0;
 }
 
 void measure(void) {
