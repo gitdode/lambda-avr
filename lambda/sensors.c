@@ -48,7 +48,7 @@ static const tableEntry lambdaTable[] = {
 
 static const tableEntry tempOTable[] = {
 	{ -57, -50 },
-	{ 455, 0 },
+	{ 454, 0 },
 	{ 1403, 100 },
 	{ 2264, 200 },
 	{ 3047, 300 },

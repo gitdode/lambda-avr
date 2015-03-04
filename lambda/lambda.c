@@ -1,5 +1,5 @@
 /*
- * lambda.h
+ * lambda.c
  *
  *  Created on: 22.02.2015
  *      Author: dode@luniks.net
