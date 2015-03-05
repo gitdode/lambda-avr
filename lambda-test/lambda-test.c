@@ -15,34 +15,56 @@
 #include "USART.h"
 #include "sensors.h"
 
-void printXunit(void) {
-	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	printString("<testsuite name=\"lambda-test\" tests=\"2\" errors=\"0\" failures=\"0\" skip=\"0\">\n");
-	printString("<testcase classname=\"lambda-test\" name=\"testToTempI\"/>\n");
-	printString("<testcase classname=\"lambda-test\" name=\"testToTempO\"/>\n");
-	printString("</testsuite>\n");
-}
-
-void testToTempI(void) {
+int testToTempI(void) {
 	int temp = toTempI(100);
 
-	if (temp == 20) {
-	}
+	return temp == 20;
 }
 
-void testToTempO(void) {
+int testToTempO(void) {
 	int temp = toTempO(454);
 
-	if (temp == 0) {
+	return temp == 999;
+}
+
+typedef struct {
+	char* name;
+	int (*test)(void);
+} test;
+
+test tests[] = {
+	{"testToTempI", testToTempI},
+	{"testToTempO", testToTempO}
+};
+
+void runTests(void) {
+	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	printString("<testsuite name=\"lambda-test\" tests=\"2\" failures=\"0\">\n");
+
+	int testCount = sizeof(tests) / sizeof(tests[0]);
+	for (int i = 0; i < testCount; i++) {
+		int result = (*tests[i].test)();
+		char buf[128];
+		snprintf(buf, sizeof(buf), "<testcase classname=\"lambda-test\" name=\"%s\">\n", tests[i].name);
+		printString(buf);
+		if (result) {
+			// pass
+			printString("</testcase>\n");
+		} else {
+			printString("<failure type=\"failure\">Test failed</failure>\n");
+			printString("</testcase>\n");
+		}
 	}
+
+	printString("</testsuite>\n");
 }
 
 int main(void) {
 
 	initUSART();
-	testToTempI();
-	testToTempO();
-	printXunit();
+
+	runTests();
+
 	// send EOT
 	printString("\n");
 	transmitByte(4);
