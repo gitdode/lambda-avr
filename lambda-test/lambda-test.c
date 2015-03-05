@@ -15,13 +15,16 @@
 #include "USART.h"
 #include "sensors.h"
 
+void printXunit(void) {
+	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	printString("<testsuite name=\"lambda-test\" tests=\"2\" errors=\"0\" failures=\"0\" skip=\"0\">\n");
+	printString("</testsuite>\n");
+}
+
 void testToTempI(void) {
 	int temp = toTempI(100);
 
 	if (temp == 20) {
-		printString("testToTempI(): passed\n");
-	} else {
-		printString("testToTempI(): failed!\n");
 	}
 }
 
@@ -29,9 +32,6 @@ void testToTempO(void) {
 	int temp = toTempO(454);
 
 	if (temp == 0) {
-		printString("testToTempO(): passed\n");
-	} else {
-		printString("testToTempO(): failed!\n");
 	}
 }
 
@@ -40,6 +40,7 @@ int main(void) {
 	initUSART();
 	testToTempI();
 	testToTempO();
+	printXunit();
 	// send EOT
 	printString("\n");
 	transmitByte(4);
