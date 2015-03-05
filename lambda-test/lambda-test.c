@@ -18,6 +18,8 @@
 void printXunit(void) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	printString("<testsuite name=\"lambda-test\" tests=\"2\" errors=\"0\" failures=\"0\" skip=\"0\">\n");
+	printString("<testcase classname=\"lambda-test\" name=\"testToTempI\"/>\n");
+	printString("<testcase classname=\"lambda-test\" name=\"testToTempO\"/>\n");
 	printString("</testsuite>\n");
 }
 
