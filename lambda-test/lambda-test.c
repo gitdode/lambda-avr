@@ -21,10 +21,22 @@ int testToTempI(void) {
 	return temp == 20;
 }
 
-int testToTempO(void) {
+int testToTempO0C(void) {
 	int temp = toTempO(454);
 
 	return temp == 0;
+}
+
+int testToTempO50C(void) {
+	int temp = toTempO(928);
+
+	return temp == 50;
+}
+
+int testToTempO100C(void) {
+	int temp = toTempO(1403);
+
+	return temp == 100;
 }
 
 typedef struct {
@@ -34,7 +46,9 @@ typedef struct {
 
 test tests[] = {
 	{"testToTempI", testToTempI},
-	{"testToTempO", testToTempO}
+	{"testToTempO0C", testToTempO0C},
+	{"testToTempO50C", testToTempO50C},
+	{"testToTempO100C", testToTempO100C}
 };
 
 void runTests(void) {
