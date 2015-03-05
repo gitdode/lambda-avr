@@ -19,9 +19,9 @@ void testToTempI(void) {
 	int temp = toTempI(100);
 
 	if (temp == 20) {
-		printString("testToTempI(): passed\r\n");
+		printString("testToTempI(): passed\n");
 	} else {
-		printString("testToTempI(): failed!\r\n");
+		printString("testToTempI(): failed!\n");
 	}
 }
 
@@ -29,9 +29,9 @@ void testToTempO(void) {
 	int temp = toTempO(454);
 
 	if (temp == 0) {
-		printString("testToTempO(): passed\r\n");
+		printString("testToTempO(): passed\n");
 	} else {
-		printString("testToTempO(): failed!\r\n");
+		printString("testToTempO(): failed!\n");
 	}
 }
 
@@ -40,6 +40,9 @@ int main(void) {
 	initUSART();
 	testToTempI();
 	testToTempO();
+	// send EOT
+	printString("\n");
+	transmitByte(4);
 
 	return 0;
 }
