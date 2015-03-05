@@ -24,7 +24,7 @@ int testToTempI(void) {
 int testToTempO(void) {
 	int temp = toTempO(454);
 
-	return temp == 999;
+	return temp == 0;
 }
 
 typedef struct {
