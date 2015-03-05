@@ -5,15 +5,10 @@
  *      Author: dode@luniks.net
  *
  */
-#include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
-#include <util/delay.h>
 #include "USART.h"
 #include "sensors.h"
+#include "avrjunit.h"
 
 int testToTempI(void) {
 	int temp = toTempI(100);
@@ -39,11 +34,6 @@ int testToTempO100C(void) {
 	return temp == 100;
 }
 
-typedef struct {
-	char* name;
-	int (*test)(void);
-} test;
-
 test tests[] = {
 	{"testToTempI", testToTempI},
 	{"testToTempO0C", testToTempO0C},
@@ -51,37 +41,11 @@ test tests[] = {
 	{"testToTempO100C", testToTempO100C}
 };
 
-void runTests(void) {
-	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	printString("<testsuite name=\"lambda-test\" tests=\"2\" failures=\"0\">\n");
-
-	int testCount = sizeof(tests) / sizeof(tests[0]);
-	for (int i = 0; i < testCount; i++) {
-		int result = (*tests[i].test)();
-		char buf[128];
-		snprintf(buf, sizeof(buf), "<testcase classname=\"lambda-test\" name=\"%s\">\n", tests[i].name);
-		printString(buf);
-		if (result) {
-			// pass
-			printString("</testcase>\n");
-		} else {
-			printString("<failure type=\"failure\">Test failed</failure>\n");
-			printString("</testcase>\n");
-		}
-	}
-
-	printString("</testsuite>\n");
-}
-
 int main(void) {
-
 	initUSART();
 
-	runTests();
-
-	// send EOT
-	printString("\n");
-	transmitByte(4);
+	int count = sizeof(tests) / sizeof(tests[0]);
+	runTests("lambda", "sensors", tests, count);
 
 	return 0;
 }
