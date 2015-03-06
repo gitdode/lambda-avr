@@ -67,7 +67,7 @@ int16_t getVoltage(uint8_t port) {
 		sleep_mode();
 		overValue += ADC;
 	}
-	int16_t mV = ((overValue >> 2) * AREF_MV / 4096) + ADC_OFFSET_MV;
+	int16_t mV = (((overValue >> 2) * AREF_MV) >> 12) + ADC_OFFSET_MV;
 
 	return mV;
 }
