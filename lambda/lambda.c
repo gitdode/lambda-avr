@@ -4,12 +4,9 @@
  *  Created on: 22.02.2015
  *      Author: dode@luniks.net
  *
- * TODO try starting ADC sample manually and wait for it to finish
- * TODO try to remove floating points
- * TODO refactoring - module?
  * TODO comments, attribution
  * TODO DIDR?
- * TODO unit tests, Jenkins?
+ * TODO How to round integer divisions half up?
  */
 #include <math.h>
 #include <stdio.h>
@@ -21,9 +18,9 @@
 #include "USART.h"
 #include "sensors.h"
 
-float lambdaVoltageAvg = 0.0;
-float tempIVoltageAvg = 0.0;
-float tempOVoltageAvg = 0.0;
+int16_t lambdaVoltageAvg = 0;
+int16_t tempIVoltageAvg = 0;
+int16_t tempOVoltageAvg = 0;
 
 EMPTY_INTERRUPT(ADC_vect);
 
@@ -41,38 +38,36 @@ void setupSleepMode(void) {
 }
 
 void display(
-		int tempIVoltage, int tempI,
-		int tempOVoltage, int tempO,
-		float lambdaVoltage, float lambda) {
-	char lambdaStr[13];
-	dtostrf(lambda, 5, 3, lambdaStr);
-	char lambdaVoltageStr[13];
-	dtostrf(lambdaVoltage, 5, 3, lambdaVoltageStr);
+		int16_t tempIVoltage, int16_t tempI,
+		int16_t tempOVoltage, int16_t tempO,
+		int16_t lambdaVoltage, int16_t lambda) {
+	int8_t lambdaI = lambda / 1000;
+	int16_t lambdaR = lambda % 1000;
 
+	// TODO chars per line 16
 	char line0[40];
 	char line1[40];
 	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
-	snprintf(line1, sizeof(line1), "L %s  (%s)\r\n", lambdaStr, lambdaVoltageStr);
+	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaI, lambdaR, lambdaVoltage);
 	printString(line0);
 	printString(line1);
 }
 
 void measure(void) {
-	float lambdaVoltage = getVoltage(PC2) / 11.0;
-	lambdaVoltageAvg = (lambdaVoltage + lambdaVoltageAvg * 8) / 9;
+	int16_t tempIVoltage = getVoltage(PC5);
+	tempIVoltageAvg = (tempIVoltage + (tempIVoltageAvg << 1)) / 3;
 
-	int tempIVoltage = getVoltage(PC5);
-	tempIVoltageAvg = (tempIVoltage + tempIVoltageAvg * 2) / 3;
+	int16_t tempOVoltage = getVoltage(PC0);
+	tempOVoltageAvg = (tempOVoltage + (tempOVoltageAvg << 1)) / 3;
 
-	int tempOVoltage = getVoltage(PC0);
-	tempOVoltageAvg = (tempOVoltage + tempOVoltageAvg * 2) / 3;
+	int16_t lambdaVoltage = getVoltage(PC2) / 11;
+	lambdaVoltageAvg = (lambdaVoltage + (lambdaVoltageAvg << 3)) / 9;
 
-	int tempI = toTempI(tempIVoltage);
-	int tempO = toTempO(tempOVoltage);
-	float lambda = toLambda(lambdaVoltage);
-	// round(lambda * 10) / 10.0;
+	int16_t tempI = toTempI(tempIVoltageAvg);
+	int16_t tempO = toTempO(tempOVoltageAvg);
+	int16_t lambda = toLambda(lambdaVoltageAvg);
 
-	display(tempIVoltage, tempI, tempOVoltage, tempO, lambdaVoltage, lambda);
+	display(tempIVoltageAvg, tempI, tempOVoltageAvg, tempO, lambdaVoltageAvg, lambda);
 }
 
 int main(void) {

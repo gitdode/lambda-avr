@@ -11,7 +11,7 @@
  */
 typedef struct {
 	char* name;
-	int (*test)(void);
+	uint8_t (*test)(void);
 } test;
 
 /**
@@ -23,4 +23,4 @@ typedef struct {
  * on the receiving side with a command like:
  * (stty sane; cat > tests.xml) < /dev/ttyUSB0
  */
-void runTests(char* suite, char* class, test tests[], int count);
+void runTests(char* suite, char* class, test tests[], uint16_t count);

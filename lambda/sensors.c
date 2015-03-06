@@ -12,6 +12,9 @@
 #include <avr/sleep.h>
 #include "sensors.h"
 
+#include <stdio.h>
+#include "USART.h"
+
 // #define AREF_MV 4850
 #define AREF_MV 5000
 #define ADC_OFFSET_MV 7
@@ -29,21 +32,21 @@ static const char* rich = "Fett!";
  * TODO equation? real table?
  */
 static const tableEntry lambdaTable[] = {
-	{ 4, 2.0 },
-	{ 5, 1.9 },
-	{ 6, 1.8 },
-	{ 8, 1.7 },
-	{ 10, 1.6 },
-	{ 12, 1.5 },
-	{ 15, 1.4 },
-	{ 20, 1.3 },
-	{ 28, 1.2 },
-	{ 40, 1.1 },
-	{ 68, 1.025 },
-	{ 400, 1.0 },
-	{ 800, 0.98 },
-	{ 860, 0.9 },
-    { 880, 0.8 }
+	{ 4, 2000 },
+	{ 5, 1900 },
+	{ 6, 1800 },
+	{ 8, 1700 },
+	{ 10, 1600 },
+	{ 12, 1500 },
+	{ 15, 1400 },
+	{ 20, 1300 },
+	{ 28, 1200 },
+	{ 40, 1100 },
+	{ 68, 1025 },
+	{ 400, 1000 },
+	{ 800, 980 },
+	{ 860, 900 },
+    { 880, 800 }
 };
 
 static const tableEntry tempOTable[] = {
@@ -55,67 +58,66 @@ static const tableEntry tempOTable[] = {
 	{ 3762, 400 }
 };
 
-int getVoltage(int port) {
+int16_t getVoltage(uint8_t port) {
 
 	ADMUX = (0b11110000 & ADMUX) | port;
 
-	unsigned long overValue = 0;
-	for (int i = 0; i < 16; i++) {
+	uint32_t overValue = 0;
+	for (uint8_t i = 0; i < 16; i++) {
 		sleep_mode();
 		overValue += ADC;
 	}
-	float mV = ((overValue >> 2) * AREF_MV / 4096) + ADC_OFFSET_MV;
+	int16_t mV = ((overValue >> 2) * AREF_MV / 4096) + ADC_OFFSET_MV;
 
 	return mV;
 }
 
-float toLambda(float mV) {
-	int length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
-	float lambda = lookupLinInter(mV, lambdaTable, length);
+int16_t toLambda(int16_t mV) {
+	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
+	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
 
 	return lambda;
 }
 
-int toTempI(float mV) {
-	int temp = round(mV / 5);
+int16_t toTempI(int16_t mV) {
+	int temp = mV / 5;
 
 	return temp;
 }
 
-int toTempO(float mV) {
-	int length = sizeof(tempOTable) / sizeof(tempOTable[0]);
-	float c = lookupLinInter(mV, tempOTable, length);
-	int temp = round(c);
+int16_t toTempO(int16_t mV) {
+	uint8_t length = sizeof(tempOTable) / sizeof(tempOTable[0]);
+	int16_t temp = lookupLinInter(mV, tempOTable, length);
 
 	return temp;
 }
 
-float lookupLinInter(float mV, const tableEntry table[], int length) {
+int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 	if (mV < table[0].mV) {
 		return table[0].value;
 	} else if (mV > table[length - 1].mV) {
 		return table[length - 1].value;
 	}
 
-	int i = 0;
+	uint8_t i = 0;
 	for (; i < length - 1; i++) {
 		if (table[i + 1].mV > mV) {
 			break;
 		}
 	}
 
-	float diffVoltage = table[i + 1].mV - table[i].mV;
-	float diffValue = table[i + 1].value - table[i].value;
-	float value = table[i].value +
-			(mV - table[i].mV) * diffValue / diffVoltage;
+	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
+	int32_t diffValue = table[i + 1].value - table[i].value;
+	int16_t value = table[i].value +
+			(((mV - table[i].mV) * (diffValue << 10) / diffVoltage) >> 10);
 
 	return value;
 }
 
-const char* toInfo(float lambda) {
-	if (lambda > 1.5) {
+const char* toInfo(int16_t lambda) {
+	if (lambda > 1500) {
 		return lean;
-	} else if (lambda > 1.3 && lambda <= 1.5) {
+	} else if (lambda > 1300 && lambda <= 1500) {
 		return ideal;
 	} else {
 		return rich;

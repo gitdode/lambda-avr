@@ -5,22 +5,22 @@
  *      Author: dode@luniks.net
  */
 typedef struct {
-    const int mV;
-    const float value;
+    const int16_t mV;
+    const int16_t value;
 } tableEntry;
 
-int getVoltage(int port);
+int16_t getVoltage(uint8_t port);
 
-float toLambda(float mV);
+int16_t toLambda(int16_t mV);
 
 /**
  * Returns the temperature for the given voltage of a type K thermocouple
  * amplified with an AD8495 (5 mV/°C). Type K thermocouple voltages are
  * about linear between 0 and 800°C.
  */
-int toTempI(float mV);
+int16_t toTempI(int16_t mV);
 
-int toTempO(float mV);
+int16_t toTempO(int16_t mV);
 
 /**
  * Returns the value corresponding to the given voltage
@@ -28,6 +28,6 @@ int toTempO(float mV);
  * Thanks to http://stackoverflow.com/a/7091629/709426 and
  * http://en.wikipedia.org/wiki/Linear_interpolation
  */
-float lookupLinInter(float mV, const tableEntry table[], int length);
+int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length);
 
-const char* toInfo(float lambda);
+const char* toInfo(int16_t lambda);

@@ -17,56 +17,56 @@ static const tableEntry testTable[] = {
 		{10, 10}
 };
 
-int testToLambdaValue(void) {
-	float lambda = toLambda(12);
+uint8_t testToLambdaValue(void) {
+	int16_t lambda = toLambda(12);
 
-	return lambda == 1.5;
+	return lambda == 1500;
 }
 
-int testToLambdaInter(void) {
-	float lambda = toLambda(50);
+uint8_t testToLambdaInter(void) {
+	int16_t lambda = toLambda(50);
 
-	return round(lambda * 1000) == 1073;
+	return lambda == 1073;
 }
 
-int testToTempI(void) {
-	int temp = toTempI(100);
+uint8_t testToTempI(void) {
+	int16_t temp = toTempI(100);
 
 	return temp == 20;
 }
 
-int testToTempOValue(void) {
-	int temp = toTempO(454);
+uint8_t testToTempOValue(void) {
+	int16_t temp = toTempO(454);
 
 	return temp == 0;
 }
 
-int testToTempOInter(void) {
-	int temp = toTempO(928);
+uint8_t testToTempOInter(void) {
+	int16_t temp = toTempO(929);
 
 	return temp == 50;
 }
 
-int testLookupLinInterBelow(void) {
-	float value = lookupLinInter(-5, testTable, 2);
+uint8_t testLookupLinInterBelow(void) {
+	int16_t value = lookupLinInter(-5, testTable, 2);
 
 	return value == 0;
 }
 
-int testLookupLinInterAbove(void) {
-	float value = lookupLinInter(15, testTable, 2);
+uint8_t testLookupLinInterAbove(void) {
+	int16_t value = lookupLinInter(15, testTable, 2);
 
 	return value == 10;
 }
 
-int testLookupLinInterValue(void) {
-	float value = lookupLinInter(10, testTable, 2);
+uint8_t testLookupLinInterValue(void) {
+	int16_t value = lookupLinInter(10, testTable, 2);
 
 	return value == 10;
 }
 
-int testLookupLinInterInter(void) {
-	float value = lookupLinInter(3, testTable, 2);
+uint8_t testLookupLinInterInter(void) {
+	int16_t value = lookupLinInter(3, testTable, 2);
 
 	return value == 3;
 }
@@ -86,7 +86,7 @@ test tests[] = {
 int main(void) {
 	initUSART();
 
-	int count = sizeof(tests) / sizeof(tests[0]);
+	uint16_t count = sizeof(tests) / sizeof(tests[0]);
 	runTests("lambda", "sensors", tests, count);
 
 	return 0;
