@@ -14,7 +14,7 @@ MAIN = lambda.c
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
-LOCAL_SOURCE = sensors.c
+LOCAL_SOURCE = sensors.c integers.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = /data/Work/AVR/AVR-Programming-master/AVR-Programming-Library/

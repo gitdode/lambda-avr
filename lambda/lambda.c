@@ -7,7 +7,6 @@
  * TODO comments, attribution
  * TODO DIDR?
  * TODO string.h?
- * TODO round, ceil, floor?
  */
 #include <math.h>
 #include <stdio.h>
@@ -18,6 +17,7 @@
 #include <util/delay.h>
 #include "USART.h"
 #include "sensors.h"
+#include "integers.h"
 
 int16_t lambdaVoltageAvg = 0;
 int16_t tempIVoltageAvg = 0;
@@ -48,14 +48,13 @@ void display(
 	char line0[40];
 	char line1[40];
 	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
-	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaT.quot, lambdaT.rem, lambdaVoltage);
+	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
 	printString(line0);
 	printString(line1);
 }
 
 int16_t average(int16_t voltage, int16_t average, uint8_t weight) {
-	// rounding up, assuming voltages are never negative
-	return (voltage + (average * weight) + weight) / (weight + 1);
+	return roundNearest(voltage + (average * weight) + weight, weight + 1);
 }
 
 void measure(void) {
