@@ -6,7 +6,6 @@
  *
  * TODO comments, attribution
  * TODO DIDR?
- * TODO How to round integer divisions half up?
  * TODO string.h?
  */
 #include <math.h>
