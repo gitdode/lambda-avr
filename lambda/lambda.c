@@ -7,6 +7,7 @@
  * TODO comments, attribution
  * TODO DIDR?
  * TODO string.h?
+ * TODO round, ceil, floor?
  */
 #include <math.h>
 #include <stdio.h>
@@ -52,8 +53,9 @@ void display(
 	printString(line1);
 }
 
-int16_t average(int16_t value, int16_t average, uint8_t weight) {
-	return (value + (average * weight) + weight) / (weight + 1);
+int16_t average(int16_t voltage, int16_t average, uint8_t weight) {
+	// rounding up, assuming voltages are never negative
+	return (voltage + (average * weight) + weight) / (weight + 1);
 }
 
 void measure(void) {

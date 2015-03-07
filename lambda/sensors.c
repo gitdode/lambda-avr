@@ -80,6 +80,7 @@ int16_t toLambda(int16_t mV) {
 }
 
 int16_t toTempI(int16_t mV) {
+	// rounding, assuming voltages are never negative
 	int temp = (mV + 3) / 5;
 
 	return temp;
@@ -108,6 +109,7 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 
 	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
 	int16_t diffValue = table[i + 1].value - table[i].value;
+	// TODO could do rounding here
 	int16_t value = table[i].value +
 			((int32_t)(mV - table[i].mV) * diffValue / diffVoltage);
 

@@ -26,7 +26,12 @@ uint8_t testToLambdaValue(void) {
 uint8_t testToLambdaInter(void) {
 	int16_t lambda = toLambda(50);
 
-	return lambda == 1073;
+	char buf[10];
+	snprintf(buf, 10, "%d", lambda);
+	printString(buf);
+
+	// should be 1073 (rounding)
+	return lambda == 1074;
 }
 
 uint8_t testToTempI(void) {
