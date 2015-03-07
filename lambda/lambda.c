@@ -7,6 +7,7 @@
  * TODO comments, attribution
  * TODO DIDR?
  * TODO How to round integer divisions half up?
+ * TODO string.h?
  */
 #include <math.h>
 #include <stdio.h>
@@ -41,14 +42,13 @@ void display(
 		int16_t tempIVoltage, int16_t tempI,
 		int16_t tempOVoltage, int16_t tempO,
 		int16_t lambdaVoltage, int16_t lambda) {
-	int8_t lambdaI = lambda / 1000;
-	int16_t lambdaR = lambda % 1000;
+	div_t lambdaT = div(lambda, 1000);
 
 	// TODO chars per line 16
 	char line0[40];
 	char line1[40];
 	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
-	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaI, lambdaR, lambdaVoltage);
+	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaT.quot, lambdaT.rem, lambdaVoltage);
 	printString(line0);
 	printString(line1);
 }
