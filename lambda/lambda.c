@@ -53,15 +53,20 @@ void display(
 	printString(line1);
 }
 
+int16_t average(int16_t value, int16_t average, uint8_t weight) {
+	return (value + (average * weight) + weight) / (weight + 1);
+}
+
 void measure(void) {
 	int16_t tempIVoltage = getVoltage(PC5);
-	tempIVoltageAvg = (tempIVoltage + (tempIVoltageAvg << 1)) / 3;
+	tempIVoltageAvg = average(tempIVoltage, tempIVoltageAvg, 4);
 
 	int16_t tempOVoltage = getVoltage(PC0);
-	tempOVoltageAvg = (tempOVoltage + (tempOVoltageAvg << 1)) / 3;
+	tempOVoltageAvg = average(tempOVoltage, tempOVoltageAvg, 4);
 
-	int16_t lambdaVoltage = getVoltage(PC2) / 11;
-	lambdaVoltageAvg = (lambdaVoltage + (lambdaVoltageAvg << 3)) / 9;
+	// OP factor is 11
+	int16_t lambdaVoltage = (getVoltage(PC2) + 5) / 11;
+	lambdaVoltageAvg = average(lambdaVoltage, lambdaVoltageAvg, 4);
 
 	int16_t tempI = toTempI(tempIVoltageAvg);
 	int16_t tempO = toTempO(tempOVoltageAvg);

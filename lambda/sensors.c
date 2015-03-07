@@ -106,7 +106,7 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 		}
 	}
 
-	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
+	int32_t diffVoltage = table[i + 1].mV - table[i].mV;
 	int32_t diffValue = table[i + 1].value - table[i].value;
 	int16_t value = table[i].value +
 			(((mV - table[i].mV) * (diffValue << 10) / diffVoltage) >> 10);
