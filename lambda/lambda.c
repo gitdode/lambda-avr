@@ -4,9 +4,8 @@
  *  Created on: 22.02.2015
  *      Author: dode@luniks.net
  *
- * TODO comments, attribution
- * TODO DIDR?
- * TODO string.h?
+ * TODO attribution
+ * TODO have a look at string.h
  */
 #include <math.h>
 #include <stdio.h>
@@ -19,12 +18,18 @@
 #include "sensors.h"
 #include "integers.h"
 
+/**
+ * Global variables holding averaged voltages.
+ */
 int16_t lambdaVoltageAvg = 0;
 int16_t tempIVoltageAvg = 0;
 int16_t tempOVoltageAvg = 0;
 
 EMPTY_INTERRUPT(ADC_vect);
 
+/**
+ * Sets up reference voltage and clock prescaler of the ADC and enables it.
+ */
 void setupADC(void) {
 	ADMUX |= (1 << REFS0); // use AVCC as reference voltage
 	// ADCSRA |= (1 << ADPS1) | (1 << ADPS2); // ADC clock prescaler /64
@@ -32,12 +37,19 @@ void setupADC(void) {
 	ADCSRA |= (1 << ADEN); // enable ADC
 }
 
+/**
+ * Sets up sleep mode and enables ADC and global interrupts.
+ */
 void setupSleepMode(void) {
 	set_sleep_mode(SLEEP_MODE_ADC);
 	ADCSRA |= (1 << ADIE); // enable ADC interrupt
 	sei(); // enable global interrupts
 }
 
+/**
+ * Formats the given values, displays them on an 16x2 LCD
+ * and prints them over USART.
+ */
 void display(
 		int16_t tempIVoltage, int16_t tempI,
 		int16_t tempOVoltage, int16_t tempO,
@@ -53,10 +65,18 @@ void display(
 	printString(line1);
 }
 
-int16_t average(int16_t voltage, int16_t average, uint8_t weight) {
-	return roundNearest(voltage + (average * weight) + weight, weight + 1);
+/**
+ * Creates an exponential moving average of the given value and
+ * average weighted by the given weight.
+ */
+int16_t average(int16_t value, int16_t average, uint8_t weight) {
+	return roundUp(value + (average * weight), weight + 1);
 }
 
+/**
+ * Measures the "input" and "output" temperatures and the lambda value
+ * and displays the measured values.
+ */
 void measure(void) {
 	int16_t tempIVoltage = getVoltage(PC5);
 	tempIVoltageAvg = average(tempIVoltage, tempIVoltageAvg, 4);
@@ -75,6 +95,13 @@ void measure(void) {
 	display(tempIVoltageAvg, tempI, tempOVoltageAvg, tempO, lambdaVoltageAvg, lambda);
 }
 
+/**
+ * Initializes the USART transmitter and receiver, sets up the ADC
+ * and sleep mode and then infinitely measures with a 1 second delay
+ * in between.
+ * TODO DIDR?
+ * TODO replace delay by an interrupt or something else more efficient?
+ */
 int main(void) {
 
 	initUSART();
@@ -91,5 +118,6 @@ int main(void) {
 		_delay_ms(1000);
 	}
 
+	// will never be reached
 	return 0;
 }

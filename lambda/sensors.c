@@ -13,21 +13,11 @@
 #include "sensors.h"
 #include "integers.h"
 
-// #define AREF_MV 4850
-#define AREF_MV 5000
-#define ADC_OFFSET_MV 7
-// #define TMP_OP_OFFSET_MV 441
-#define TMP_OP_OFFSET_MV 454
-
-static const char* lean = "Mager";
-static const char* ideal = "Ideal";
-static const char* rich = "Fett!";
-
 /**
  * Table used to look up the lambda value at 12 V heater voltage
  * and 220°C exhaust gas temperature. Most values are approximated
  * from the characteristic curve in the datasheet.
- * TODO equation? real table?
+ * TODO real data?
  */
 static const tableEntry lambdaTable[] = {
 	{ 4, 2000 },
@@ -47,6 +37,12 @@ static const tableEntry lambdaTable[] = {
     { 880, 800 }
 };
 
+/**
+ * Table used to look up the temperature in °C at a given voltage
+ * measured using a wheatstone bridge and amplified with a non-
+ * inverting OP with an offset of 454 mV at 5000 mV supply voltage
+ * and an amplification factor of 6.17.
+ */
 static const tableEntry tempOTable[] = {
 	{ -57, -50 },
 	{ 454, 0 },
@@ -70,13 +66,6 @@ int16_t getVoltage(uint8_t port) {
 	return mV;
 }
 
-int16_t toLambda(int16_t mV) {
-	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
-	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
-
-	return lambda;
-}
-
 int16_t toTempI(int16_t mV) {
 	int temp = roundNearest(mV, 5);
 
@@ -88,6 +77,13 @@ int16_t toTempO(int16_t mV) {
 	int16_t temp = lookupLinInter(mV, tempOTable, length);
 
 	return temp;
+}
+
+int16_t toLambda(int16_t mV) {
+	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
+	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
+
+	return lambda;
 }
 
 int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
@@ -114,11 +110,11 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 
 const char* toInfo(int16_t lambda) {
 	if (lambda > 1500) {
-		return lean;
+		return LEAN;
 	} else if (lambda > 1300 && lambda <= 1500) {
-		return ideal;
+		return IDEAL;
 	} else {
-		return rich;
+		return RICH;
 	}
 }
 

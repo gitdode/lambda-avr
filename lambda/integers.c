@@ -13,3 +13,9 @@ int32_t roundNearest(int32_t num, int32_t den) {
 			((num + den / 2) / den);
 }
 
+int32_t roundUp(int32_t num, int32_t den) {
+	return ((num < 0) ^ (den < 0)) ?
+			((num - den + 1) / den) :
+			((num + den - 1) / den);
+}
+
