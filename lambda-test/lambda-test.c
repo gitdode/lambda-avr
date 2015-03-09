@@ -5,7 +5,7 @@
  *      Author: dode@luniks.net
  *
  */
-#include <math.h>
+
 #include <stdio.h>
 // #include <stdlib.h>
 #include "USART.h"
@@ -16,6 +16,26 @@ static const tableEntry testTable[] = {
 		{0, 0},
 		{10, 10}
 };
+
+uint8_t testAverage(void) {
+	int16_t avg = 0;
+	avg = average(8, avg, 4);
+	if (avg != 2) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 4) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 5) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 6) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 7) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 8) { return 0; }
+	avg = average(8, avg, 4);
+	if (avg != 8) { return 0; }
+
+	return 1;
+}
 
 uint8_t testToLambdaValue(void) {
 	int16_t lambda = toLambda(12);
@@ -72,6 +92,7 @@ uint8_t testLookupLinInterInter(void) {
 }
 
 test tests[] = {
+		{"testAverage", testAverage},
 		{"testToLambdaValue", testToLambdaValue},
 		{"testToLambdaInter", testToLambdaInter},
 		{"testToTempI", testToTempI},

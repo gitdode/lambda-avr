@@ -25,6 +25,27 @@ typedef struct {
 } tableEntry;
 
 /**
+ * Measures the "input" and "output" temperatures and the lambda value
+ * and displays the measured values.
+ */
+void measure(void);
+
+/**
+ * Creates an exponential moving average of the given value and
+ * average weighted by the given weight.
+ */
+int16_t average(int16_t value, int16_t average, uint8_t weight);
+
+/**
+ * Formats the given values, displays them on an 16x2 LCD
+ * and prints them over USART.
+ */
+void display(
+		int16_t tempIVoltage, int16_t tempI,
+		int16_t tempOVoltage, int16_t tempO,
+		int16_t lambdaVoltage, int16_t lambda);
+
+/**
  * Returns the voltage sampled at the given ADC input port doing
  * 16x oversampling and taking in account the calibrated AREF and
  * ADC offset voltages.
