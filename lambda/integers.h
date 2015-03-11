@@ -18,4 +18,5 @@ int32_t roundNearest(int32_t num, int32_t den);
  */
 int32_t roundUp(int32_t num, int32_t den);
 
+// TODO function to divide and return result as decimal string?
 // char* toDecimalString(int32_t num, int32_t den);

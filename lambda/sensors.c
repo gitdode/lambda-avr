@@ -4,7 +4,6 @@
  *  Created on: 02.03.2015
  *      Author: dode@luniks.net
  *
- * TODO put defines in makefile
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -83,10 +82,6 @@ void measure(void) {
 	display(tempIVoltageAvg, tempI, tempOVoltageAvg, tempO, lambdaVoltageAvg, lambda);
 }
 
-int16_t average(int16_t value, int16_t average, uint8_t weight) {
-	return roundUp(value + (average * weight), weight + 1);
-}
-
 void display(
 		int16_t tempIVoltage, int16_t tempI,
 		int16_t tempOVoltage, int16_t tempO,
@@ -114,6 +109,10 @@ int16_t getVoltage(uint8_t port) {
 	int16_t mV = (((overValue >> 2) * AREF_MV) >> 12) + ADC_OFFSET_MV;
 
 	return mV;
+}
+
+int16_t average(int16_t value, int16_t average, uint8_t weight) {
+	return roundUp(value + (average * weight), weight + 1);
 }
 
 int16_t toTempI(int16_t mV) {

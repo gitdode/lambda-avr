@@ -7,8 +7,10 @@
  */
 
 #include <stdio.h>
-// #include <stdlib.h>
+#include <avr/io.h>
+#include <util/delay.h>
 #include "USART.h"
+#include "adc.h"
 #include "sensors.h"
 #include "avrjunit.h"
 
@@ -16,6 +18,22 @@ static const tableEntry testTable[] = {
 		{0, 0},
 		{10, 10}
 };
+
+uint8_t testGetVoltage(void) {
+	// enable pull-up resistor so the measured voltage
+	// should be (close to?) to AREF
+	PORTC |= (1 << PC1);
+	// PORTC = 0xff;
+
+	// it seems that sleep_mode() causes some interference when called
+	// immediately after sending data over USART - some buffer not yet empty?
+	// loop_until_bit_is_set(UCSR0A, UDRE0);
+	_delay_ms(10);
+
+	int16_t mV = getVoltage(PC1);
+
+	return mV > 4950;
+}
 
 uint8_t testAverage(void) {
 	int16_t avg = 0;
@@ -92,6 +110,7 @@ uint8_t testLookupLinInterInter(void) {
 }
 
 test tests[] = {
+		{"testGetVoltage", testGetVoltage},
 		{"testAverage", testAverage},
 		{"testToLambdaValue", testToLambdaValue},
 		{"testToLambdaInter", testToLambdaInter},
@@ -105,6 +124,8 @@ test tests[] = {
 };
 
 int main(void) {
+	setupADC();
+	setupSleepMode();
 	initUSART();
 
 	uint16_t count = sizeof(tests) / sizeof(tests[0]);

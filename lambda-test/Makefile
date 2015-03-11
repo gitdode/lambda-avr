@@ -22,7 +22,7 @@ EXTRA_SOURCE_FILES = USART.c
 
 ## Link to directory of project under test and its source files
 TEST_SOURCE_DIR = /data/Job/git/lambda-avr/lambda/
-TEST_SOURCE_FILES = sensors.c integers.c
+TEST_SOURCE_FILES = adc.c sensors.c integers.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
