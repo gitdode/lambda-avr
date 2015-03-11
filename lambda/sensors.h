@@ -5,13 +5,6 @@
  *      Author: dode@luniks.net
  */
 
-// TODO right place for these definitions? Put in makefile?
-// #define AREF_MV 4850
-#define AREF_MV 5000
-#define ADC_OFFSET_MV 7
-// #define TEMPO_OP_OFFSET_MV 441
-#define TEMPO_OP_OFFSET_MV 454
-
 #define LEAN "Mager"
 #define IDEAL "Ideal";
 #define RICH "Fett!";
@@ -38,13 +31,6 @@ void display(
 		int16_t tempIVoltage, int16_t tempI,
 		int16_t tempOVoltage, int16_t tempO,
 		int16_t lambdaVoltage, int16_t lambda);
-
-/**
- * Returns the voltage sampled at the given ADC input port doing
- * 16x oversampling and taking in account the calibrated AREF and
- * ADC offset voltages.
- */
-int16_t getVoltage(uint8_t port);
 
 /**
  * Creates an exponential moving average of the given value and

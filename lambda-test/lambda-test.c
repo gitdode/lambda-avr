@@ -110,17 +110,17 @@ uint8_t testLookupLinInterInter(void) {
 }
 
 test tests[] = {
-		{"testGetVoltage", testGetVoltage},
-		{"testAverage", testAverage},
-		{"testToLambdaValue", testToLambdaValue},
-		{"testToLambdaInter", testToLambdaInter},
-		{"testToTempI", testToTempI},
-		{"testToTempOValue", testToTempOValue},
-		{"testToTempOInter", testToTempOInter},
-		{"testLookupLinInterValue", testLookupLinInterValue},
-		{"testLookupLinInterInter", testLookupLinInterInter},
-		{"testLookupLinInterBelow", testLookupLinInterBelow},
-		{"testLookupLinInterAbove", testLookupLinInterAbove}
+		{"adc", "testGetVoltage", testGetVoltage},
+		{"sensors", "testAverage", testAverage},
+		{"sensors", "testToLambdaValue", testToLambdaValue},
+		{"sensors", "testToLambdaInter", testToLambdaInter},
+		{"sensors", "testToTempI", testToTempI},
+		{"sensors", "testToTempOValue", testToTempOValue},
+		{"sensors", "testToTempOInter", testToTempOInter},
+		{"sensors", "testLookupLinInterValue", testLookupLinInterValue},
+		{"sensors", "testLookupLinInterInter", testLookupLinInterInter},
+		{"sensors", "testLookupLinInterBelow", testLookupLinInterBelow},
+		{"sensors", "testLookupLinInterAbove", testLookupLinInterAbove}
 };
 
 int main(void) {
@@ -129,7 +129,7 @@ int main(void) {
 	initUSART();
 
 	uint16_t count = sizeof(tests) / sizeof(tests[0]);
-	runTests("lambda", "sensors", tests, count);
+	runTests("lambda", tests, count);
 
 	return 0;
 }

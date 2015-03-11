@@ -8,9 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
 #include "USART.h"
+#include "adc.h"
 #include "sensors.h"
 #include "integers.h"
 
@@ -95,20 +94,6 @@ void display(
 	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
 	printString(line0);
 	printString(line1);
-}
-
-int16_t getVoltage(uint8_t port) {
-
-	ADMUX = (0b11110000 & ADMUX) | port;
-
-	uint32_t overValue = 0;
-	for (uint8_t i = 0; i < 16; i++) {
-		sleep_mode();
-		overValue += ADC;
-	}
-	int16_t mV = (((overValue >> 2) * AREF_MV) >> 12) + ADC_OFFSET_MV;
-
-	return mV;
 }
 
 int16_t average(int16_t value, int16_t average, uint8_t weight) {
