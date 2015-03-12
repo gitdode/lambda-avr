@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
 #include <util/delay.h>
 #include "USART.h"
 #include "adc.h"
@@ -21,6 +23,28 @@ static const tableEntry testTable[] = {
 };
 
 /* Module adc */
+
+uint8_t testSetupADC(void) {
+	setupADC();
+
+	// AVCC is set as AREF
+	return (ADMUX & (1 << REFS0)) == (1 << REFS0);
+	// ADC clock prescaler/16
+	return (ADCSRA & (1 << ADPS2)) == (1 << ADPS2);
+	// ADC enabled
+	return (ADCSRA & (1 << ADEN)) == (1 << ADEN);
+}
+
+uint8_t testSetupSleepMode(void) {
+	setupSleepMode();
+
+	// don't know how to verify these
+	// set_sleep_mode(SLEEP_MODE_ADC);
+	// sei(); // enable global interrupts
+
+	// ADC interrupt enabled
+	return (ADCSRA & (1 << ADIE)) == (1 << ADIE);
+}
 
 uint8_t testGetVoltage(void) {
 	setupADC();
@@ -240,7 +264,9 @@ uint8_t testLookupLinInterInter(void) {
 }
 
 test tests[] = {
+		{"adc", "testSetupADC", testSetupADC},
 		{"adc", "testGetVoltage", testGetVoltage},
+		{"adc", "testSetupSleepMode", testSetupSleepMode},
 		{"integers", "testDivRoundNearest", testDivRoundNearest},
 		{"integers", "testDivRoundNearestNumNeg", testDivRoundNearestNumNeg},
 		{"integers", "testDivRoundNearestDenNeg", testDivRoundNearestDenNeg},
