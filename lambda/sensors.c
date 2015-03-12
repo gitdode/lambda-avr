@@ -97,11 +97,11 @@ void display(
 }
 
 int16_t average(int16_t value, int16_t average, uint8_t weight) {
-	return roundUp(value + (average * weight), weight + 1);
+	return divRoundUp(value + (average * weight), weight + 1);
 }
 
 int16_t toTempI(int16_t mV) {
-	int temp = roundNearest(mV, 5);
+	int temp = divRoundNearest(mV, 5);
 
 	return temp;
 }
@@ -137,7 +137,7 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
 	int16_t diffValue = table[i + 1].value - table[i].value;
 	int16_t value = table[i].value +
-			roundNearest((int32_t)(mV - table[i].mV) * diffValue, diffVoltage);
+			divRoundNearest((int32_t)(mV - table[i].mV) * diffValue, diffVoltage);
 
 	return value;
 }

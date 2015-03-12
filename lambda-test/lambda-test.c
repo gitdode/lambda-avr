@@ -11,6 +11,7 @@
 #include <util/delay.h>
 #include "USART.h"
 #include "adc.h"
+#include "integers.h"
 #include "sensors.h"
 #include "avrjunit.h"
 
@@ -19,7 +20,12 @@ static const tableEntry testTable[] = {
 		{10, 10}
 };
 
+/* Module adc */
+
 uint8_t testGetVoltage(void) {
+	setupADC();
+	setupSleepMode();
+
 	// enable pull-up resistor so the measured voltage
 	// should be (close to?) to AREF
 	PORTC |= (1 << PC1);
@@ -34,6 +40,130 @@ uint8_t testGetVoltage(void) {
 
 	return mV > 4950;
 }
+
+/* Module integers */
+
+uint8_t testDivRoundNearest(void) {
+	int32_t round = 0;
+
+	round = divRoundNearest(4, 2);
+	if (round != 2) return 0;
+
+	round = divRoundNearest(5, 2);
+	if (round != 3) return 0;
+
+	round = divRoundNearest(10, 3);
+	if (round != 3) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundNearestNumNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundNearest(-4, 2);
+	if (round != -2) return 0;
+
+	round = divRoundNearest(-5, 2);
+	if (round != -3) return 0;
+
+	round = divRoundNearest(-10, 3);
+	if (round != -3) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundNearestDenNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundNearest(4, -2);
+	if (round != -2) return 0;
+
+	round = divRoundNearest(5, -2);
+	if (round != -3) return 0;
+
+	round = divRoundNearest(10, -3);
+	if (round != -3) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundNearestBothNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundNearest(-4, -2);
+	if (round != 2) return 0;
+
+	round = divRoundNearest(-5, -2);
+	if (round != 3) return 0;
+
+	round = divRoundNearest(-10, -3);
+	if (round != 3) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundUp(void) {
+	int32_t round = 0;
+
+	round = divRoundUp(4, 2);
+	if (round != 2) return 0;
+
+	round = divRoundUp(5, 2);
+	if (round != 3) return 0;
+
+	round = divRoundUp(10, 3);
+	if (round != 4) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundUpNumNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundUp(-4, 2);
+	if (round != -2) return 0;
+
+	round = divRoundUp(-5, 2);
+	if (round != -3) return 0;
+
+	round = divRoundUp(-10, 3);
+	if (round != -4) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundUpDenNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundUp(4, -2);
+	if (round != -2) return 0;
+
+	round = divRoundUp(5, -2);
+	if (round != -3) return 0;
+
+	round = divRoundUp(10, -3);
+	if (round != -4) return 0;
+
+	return 1;
+}
+
+uint8_t testDivRoundUpBothNeg(void) {
+	int32_t round = 0;
+
+	round = divRoundUp(-4, -2);
+	if (round != 2) return 0;
+
+	round = divRoundUp(-5, -2);
+	if (round != 3) return 0;
+
+	round = divRoundUp(-10, -3);
+	if (round != 4) return 0;
+
+	return 1;
+}
+
+/* Module sensors */
 
 uint8_t testAverage(void) {
 	int16_t avg = 0;
@@ -111,6 +241,14 @@ uint8_t testLookupLinInterInter(void) {
 
 test tests[] = {
 		{"adc", "testGetVoltage", testGetVoltage},
+		{"integers", "testDivRoundNearest", testDivRoundNearest},
+		{"integers", "testDivRoundNearestNumNeg", testDivRoundNearestNumNeg},
+		{"integers", "testDivRoundNearestDenNeg", testDivRoundNearestDenNeg},
+		{"integers", "testDivRoundNearestBothNeg", testDivRoundNearestBothNeg},
+		{"integers", "testDivRoundUp", testDivRoundUp},
+		{"integers", "testDivRoundUpNumNeg", testDivRoundUpNumNeg},
+		{"integers", "testDivRoundUpDenNeg", testDivRoundUpDenNeg},
+		{"integers", "testDivRoundUpBothNeg", testDivRoundUpBothNeg},
 		{"sensors", "testAverage", testAverage},
 		{"sensors", "testToLambdaValue", testToLambdaValue},
 		{"sensors", "testToLambdaInter", testToLambdaInter},
@@ -124,8 +262,6 @@ test tests[] = {
 };
 
 int main(void) {
-	setupADC();
-	setupSleepMode();
 	initUSART();
 
 	uint16_t count = sizeof(tests) / sizeof(tests[0]);
