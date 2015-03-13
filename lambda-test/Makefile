@@ -17,12 +17,8 @@ MAIN = lambda-test.c
 LOCAL_SOURCE = avrjunit.c
 
 ## Here you can link to one more directory (and multiple .c files)
-EXTRA_SOURCE_DIR = /data/Work/AVR/AVR-Programming-master/AVR-Programming-Library/
-EXTRA_SOURCE_FILES = USART.c
-
-## Link to directory of project under test and its source files
-TEST_SOURCE_DIR = /data/Job/git/lambda-avr/lambda/
-TEST_SOURCE_FILES = adc.c sensors.c integers.c
+EXTRA_SOURCE_DIR = ../lambda/
+EXTRA_SOURCE_FILES = USART.c adc.c sensors.c integers.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
@@ -51,7 +47,7 @@ AVRSIZE = avr-size
 AVRDUDE = avrdude
 
 ## Compilation options, type man avr-gcc if you're curious.
-CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -DBAUD=$(BAUD) -Os -I. -I$(EXTRA_SOURCE_DIR) -I$(TEST_SOURCE_DIR)
+CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU)UL -DBAUD=$(BAUD) -Os -I. -I$(EXTRA_SOURCE_DIR) -I$(TEST_SOURCE_DIR) 
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
 CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -g -ggdb
@@ -64,9 +60,7 @@ CFLAGS += -std=gnu99
 TARGET = $(strip $(basename $(MAIN)))
 SRC = $(TARGET).c
 EXTRA_SOURCE = $(addprefix $(EXTRA_SOURCE_DIR), $(EXTRA_SOURCE_FILES))
-TEST_SOURCE = $(addprefix $(TEST_SOURCE_DIR), $(TEST_SOURCE_FILES))
 SRC += $(EXTRA_SOURCE)
-SRC += $(TEST_SOURCE) 
 SRC += $(LOCAL_SOURCE) 
 
 ## List of all header files
