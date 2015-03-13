@@ -1,6 +1,8 @@
 /*
  * sensors.c
  *
+ * Functions to evaluate measurements from the sensors.
+ *
  *  Created on: 02.03.2015
  *      Author: dode@luniks.net
  *
@@ -108,7 +110,7 @@ void display(
 		int16_t lambdaVoltage, int16_t lambda) {
 	div_t lambdaT = div(lambda, 1000);
 
-	// TODO chars per line 16
+	// TODO LCD, 16 chars per line
 	char line0[40];
 	char line1[40];
 	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);

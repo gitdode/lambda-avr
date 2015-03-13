@@ -1,5 +1,7 @@
 /*
- * sensors-test.c
+ * lambda-test.c
+ *
+ * Unit tests for the lambda project.
  *
  *  Created on: 04.03.2015
  *      Author: dode@luniks.net

@@ -1,6 +1,9 @@
 /*
  * avrjunit.c
  *
+ * Functions to run basic unit tests on an AVR micro controller and
+ * send a minimal JUnit test report XML via USART.
+ *
  *  Created on: 06.03.2015
  *      Author: dode@luniks.net
  *

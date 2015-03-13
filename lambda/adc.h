@@ -1,6 +1,8 @@
 /*
  * adc.h
  *
+ * Functions to set up the ADC and get voltages from its ports.
+ *
  *  Created on: 11.03.2015
  *      Author: dode@luniks.net
  *

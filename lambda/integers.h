@@ -1,6 +1,8 @@
 /*
  * integers.h
  *
+ * Functions to help with integers.
+ *
  *  Created on: 07.03.2015
  *      Author: dode@luniks.net
  *

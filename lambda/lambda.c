@@ -1,6 +1,9 @@
 /*
  * lambda.c
  *
+ * Program for an AVR micro controller based circuit to measure exhaust
+ * gas temperatures and residual oxygen of a wood oven.
+ *
  *  Created on: 22.02.2015
  *      Author: dode@luniks.net
  *

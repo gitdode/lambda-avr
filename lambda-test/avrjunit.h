@@ -1,6 +1,8 @@
 /*
  * avrjunit.h
  *
+ * Very basic unit test framework for AVR microcontroller code.
+ *
  *  Created on: 06.03.2015
  *      Author: dode@luniks.net
  *
@@ -25,6 +27,7 @@
  * the code accompanying the book Make: AVR Programming by Elliot Williams,
  * a great book and a pleasant read, that helped me tremendously to get
  * started with AVR programming.
+ *
  */
 
 /**

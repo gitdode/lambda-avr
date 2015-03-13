@@ -1,6 +1,8 @@
 /*
  * sensors.h
  *
+ * Functions to evaluate measurements from the sensors.
+ *
  *  Created on: 02.03.2015
  *      Author: dode@luniks.net
  *
