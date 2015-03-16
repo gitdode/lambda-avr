@@ -29,6 +29,13 @@
  * started with AVR programming.
  */
 
+// TODO Put in makefile
+// #define AREF_MV 4850
+#define AREF_MV 5000
+#define ADC_OFFSET_MV 7
+// #define TEMPO_OP_OFFSET_MV 441
+#define TEMPO_OP_OFFSET_MV 454
+
 /**
  * Sets up reference voltage and clock prescaler of the ADC and enables it.
  */

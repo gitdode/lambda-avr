@@ -28,7 +28,7 @@ EXTRA_SOURCE_FILES = USART.c adc.c sensors.c integers.c
 
 PROGRAMMER_TYPE = avrisp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
+PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM0
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########

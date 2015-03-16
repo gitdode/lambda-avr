@@ -30,13 +30,7 @@
  */
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
-
-// TODO right place for these definitions? Put in makefile?
-// #define AREF_MV 4850
-#define AREF_MV 5000
-#define ADC_OFFSET_MV 7
-// #define TEMPO_OP_OFFSET_MV 441
-#define TEMPO_OP_OFFSET_MV 454
+#include "adc.h"
 
 // TODO what exactly does this do?
 EMPTY_INTERRUPT(ADC_vect);

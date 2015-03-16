@@ -94,7 +94,7 @@ void measure(void) {
 	tempOVoltageAvg = average(tempOVoltage, tempOVoltageAvg, 4);
 
 	// OP factor is 11
-	int16_t lambdaVoltage = (getVoltage(PC2) + 5) / 11;
+	int16_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
 	lambdaVoltageAvg = average(lambdaVoltage, lambdaVoltageAvg, 4);
 
 	int16_t tempI = toTempI(tempIVoltageAvg);
