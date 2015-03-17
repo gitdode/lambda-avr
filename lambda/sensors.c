@@ -35,6 +35,7 @@
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"
+#include "lcdroutines.h"
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -85,6 +86,7 @@ int16_t tempOVoltageAvg = 0;
 /**
  * Measures the "input" and "output" temperatures and the lambda value
  * and displays the measured values.
+ * TODO tests, with local implementation of getVoltage()?
  */
 void measure(void) {
 	int16_t tempIVoltage = getVoltage(PC5);
@@ -101,7 +103,9 @@ void measure(void) {
 	int16_t tempO = toTempO(tempOVoltageAvg);
 	int16_t lambda = toLambda(lambdaVoltageAvg);
 
-	display(tempIVoltageAvg, tempI, tempOVoltageAvg, tempO, lambdaVoltageAvg, lambda);
+	display(tempIVoltageAvg, tempI,
+			tempOVoltageAvg, tempO,
+			lambdaVoltageAvg, lambda);
 }
 
 void display(
@@ -110,13 +114,21 @@ void display(
 		int16_t lambdaVoltage, int16_t lambda) {
 	div_t lambdaT = div(lambda, 1000);
 
-	// TODO LCD, 16 chars per line
-	char line0[40];
-	char line1[40];
-	snprintf(line0, sizeof(line0), "Ti %3d C %d   To %3d C %d\r\n", tempI, tempIVoltage, tempO, tempOVoltage);
-	snprintf(line1, sizeof(line1), "L %d.%03d %d\r\n", lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
-	printString(line0);
-	printString(line1);
+	char log[64];
+	snprintf(log, sizeof(log), "Ti %3d C %d - To %3d C %d - L %d.%03d %d\r\n",
+			tempI, tempIVoltage, tempO, tempOVoltage,
+			lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
+	printString(log);
+
+	char line0[17];
+	char line1[17];
+	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC", tempI, tempO);
+	snprintf(line1, sizeof(line1), "L %d.%03d %s",
+			lambdaT.quot, abs(lambdaT.rem), toInfo(lambda));
+	lcd_setcursor(0, 1);
+	lcd_string(line0);
+	lcd_setcursor(0, 2);
+	lcd_string(line1);
 }
 
 int16_t average(int16_t value, int16_t average, uint8_t weight) {

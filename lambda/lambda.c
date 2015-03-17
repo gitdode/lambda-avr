@@ -35,6 +35,7 @@
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"
+#include "lcdroutines.h"
 
 /**
  * Initializes the USART transmitter and receiver, sets up the ADC
@@ -45,6 +46,7 @@
  */
 int main(void) {
 	initUSART();
+	lcd_init();
 	setupADC();
 	setupSleepMode();
 
