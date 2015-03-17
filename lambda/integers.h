@@ -21,13 +21,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU (Lesser) General Public License for more details.
  *
- * DISCLAIMER: I'm experienced with Java, but new to C.
- *
- * ATTRIBUTION: This project includes the module USART and the Makefile from
- * the code accompanying the book Make: AVR Programming by Elliot Williams,
- * a great book and a pleasant read, that helped me tremendously to get
- * started with AVR programming.
+ * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  */
+
+#ifndef INTEGERS_H_
+#define INTEGERS_H_
 
 /**
  * Divides the given numerator by the given denominator,
@@ -44,3 +42,5 @@ int32_t divRoundUp(int32_t num, int32_t den);
 
 // TODO function to divide and return result as decimal string?
 // char* divToDecimalString(int32_t num, int32_t den);
+
+#endif /* INTEGERS_H_ */

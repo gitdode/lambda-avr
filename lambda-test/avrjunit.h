@@ -21,14 +21,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU (Lesser) General Public License for more details.
  *
- * DISCLAIMER: I'm experienced with Java, but new to C.
- *
- * ATTRIBUTION: This project includes the module USART and the Makefile from
- * the code accompanying the book Make: AVR Programming by Elliot Williams,
- * a great book and a pleasant read, that helped me tremendously to get
- * started with AVR programming.
- *
+ * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  */
+
+#ifndef AVRJUNIT_H_
+#define AVRJUNIT_H_
 
 /**
  * A test case with its class, name and pointer to the test function,
@@ -49,3 +46,5 @@ typedef struct {
  * (stty sane; cat > tests.xml) < /dev/ttyUSB0
  */
 void runTests(char* suite, test tests[], uint16_t count);
+
+#endif /* AVRJUNIT_H_ */

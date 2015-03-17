@@ -21,14 +21,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU (Lesser) General Public License for more details.
  *
- * DISCLAIMER: I'm experienced with Java, but new to C.
- *
- * ATTRIBUTION: This project includes the module USART and the Makefile from
- * the code accompanying the book Make: AVR Programming by Elliot Williams,
- * a great book and a pleasant read, that helped me tremendously to get
- * started with AVR programming.
+ * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  */
 
+#ifndef SENSORS_H_
+#define SENSORS_H_
+
+// TODO put in Makefile?
 #define LEAN "Mager"
 #define IDEAL "Ideal";
 #define RICH "Fett!";
@@ -101,3 +100,5 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length);
  * a good value, below is rich and above is lean.
  */
 const char* toInfo(int16_t lambda);
+
+#endif /* SENSORS_H_ */

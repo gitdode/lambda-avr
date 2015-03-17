@@ -22,13 +22,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU (Lesser) General Public License for more details.
  *
- * DISCLAIMER: I'm experienced with Java, but new to C.
+ * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  *
  * ATTRIBUTION: This project includes the module USART and the Makefile from
  * the code accompanying the book Make: AVR Programming by Elliot Williams,
  * a great book and a pleasant read, that helped me tremendously to get
  * started with AVR programming.
+ * ATTRIBUTION: This project includes the module lcdroutines from
+ * http://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/LCD-Ansteuerung
  */
+
 #include <stdio.h>
 #include <util/delay.h>
 #include "USART.h"

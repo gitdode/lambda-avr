@@ -21,13 +21,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU (Lesser) General Public License for more details.
  *
- * DISCLAIMER: I'm experienced with Java, but new to C.
- *
- * ATTRIBUTION: This project includes the module USART and the Makefile from
- * the code accompanying the book Make: AVR Programming by Elliot Williams,
- * a great book and a pleasant read, that helped me tremendously to get
- * started with AVR programming.
+ * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/io.h>
