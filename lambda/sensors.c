@@ -86,7 +86,7 @@ int16_t tempOVoltageAvg = 0;
  */
 void measure(void) {
 	int16_t tempIVoltage = getVoltage(PC5);
-	tempIVoltageAvg = average(tempIVoltage, tempIVoltageAvg, 4);
+	tempIVoltageAvg = average(tempIVoltage, tempIVoltageAvg, 8);
 
 	int16_t tempOVoltage = getVoltage(PC0);
 	tempOVoltageAvg = average(tempOVoltage, tempOVoltageAvg, 4);
@@ -94,6 +94,14 @@ void measure(void) {
 	// OP factor is 11
 	int16_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
 	lambdaVoltageAvg = average(lambdaVoltage, lambdaVoltageAvg, 4);
+
+	// TODO just for testing, remove at some point
+	char log[64];
+	snprintf(log, sizeof(log), "Direct: Ti %3d C %4d - To %3d C %4d - L       %4d\r\n",
+			toTempI(tempIVoltage), tempIVoltage,
+			toTempO(tempOVoltage), tempOVoltage,
+			lambdaVoltage);
+	printString(log);
 
 	int16_t tempI = toTempI(tempIVoltageAvg);
 	int16_t tempO = toTempO(tempOVoltageAvg);
@@ -111,7 +119,7 @@ void display(
 	div_t lambdaT = div(lambda, 1000);
 
 	char log[64];
-	snprintf(log, sizeof(log), "Ti %3d C %d - To %3d C %d - L %d.%03d %d\r\n",
+	snprintf(log, sizeof(log), "Averag: Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
 			tempI, tempIVoltage, tempO, tempOVoltage,
 			lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
 	printString(log);
