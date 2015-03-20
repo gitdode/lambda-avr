@@ -59,7 +59,7 @@ void display(
  * Creates an exponential moving average of the given value and
  * average weighted by the given weight.
  */
-int16_t average(int16_t value, int16_t average, uint8_t weight);
+int32_t average(int32_t value, int32_t average, uint8_t weight);
 
 /**
  * Returns the temperature for the given voltage of a type K thermocouple

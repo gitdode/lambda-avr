@@ -46,7 +46,7 @@ void runTests(char* suite, test tests[], uint16_t count) {
 		printString(tcbuf);
 		if (! result) {
 			// failure
-			printString("<failure type=\"failure\">Test failed</failure>\n");
+			printString("<failure type=\"failure\">failed</failure>\n");
 		}
 		printString("</testcase>\n");
 	}

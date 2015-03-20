@@ -75,9 +75,9 @@ static const tableEntry tempOTable[] = {
 /**
  * Global variables holding averaged voltages.
  */
-int16_t lambdaVoltageAvg = 0;
-int16_t tempIVoltageAvg = 0;
-int16_t tempOVoltageAvg = 0;
+int32_t lambdaVoltageAvg = 0;
+int32_t tempIVoltageAvg = 0;
+int32_t tempOVoltageAvg = 0;
 
 /**
  * Measures the "input" and "output" temperatures and the lambda value
@@ -86,30 +86,26 @@ int16_t tempOVoltageAvg = 0;
  */
 void measure(void) {
 	int16_t tempIVoltage = getVoltage(PC5);
-	tempIVoltageAvg = average(tempIVoltage, tempIVoltageAvg, 8);
+	tempIVoltageAvg = average((tempIVoltage << 4), tempIVoltageAvg, 4);
 
 	int16_t tempOVoltage = getVoltage(PC0);
-	tempOVoltageAvg = average(tempOVoltage, tempOVoltageAvg, 4);
+	tempOVoltageAvg = average((tempOVoltage << 4), tempOVoltageAvg, 4);
 
 	// OP factor is 11
 	int16_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
-	lambdaVoltageAvg = average(lambdaVoltage, lambdaVoltageAvg, 4);
+	lambdaVoltageAvg = average((lambdaVoltage << 4), lambdaVoltageAvg, 4);
 
-	// TODO just for testing, remove at some point
-	char log[64];
-	snprintf(log, sizeof(log), "Direct: Ti %3d C %4d - To %3d C %4d - L       %4d\r\n",
-			toTempI(tempIVoltage), tempIVoltage,
-			toTempO(tempOVoltage), tempOVoltage,
-			lambdaVoltage);
-	printString(log);
+	int16_t tempIVoltageAvgDiv = divRoundNearest(tempIVoltageAvg, 16);
+	int16_t tempOVoltageAvgDiv = divRoundNearest(tempOVoltageAvg, 16);
+	int16_t lambdaVoltageAvgDiv = divRoundNearest(lambdaVoltageAvg, 16);
 
-	int16_t tempI = toTempI(tempIVoltageAvg);
-	int16_t tempO = toTempO(tempOVoltageAvg);
-	int16_t lambda = toLambda(lambdaVoltageAvg);
+	int16_t tempI = toTempI(tempIVoltageAvgDiv);
+	int16_t tempO = toTempO(tempOVoltageAvgDiv);
+	int16_t lambda = toLambda(lambdaVoltageAvgDiv);
 
-	display(tempIVoltageAvg, tempI,
-			tempOVoltageAvg, tempO,
-			lambdaVoltageAvg, lambda);
+	display(tempIVoltageAvgDiv, tempI,
+			tempOVoltageAvgDiv, tempO,
+			lambdaVoltageAvgDiv, lambda);
 }
 
 void display(
@@ -119,7 +115,7 @@ void display(
 	div_t lambdaT = div(lambda, 1000);
 
 	char log[64];
-	snprintf(log, sizeof(log), "Averag: Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
+	snprintf(log, sizeof(log), "Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
 			tempI, tempIVoltage, tempO, tempOVoltage,
 			lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
 	printString(log);
@@ -135,8 +131,8 @@ void display(
 	lcd_string(line1);
 }
 
-int16_t average(int16_t value, int16_t average, uint8_t weight) {
-	return divRoundUp(value + (average * weight), weight + 1);
+int32_t average(int32_t value, int32_t average, uint8_t weight) {
+	return divRoundNearest(value + (average * weight), weight + 1);
 }
 
 int16_t toTempI(int16_t mV) {

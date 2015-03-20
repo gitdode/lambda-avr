@@ -87,7 +87,7 @@ uint8_t testGetVoltage(void) {
 
 	int16_t mV = getVoltage(PC1);
 
-	return mV > 4950;
+	return mV > 4900;
 }
 
 /* Module integers */
@@ -214,24 +214,32 @@ uint8_t testDivRoundUpBothNeg(void) {
 
 /* Module sensors */
 
-uint8_t testAverage(void) {
-	int16_t avg = 0;
-	avg = average(8, avg, 4);
-	if (avg != 2) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 4) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 5) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 6) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 7) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 8) { return 0; }
-	avg = average(8, avg, 4);
-	if (avg != 8) { return 0; }
+uint8_t testAverageUp(void) {
+	int32_t value = 10;
+	int32_t avg = 0;
+	for (uint8_t i = 0; i < 14; i++) {
+		avg = average((value << 4), avg, 4);
+	}
 
-	return 1;
+	return divRoundNearest(avg, 16) == value;
+}
+
+uint8_t testAverageDown(void) {
+	int32_t value = 0;
+	int32_t avg = (10 << 4);
+	for (uint8_t i = 0; i < 14; i++) {
+		avg = average((value << 4), avg, 4);
+	}
+
+	return divRoundNearest(avg, 16) == value;
+}
+
+uint8_t testAverageDoesNotWrap(void) {
+	int32_t value = 5000;
+	int32_t avg = (value << 4);
+	avg = average((value << 4), avg, 8);
+
+	return divRoundNearest(avg, 16) == value;
 }
 
 uint8_t testToLambdaValue(void) {
@@ -288,6 +296,7 @@ uint8_t testLookupLinInterInter(void) {
 	return value == 3;
 }
 
+// these long function names passed along as strings use a lot of memory
 test tests[] = {
 		{"adc", "testSetupADC", testSetupADC},
 		{"adc", "testGetVoltage", testGetVoltage},
@@ -300,7 +309,9 @@ test tests[] = {
 		{"integers", "testDivRoundUpNumNeg", testDivRoundUpNumNeg},
 		{"integers", "testDivRoundUpDenNeg", testDivRoundUpDenNeg},
 		{"integers", "testDivRoundUpBothNeg", testDivRoundUpBothNeg},
-		{"sensors", "testAverage", testAverage},
+		{"sensors", "testAverageUp", testAverageUp},
+		{"sensors", "testAverageDown", testAverageDown},
+		{"sensors", "testAverageDoesNotWrap", testAverageDoesNotWrap},
 		{"sensors", "testToLambdaValue", testToLambdaValue},
 		{"sensors", "testToLambdaInter", testToLambdaInter},
 		{"sensors", "testToTempI", testToTempI},
