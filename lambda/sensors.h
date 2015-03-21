@@ -29,8 +29,8 @@
 
 // TODO put in Makefile?
 #define LEAN "Mager"
-#define IDEAL "Ideal";
-#define RICH "Fett!";
+#define IDEAL "Ideal"
+#define RICH "Fett!"
 
 /**
  * Entry for the lookup tables.
@@ -41,19 +41,28 @@ typedef struct {
 } tableEntry;
 
 /**
+ * Measured values.
+ */
+typedef struct {
+	int16_t tempIVoltage;
+	int16_t tempI;
+	int16_t tempOVoltage;
+	int16_t tempO;
+	int16_t lambdaVoltage;
+	int16_t lambda;
+} measurement;
+
+/**
  * Measures the "input" and "output" temperatures and the lambda value
  * and displays the measured values.
  */
-void measure(void);
+measurement measure(void);
 
 /**
  * Formats the given values, displays them on an 16x2 LCD
  * and prints them over USART.
  */
-void display(
-		int16_t tempIVoltage, int16_t tempI,
-		int16_t tempOVoltage, int16_t tempO,
-		int16_t lambdaVoltage, int16_t lambda);
+void display(measurement);
 
 /**
  * Creates an exponential moving average of the given value and

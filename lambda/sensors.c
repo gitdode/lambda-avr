@@ -82,49 +82,54 @@ int32_t tempOVoltageAvg = 0;
 /**
  * Measures the "input" and "output" temperatures and the lambda value
  * and displays the measured values.
- * TODO tests, with local implementation of getVoltage()?
  */
-void measure(void) {
-	int16_t tempIVoltage = getVoltage(PC5);
+measurement measure(void) {
+	int32_t tempIVoltage = getVoltage(PC5);
 	tempIVoltageAvg = average((tempIVoltage << 4), tempIVoltageAvg, 4);
 
-	int16_t tempOVoltage = getVoltage(PC0);
+	int32_t tempOVoltage = getVoltage(PC0);
 	tempOVoltageAvg = average((tempOVoltage << 4), tempOVoltageAvg, 4);
 
 	// OP factor is 11
-	int16_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
+	int32_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
 	lambdaVoltageAvg = average((lambdaVoltage << 4), lambdaVoltageAvg, 4);
 
-	int16_t tempIVoltageAvgDiv = divRoundNearest(tempIVoltageAvg, 16);
-	int16_t tempOVoltageAvgDiv = divRoundNearest(tempOVoltageAvg, 16);
-	int16_t lambdaVoltageAvgDiv = divRoundNearest(lambdaVoltageAvg, 16);
+	// TODO just for testing, remove at some point
+	char log[64];
+	snprintf(log, sizeof(log),
+			"Ti %3d C %4ld - To %3d C %4ld - L       %4ld\r\n",
+			toTempI(tempIVoltage), tempIVoltage,
+			toTempO(tempOVoltage), tempOVoltage,
+			lambdaVoltage);
+	// printString(log);
 
-	int16_t tempI = toTempI(tempIVoltageAvgDiv);
-	int16_t tempO = toTempO(tempOVoltageAvgDiv);
-	int16_t lambda = toLambda(lambdaVoltageAvgDiv);
+	measurement meas;
+	meas.tempIVoltage = divRoundNearest(tempIVoltageAvg, 16);
+	meas.tempOVoltage = divRoundNearest(tempOVoltageAvg, 16);
+	meas.lambdaVoltage = divRoundNearest(lambdaVoltageAvg, 16);
 
-	display(tempIVoltageAvgDiv, tempI,
-			tempOVoltageAvgDiv, tempO,
-			lambdaVoltageAvgDiv, lambda);
+	meas.tempI = toTempI(meas.tempIVoltage);
+	meas.tempO = toTempO(meas.tempOVoltage);
+	meas.lambda = toLambda(meas.lambdaVoltage);
+
+	return meas;
 }
 
-void display(
-		int16_t tempIVoltage, int16_t tempI,
-		int16_t tempOVoltage, int16_t tempO,
-		int16_t lambdaVoltage, int16_t lambda) {
-	div_t lambdaT = div(lambda, 1000);
+void display(measurement meas) {
+	div_t lambdaT = div(meas.lambda, 1000);
 
 	char log[64];
-	snprintf(log, sizeof(log), "Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
-			tempI, tempIVoltage, tempO, tempOVoltage,
-			lambdaT.quot, abs(lambdaT.rem), lambdaVoltage);
+	snprintf(log, sizeof(log),
+			"Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
+			meas.tempI, meas.tempIVoltage, meas.tempO, meas.tempOVoltage,
+			lambdaT.quot, abs(lambdaT.rem), meas.lambdaVoltage);
 	printString(log);
 
 	char line0[17];
 	char line1[17];
-	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC", tempI, tempO);
-	snprintf(line1, sizeof(line1), "L %d.%03d %s",
-			lambdaT.quot, abs(lambdaT.rem), toInfo(lambda));
+	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
+	snprintf(line1, sizeof(line1), "L %d.%03d %s    ",
+			lambdaT.quot, abs(lambdaT.rem), toInfo(meas.lambda));
 	lcd_setcursor(0, 1);
 	lcd_string(line0);
 	lcd_setcursor(0, 2);
@@ -171,8 +176,8 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 
 	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
 	int16_t diffValue = table[i + 1].value - table[i].value;
-	int16_t value = table[i].value +
-			divRoundNearest((int32_t)(mV - table[i].mV) * diffValue, diffVoltage);
+	int16_t value = table[i].value + divRoundNearest(
+			(int32_t)(mV - table[i].mV) * diffValue, diffVoltage);
 
 	return value;
 }

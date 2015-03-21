@@ -98,7 +98,6 @@
 								<option id="de.innot.avreclipse.compiler.option.optimize.1961379399" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.size" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.compiler.option.incpath.1171896700" name="Include Paths (-I)" superClass="de.innot.avreclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lambda}&quot;"/>
-									<listOptionValue builtIn="false" value="/data/Work/AVR/AVR-Programming-master/AVR-Programming-Library"/>
 								</option>
 								<inputType id="de.innot.avreclipse.compiler.winavr.input.1975205149" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
 							</tool>
@@ -124,7 +123,9 @@
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
-				<externalSettings containerId="lambda;de.innot.avreclipse.configuration.app.release.1293588036" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="lambda;de.innot.avreclipse.configuration.app.release.1293588036" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting/>
+				</externalSettings>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>

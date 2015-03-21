@@ -24,6 +24,8 @@
  * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
  */
 
+#include <stdbool.h>
+
 #ifndef AVRJUNIT_H_
 #define AVRJUNIT_H_
 
@@ -34,7 +36,7 @@
 typedef struct {
 	char* class;
 	char* name;
-	uint8_t (*test)(void);
+	bool (*test)(void);
 } test;
 
 /**

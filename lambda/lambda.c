@@ -59,7 +59,8 @@ int main(void) {
 
 	// main loop
 	while (1) {
-		measure();
+		measurement meas = measure();
+		display(meas);
 		_delay_ms(1000);
 	}
 

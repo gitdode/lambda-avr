@@ -34,10 +34,8 @@ EMPTY_INTERRUPT(ADC_vect);
 void setupADC(void) {
 	// use AVCC as reference voltage
 	ADMUX |= (1 << REFS0);
-	// ADC clock prescaler/64
-	// ADCSRA |= (1 << ADPS1) | (1 << ADPS2);
-	// ADC clock prescaler/16
-	ADCSRA |= (1 << ADPS2);
+	// ADC clock prescaler/8
+	ADCSRA |= (1 << ADPS1) | (1 << ADPS0);
 	// enable ADC
 	ADCSRA |= (1 << ADEN);
 }
