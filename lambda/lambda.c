@@ -45,7 +45,6 @@
  * Initializes the USART transmitter and receiver, sets up the ADC
  * and sleep mode and then infinitely measures with a 1 second delay
  * in between.
- * TODO DIDR?
  * TODO replace delay by an interrupt or something else more efficient?
  */
 int main(void) {
