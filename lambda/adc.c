@@ -35,6 +35,9 @@ EMPTY_INTERRUPT(ADC_vect);
 void setupADC(void) {
 	// use AVCC as reference voltage
 	ADMUX |= (1 << REFS0);
+	// disable digital input on the ADC inputs
+	// http://www.openmusiclabs.com/learning/digital/atmega-adc/
+	DIDR0 |= (1 << PC0) | (1 << PC2) | (1 << PC5);
 	// ADC clock prescaler/8
 	ADCSRA |= (1 << ADPS1) | (1 << ADPS0);
 	// enable ADC

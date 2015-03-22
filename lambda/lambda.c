@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include <util/delay.h>
+#include <avr/io.h>
 #include "USART.h"
 #include "adc.h"
 #include "sensors.h"
@@ -52,10 +53,6 @@ int main(void) {
 	lcd_init();
 	setupADC();
 	setupSleepMode();
-
-	// disable digital input on ADC0
-	// http://www.openmusiclabs.com/learning/digital/atmega-adc/
-	// DIDR0 = 0b00000011;
 
 	// main loop
 	while (1) {
