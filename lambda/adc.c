@@ -28,7 +28,8 @@
 #include <avr/sleep.h>
 #include "adc.h"
 
-// TODO what exactly does this do?
+// set up a fake ISR to just return to where sleep_mode() was called
+// when ADC conversion is complete (ADC_vect)
 EMPTY_INTERRUPT(ADC_vect);
 
 void setupADC(void) {

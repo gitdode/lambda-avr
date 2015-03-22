@@ -55,12 +55,12 @@ bool testSetupADC(void) {
 	setupADC();
 
 	// AVCC is set as AREF
-	if (! (ADMUX & (1 << REFS0)) == (1 << REFS0)) return false;
+	if ((ADMUX & (1 << REFS0)) != (1 << REFS0)) return false;
 	// ADC clock prescaler/8
 	uint8_t prescalerBy8 = (1 << ADPS1) | (1 << ADPS0);
-	if (! (ADCSRA & prescalerBy8) == prescalerBy8) return false;
+	if ((ADCSRA & prescalerBy8) != prescalerBy8) return false;
 	// ADC enabled
-	if (! (ADCSRA & (1 << ADEN)) == (1 << ADEN)) return false;
+	if ((ADCSRA & (1 << ADEN)) != (1 << ADEN)) return false;
 
 	return true;
 }
@@ -68,12 +68,14 @@ bool testSetupADC(void) {
 bool testSetupSleepMode(void) {
 	setupSleepMode();
 
-	// don't know how to verify these
 	// set_sleep_mode(SLEEP_MODE_ADC);
+	if ((SMCR & (1 << SM0)) != (1 << SM0)) return false;
 	// sei(); // enable global interrupts
-
+	if ((SREG & (1 << SREG_I)) != (1 << SREG_I)) return false;
 	// ADC interrupt enabled
-	return (ADCSRA & (1 << ADIE)) == (1 << ADIE);
+	if ((ADCSRA & (1 << ADIE)) != (1 << ADIE)) return false;
+
+	return true;
 }
 
 bool testGetVoltage(void) {
@@ -96,36 +98,6 @@ bool testGetVoltage(void) {
 }
 
 /* Module integers */
-
-bool testMeasure(void) {
-	setupADC();
-	setupSleepMode();
-
-	// enable pull-up resistor so the measured voltage
-	// should be (close to?) AREF
-	PORTC |= ((1 << PC5) | (1 << PC0) | (1 << PC2));
-
-	_delay_ms(10);
-
-	// do many measurements so the averaged voltages are near the measured
-	// voltages (close to AREF)
-	measurement meas;
-	for (uint8_t i = 0; i < 64; i++) {
-		meas = measure();
-	}
-
-	if (meas.tempIVoltage < 4900) return false;
-	if (meas.tempOVoltage < 4900) return false;
-	// lambdaVoltage is divided by the OP amplification factor 11
-	if (meas.lambdaVoltage < (4900 / 11)) return false;
-
-	// verify that temperatures and lambda are calculated correctly
-	if (meas.tempI != toTempI(meas.tempIVoltage)) return false;
-	if (meas.tempO != toTempO(meas.tempOVoltage)) return false;
-	if (meas.lambda != toLambda(meas.lambdaVoltage)) return false;
-
-	return true;
-}
 
 bool testDivRoundNearest(void) {
 	int32_t round = 0;
@@ -248,6 +220,36 @@ bool testDivRoundUpBothNeg(void) {
 }
 
 /* Module sensors */
+
+bool testMeasure(void) {
+	setupADC();
+	setupSleepMode();
+
+	// enable pull-up resistor so the measured voltage
+	// should be (close to?) AREF
+	PORTC |= ((1 << PC5) | (1 << PC0) | (1 << PC2));
+
+	_delay_ms(10);
+
+	// do many measurements so the averaged voltages are near the measured
+	// voltages (close to AREF)
+	measurement meas;
+	for (uint8_t i = 0; i < 64; i++) {
+		meas = measure();
+	}
+
+	if (meas.tempIVoltage < 4900) return false;
+	if (meas.tempOVoltage < 4900) return false;
+	// lambdaVoltage is divided by the OP amplification factor 11
+	if (meas.lambdaVoltage < (4900 / 11)) return false;
+
+	// verify that temperatures and lambda are calculated correctly
+	if (meas.tempI != toTempI(meas.tempIVoltage)) return false;
+	if (meas.tempO != toTempO(meas.tempOVoltage)) return false;
+	if (meas.lambda != toLambda(meas.lambdaVoltage)) return false;
+
+	return true;
+}
 
 bool testAverageUp(void) {
 	int32_t value = 10;
