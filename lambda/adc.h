@@ -1,7 +1,7 @@
 /*
  * adc.h
  *
- * Functions to set up the ADC and get voltages from its ports.
+ * Functions to set up the ADC and get voltages from its pins.
  *
  *  Created on: 11.03.2015
  *      Author: dode@luniks.net
@@ -30,10 +30,10 @@ void setupADC(void);
 void setupSleepMode(void);
 
 /**
- * Returns the voltage sampled at the given ADC input port doing
+ * Returns the voltage sampled at the given ADC input pin doing
  * 16x oversampling and taking in account the calibrated AREF and
  * ADC offset voltages.
  */
-int16_t getVoltage(uint8_t port);
+int16_t getVoltage(uint8_t pin);
 
 #endif /* ADC_H_ */

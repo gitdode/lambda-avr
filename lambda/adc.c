@@ -1,7 +1,7 @@
 /*
  * adc.c
  *
- * Functions to set up the ADC and get voltages from its ports.
+ * Functions to set up the ADC and get voltages from its pins.
  *
  *  Created on: 11.03.2015
  *      Author: dode@luniks.net
@@ -37,9 +37,9 @@ void setupSleepMode(void) {
 	sei();
 }
 
-int16_t getVoltage(uint8_t port) {
+int16_t getVoltage(uint8_t pin) {
 
-	ADMUX = (0b11110000 & ADMUX) | port;
+	ADMUX = (0b11110000 & ADMUX) | pin;
 
 	uint32_t overValue = 0;
 	for (uint8_t i = 0; i < 16; i++) {
