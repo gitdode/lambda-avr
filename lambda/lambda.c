@@ -7,22 +7,7 @@
  *  Created on: 22.02.2015
  *      Author: dode@luniks.net
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Alternatively, the contents of this file may be used under the terms of the
- * GNU Lesser General Public License Version 2.1 (the "LGPL License"), in which
- * case the provisions of the LGPL License are applicable instead of those
- * above.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU (Lesser) General Public License for more details.
- *
- * DISCLAIMER: I'm experienced with Java and I like C, but I'm new here.
+ * DISCLAIMER: I'm new to C.
  *
  * ATTRIBUTION: This project includes the module USART and the Makefile from
  * the code accompanying the book Make: AVR Programming by Elliot Williams,
