@@ -15,6 +15,16 @@
 #define AVRJUNIT_H_
 
 /**
+ * Returns false if the given expression is not true.
+ */
+#define assertTrue(exp) if (! (exp)) return false
+
+/**
+ * Returns false if the given expression is not false.
+ */
+#define assertFalse(exp) if (exp) return false
+
+/**
  * A test case with its class, name and pointer to the test function,
  * which should return true on success and false on failure.
  */

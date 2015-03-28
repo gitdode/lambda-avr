@@ -40,15 +40,15 @@ bool testSetupADC(void) {
 	setupADC();
 
 	// AVCC is set as AREF
-	if ((ADMUX & (1 << REFS0)) != (1 << REFS0)) return false;
+	assertTrue(bit_is_set(ADMUX, REFS0));
 	// digital inputs are disabled
 	uint8_t adcPorts = (1 << PC0) | (1 << PC2) | (1 << PC5);
-	if ((DIDR0 & adcPorts) != adcPorts) return false;
+	assertTrue((DIDR0 & adcPorts) == adcPorts);
 	// ADC clock prescaler/8
 	uint8_t prescalerBy8 = (1 << ADPS1) | (1 << ADPS0);
-	if ((ADCSRA & prescalerBy8) != prescalerBy8) return false;
+	assertTrue((ADCSRA & prescalerBy8) == prescalerBy8);
 	// ADC enabled
-	if ((ADCSRA & (1 << ADEN)) != (1 << ADEN)) return false;
+	assertTrue(bit_is_set(ADCSRA, ADEN));
 
 	return true;
 }
@@ -57,11 +57,11 @@ bool testSetupSleepMode(void) {
 	setupSleepMode();
 
 	// set_sleep_mode(SLEEP_MODE_ADC);
-	if ((SMCR & (1 << SM0)) != (1 << SM0)) return false;
+	assertTrue(bit_is_set(SMCR, SM0));
 	// sei(); // enable global interrupts
-	if ((SREG & (1 << SREG_I)) != (1 << SREG_I)) return false;
+	assertTrue(bit_is_set(SREG, SREG_I));
 	// ADC interrupt enabled
-	if ((ADCSRA & (1 << ADIE)) != (1 << ADIE)) return false;
+	assertTrue(bit_is_set(ADCSRA, ADIE));
 
 	return true;
 }
@@ -88,121 +88,65 @@ bool testGetVoltage(void) {
 /* Module integers */
 
 bool testDivRoundNearest(void) {
-	int32_t round = 0;
-
-	round = divRoundNearest(4, 2);
-	if (round != 2) return false;
-
-	round = divRoundNearest(5, 2);
-	if (round != 3) return false;
-
-	round = divRoundNearest(10, 3);
-	if (round != 3) return false;
+	assertTrue(divRoundNearest(4, 2) == 2);
+	assertTrue(divRoundNearest(5, 2) == 3);
+	assertTrue(divRoundNearest(10, 3) == 3);
 
 	return true;
 }
 
 bool testDivRoundNearestNumNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundNearest(-4, 2);
-	if (round != -2) return false;
-
-	round = divRoundNearest(-5, 2);
-	if (round != -3) return false;
-
-	round = divRoundNearest(-10, 3);
-	if (round != -3) return false;
+	assertTrue(divRoundNearest(-4, 2) == -2);
+	assertTrue(divRoundNearest(-5, 2) == -3);
+	assertTrue(divRoundNearest(-10, 3) == -3);
 
 	return true;
 }
 
 bool testDivRoundNearestDenNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundNearest(4, -2);
-	if (round != -2) return false;
-
-	round = divRoundNearest(5, -2);
-	if (round != -3) return false;
-
-	round = divRoundNearest(10, -3);
-	if (round != -3) return false;
+	assertTrue(divRoundNearest(4, -2) == -2);
+	assertTrue(divRoundNearest(5, -2) == -3);
+	assertTrue(divRoundNearest(10, -3) == -3);
 
 	return true;
 }
 
 bool testDivRoundNearestBothNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundNearest(-4, -2);
-	if (round != 2) return false;
-
-	round = divRoundNearest(-5, -2);
-	if (round != 3) return false;
-
-	round = divRoundNearest(-10, -3);
-	if (round != 3) return false;
+	assertTrue(divRoundNearest(-4, -2) == 2);
+	assertTrue(divRoundNearest(-5, -2) == 3);
+	assertTrue(divRoundNearest(-10, -3) == 3);
 
 	return true;
 }
 
 bool testDivRoundUp(void) {
-	int32_t round = 0;
-
-	round = divRoundUp(4, 2);
-	if (round != 2) return false;
-
-	round = divRoundUp(5, 2);
-	if (round != 3) return false;
-
-	round = divRoundUp(10, 3);
-	if (round != 4) return false;
+	assertTrue(divRoundUp(4, 2) == 2);
+	assertTrue(divRoundUp(5, 2) == 3);
+	assertTrue(divRoundUp(10, 3) == 4);
 
 	return true;
 }
 
 bool testDivRoundUpNumNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundUp(-4, 2);
-	if (round != -2) return false;
-
-	round = divRoundUp(-5, 2);
-	if (round != -3) return false;
-
-	round = divRoundUp(-10, 3);
-	if (round != -4) return false;
+	assertTrue(divRoundUp(-4, 2) == -2);
+	assertTrue(divRoundUp(-5, 2) == -3);
+	assertTrue(divRoundUp(-10, 3) == -4);
 
 	return true;
 }
 
 bool testDivRoundUpDenNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundUp(4, -2);
-	if (round != -2) return false;
-
-	round = divRoundUp(5, -2);
-	if (round != -3) return false;
-
-	round = divRoundUp(10, -3);
-	if (round != -4) return false;
+	assertTrue(divRoundUp(4, -2) == -2);
+	assertTrue(divRoundUp(5, -2) == -3);
+	assertTrue(divRoundUp(10, -3) == -4);
 
 	return true;
 }
 
 bool testDivRoundUpBothNeg(void) {
-	int32_t round = 0;
-
-	round = divRoundUp(-4, -2);
-	if (round != 2) return false;
-
-	round = divRoundUp(-5, -2);
-	if (round != 3) return false;
-
-	round = divRoundUp(-10, -3);
-	if (round != 4) return false;
+	assertTrue(divRoundUp(-4, -2) == 2);
+	assertTrue(divRoundUp(-5, -2) == 3);
+	assertTrue(divRoundUp(-10, -3) == 4);
 
 	return true;
 }
@@ -226,15 +170,15 @@ bool testMeasure(void) {
 		meas = measure();
 	}
 
-	if (meas.tempIVoltage < 4900) return false;
-	if (meas.tempOVoltage < 4900) return false;
+	assertTrue(meas.tempIVoltage > 4900);
+	assertTrue(meas.tempOVoltage > 4900);
 	// lambdaVoltage is divided by the OP amplification factor 11
-	if (meas.lambdaVoltage < (4900 / 11)) return false;
+	assertTrue(meas.lambdaVoltage > (4900 / 11));
 
 	// verify that temperatures and lambda are calculated correctly
-	if (meas.tempI != toTempI(meas.tempIVoltage)) return false;
-	if (meas.tempO != toTempO(meas.tempOVoltage)) return false;
-	if (meas.lambda != toLambda(meas.lambdaVoltage)) return false;
+	assertTrue(meas.tempI == toTempI(meas.tempIVoltage));
+	assertTrue(meas.tempO == toTempO(meas.tempOVoltage));
+	assertTrue(meas.lambda == toLambda(meas.lambdaVoltage));
 
 	return true;
 }
