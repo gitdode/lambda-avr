@@ -71,7 +71,7 @@ bool testGetVoltage(void) {
 	setupSleepMode();
 
 	// enable pull-up resistor so the measured voltage
-	// should be (close to?) AREF
+	// should be close to AREF
 	PORTC |= (1 << PC1);
 	// PORTC = 0xff;
 
@@ -158,7 +158,7 @@ bool testMeasure(void) {
 	setupSleepMode();
 
 	// enable pull-up resistor so the measured voltage
-	// should be (close to?) AREF
+	// should be close to AREF
 	PORTC |= ((1 << PC5) | (1 << PC0) | (1 << PC2));
 
 	_delay_ms(10);
@@ -266,15 +266,25 @@ bool testLookupLinInterInter(void) {
 }
 
 bool testToInfoLean(void) {
-	const char* info = toInfo(1600);
+	const char* info = toInfo(1901);
 
 	return ! strcmp(info, LEAN);
 }
 
-bool testToInfoIdeal(void) {
-	const char* info = toInfo(1400);
+bool testToInfoOkay(void) {
+	assertTrue(0 == strcmp(toInfo(1900), OKAY));
+	assertTrue(0 == strcmp(toInfo(1700), OKAY));
+	assertTrue(0 == strcmp(toInfo(1501), OKAY));
 
-	return ! strcmp(info, IDEAL);
+	return true;
+}
+
+bool testToInfoIdeal(void) {
+	assertTrue(0 == strcmp(toInfo(1500), IDEAL));
+	assertTrue(0 == strcmp(toInfo(1400), IDEAL));
+	assertTrue(0 == strcmp(toInfo(1300), IDEAL));
+
+	return true;
 }
 
 bool testToInfoRich(void) {
@@ -310,6 +320,7 @@ test tests[] = {
 		{"sensors", "testLookupLinInterBelow", testLookupLinInterBelow},
 		{"sensors", "testLookupLinInterAbove", testLookupLinInterAbove},
 		{"sensors", "testToInfoLean", testToInfoLean},
+		{"sensors", "testToInfoOkay", testToInfoOkay},
 		{"sensors", "testToInfoIdeal", testToInfoIdeal},
 		{"sensors", "testToInfoRich", testToInfoRich}
 };

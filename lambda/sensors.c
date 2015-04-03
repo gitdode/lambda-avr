@@ -79,15 +79,6 @@ measurement measure(void) {
 	int32_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
 	lambdaVoltageAvg = average((lambdaVoltage << 4), lambdaVoltageAvg, 4);
 
-	// TODO just for testing, remove at some point
-	char log[64];
-	snprintf(log, sizeof(log),
-			"Ti %3d C %4ld - To %3d C %4ld - L       %4ld\r\n",
-			toTempI(tempIVoltage), tempIVoltage,
-			toTempO(tempOVoltage), tempOVoltage,
-			lambdaVoltage);
-	// printString(log);
-
 	measurement meas;
 	meas.tempIVoltage = divRoundNearest(tempIVoltageAvg, 16);
 	meas.tempOVoltage = divRoundNearest(tempOVoltageAvg, 16);
@@ -101,19 +92,20 @@ measurement measure(void) {
 }
 
 void display(measurement meas) {
-	div_t lambdaT = div(meas.lambda, 1000);
+	uint8_t lambdax10 = divRoundNearest(meas.lambda, 100);
+	div_t lambdaT = div(lambdax10, 10);
 
 	char log[64];
 	snprintf(log, sizeof(log),
-			"Ti %3d C %4d - To %3d C %4d - L %d.%03d %4d\r\n",
+			"Ti %3d C %4d - To %3d C %4d - L %4d %4d\r\n",
 			meas.tempI, meas.tempIVoltage, meas.tempO, meas.tempOVoltage,
-			lambdaT.quot, abs(lambdaT.rem), meas.lambdaVoltage);
+			meas.lambda, meas.lambdaVoltage);
 	printString(log);
 
 	char line0[17];
 	char line1[17];
 	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	snprintf(line1, sizeof(line1), "L %d.%03d %s    ",
+	snprintf(line1, sizeof(line1), "L   %d.%01d %s   ",
 			lambdaT.quot, abs(lambdaT.rem), toInfo(meas.lambda));
 	lcd_setcursor(0, 1);
 	lcd_string(line0);
@@ -168,9 +160,11 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 }
 
 const char* toInfo(int16_t lambda) {
-	if (lambda > 1500) {
+	if (lambda > 1900) {
 		return LEAN;
-	} else if (lambda > 1300 && lambda <= 1500) {
+	} else if (lambda > 1500 && lambda <= 1900) {
+		return OKAY;
+	} else if (lambda >= 1300 && lambda <= 1500) {
 		return IDEAL;
 	} else {
 		return RICH;

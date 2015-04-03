@@ -14,6 +14,7 @@
 
 // TODO put in Makefile?
 #define LEAN "Mager"
+#define OKAY "Okay "
 #define IDEAL "Ideal"
 #define RICH "Fett!"
 
