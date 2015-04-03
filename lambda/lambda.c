@@ -30,7 +30,7 @@
  * Initializes the USART transmitter and receiver, the lcd, sets up the ADC
  * and sleep mode and then infinitely measures with a 1 second delay
  * in between.
- * TODO replace delay by an interrupt or something else more efficient?
+ * TODO replace delay by a timer?
  */
 int main(void) {
 	initUSART();
