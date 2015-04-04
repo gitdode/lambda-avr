@@ -30,8 +30,8 @@
 #include "avrjunit.h"
 
 static const tableEntry testTable[] = {
-		{0, 0},
-		{10, 10}
+		{10, 10},
+		{20, 20}
 };
 
 /* Module adc */
@@ -80,7 +80,7 @@ bool testGetVoltage(void) {
 	// loop_until_bit_is_set(UCSR0A, UDRE0);
 	_delay_ms(10);
 
-	int16_t mV = getVoltage(PC1);
+	uint16_t mV = getVoltage(PC1);
 
 	return mV > 4900;
 }
@@ -183,34 +183,6 @@ bool testMeasure(void) {
 	return true;
 }
 
-bool testAverageUp(void) {
-	int32_t value = 10;
-	int32_t avg = 0;
-	for (uint8_t i = 0; i < 14; i++) {
-		avg = average((value << 4), avg, 4);
-	}
-
-	return divRoundNearest(avg, 16) == value;
-}
-
-bool testAverageDown(void) {
-	int32_t value = 0;
-	int32_t avg = (10 << 4);
-	for (uint8_t i = 0; i < 14; i++) {
-		avg = average((value << 4), avg, 4);
-	}
-
-	return divRoundNearest(avg, 16) == value;
-}
-
-bool testAverageDoesNotWrap(void) {
-	int32_t value = 5000;
-	int32_t avg = (value << 4);
-	avg = average((value << 4), avg, 16);
-
-	return divRoundNearest(avg, 16) == value;
-}
-
 bool testToLambdaValue(void) {
 	int16_t lambda = toLambda(12);
 
@@ -242,15 +214,15 @@ bool testToTempOInter(void) {
 }
 
 bool testLookupLinInterBelow(void) {
-	int16_t value = lookupLinInter(-5, testTable, 2);
+	int16_t value = lookupLinInter(0, testTable, 2);
 
-	return value == 0;
+	return value == 10;
 }
 
 bool testLookupLinInterAbove(void) {
-	int16_t value = lookupLinInter(15, testTable, 2);
+	int16_t value = lookupLinInter(30, testTable, 2);
 
-	return value == 10;
+	return value == 20;
 }
 
 bool testLookupLinInterValue(void) {
@@ -260,35 +232,35 @@ bool testLookupLinInterValue(void) {
 }
 
 bool testLookupLinInterInter(void) {
-	int16_t value = lookupLinInter(3, testTable, 2);
+	int16_t value = lookupLinInter(15, testTable, 2);
 
-	return value == 3;
+	return value == 15;
 }
 
 bool testToInfoLean(void) {
-	const char* info = toInfo(1901);
+	const char* info = toInfo(191);
 
 	return ! strcmp(info, LEAN);
 }
 
 bool testToInfoOkay(void) {
-	assertTrue(0 == strcmp(toInfo(1900), OKAY));
-	assertTrue(0 == strcmp(toInfo(1700), OKAY));
-	assertTrue(0 == strcmp(toInfo(1501), OKAY));
+	assertTrue(0 == strcmp(toInfo(190), OKAY));
+	assertTrue(0 == strcmp(toInfo(170), OKAY));
+	assertTrue(0 == strcmp(toInfo(151), OKAY));
 
 	return true;
 }
 
 bool testToInfoIdeal(void) {
-	assertTrue(0 == strcmp(toInfo(1500), IDEAL));
-	assertTrue(0 == strcmp(toInfo(1400), IDEAL));
-	assertTrue(0 == strcmp(toInfo(1300), IDEAL));
+	assertTrue(0 == strcmp(toInfo(150), IDEAL));
+	assertTrue(0 == strcmp(toInfo(140), IDEAL));
+	assertTrue(0 == strcmp(toInfo(130), IDEAL));
 
 	return true;
 }
 
 bool testToInfoRich(void) {
-	const char* info = toInfo(1200);
+	const char* info = toInfo(129);
 
 	return ! strcmp(info, RICH);
 }
@@ -307,9 +279,6 @@ test tests[] = {
 		{"integers", "testDivRoundUpDenNeg", testDivRoundUpDenNeg},
 		{"integers", "testDivRoundUpBothNeg", testDivRoundUpBothNeg},
 		{"sensors", "testMeasure", testMeasure},
-		{"sensors", "testAverageUp", testAverageUp},
-		{"sensors", "testAverageDown", testAverageDown},
-		{"sensors", "testAverageDoesNotWrap", testAverageDoesNotWrap},
 		{"sensors", "testToLambdaValue", testToLambdaValue},
 		{"sensors", "testToLambdaInter", testToLambdaInter},
 		{"sensors", "testToTempI", testToTempI},

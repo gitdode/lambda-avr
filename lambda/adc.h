@@ -34,6 +34,6 @@ void setupSleepMode(void);
  * 16x oversampling and taking in account the calibrated AREF and
  * ADC offset voltages.
  */
-int16_t getVoltage(uint8_t pin);
+uint16_t getVoltage(uint8_t pin);
 
 #endif /* ADC_H_ */

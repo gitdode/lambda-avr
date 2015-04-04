@@ -37,7 +37,7 @@ void setupSleepMode(void) {
 	sei();
 }
 
-int16_t getVoltage(uint8_t pin) {
+uint16_t getVoltage(uint8_t pin) {
 
 	ADMUX = (0b11110000 & ADMUX) | pin;
 

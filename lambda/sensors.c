@@ -49,7 +49,7 @@ static const tableEntry lambdaTable[] = {
  * and an amplification factor of 6.17.
  */
 static const tableEntry tempOTable[] = {
-	{ -57, -50 },
+	// { -57, -50 },
 	{ 454, 0 },
 	{ 1403, 100 },
 	{ 2264, 200 },
@@ -60,29 +60,32 @@ static const tableEntry tempOTable[] = {
 /**
  * Global variables holding averaged voltages.
  */
-int32_t lambdaVoltageAvg = 0;
-int32_t tempIVoltageAvg = 0;
-int32_t tempOVoltageAvg = 0;
+uint32_t lambdaVoltageAvg = 4;
+uint32_t tempIVoltageAvg = 4;
+uint32_t tempOVoltageAvg = 4;
 
 /**
- * Measures the "input" and "output" temperatures and the lambda value
- * and displays the measured values.
+ * Measures the "input" and "output" temperatures and the lambda value,
+ * calculates an exponential moving average and displays the translated values.
  */
 measurement measure(void) {
-	int32_t tempIVoltage = getVoltage(PC5);
-	tempIVoltageAvg = average((tempIVoltage << 4), tempIVoltageAvg, 4);
+	uint32_t tempIVoltage = getVoltage(PC5);
+	tempIVoltageAvg = tempIVoltage + tempIVoltageAvg -
+			((tempIVoltageAvg - 4) >> 3);
 
-	int32_t tempOVoltage = getVoltage(PC0);
-	tempOVoltageAvg = average((tempOVoltage << 4), tempOVoltageAvg, 4);
+	uint32_t tempOVoltage = getVoltage(PC0);
+	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
+			((tempOVoltageAvg - 4) >> 3);
 
 	// OP factor is 11
-	int32_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
-	lambdaVoltageAvg = average((lambdaVoltage << 4), lambdaVoltageAvg, 4);
+	uint32_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
+	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
+			((lambdaVoltageAvg - 4) >> 3);
 
 	measurement meas;
-	meas.tempIVoltage = divRoundNearest(tempIVoltageAvg, 16);
-	meas.tempOVoltage = divRoundNearest(tempOVoltageAvg, 16);
-	meas.lambdaVoltage = divRoundNearest(lambdaVoltageAvg, 16);
+	meas.tempIVoltage = (tempIVoltageAvg >> 3);
+	meas.tempOVoltage = (tempOVoltageAvg >> 3);
+	meas.lambdaVoltage = (lambdaVoltageAvg >> 3);
 
 	meas.tempI = toTempI(meas.tempIVoltage);
 	meas.tempO = toTempO(meas.tempOVoltage);
@@ -92,12 +95,12 @@ measurement measure(void) {
 }
 
 void display(measurement meas) {
-	uint8_t lambdax10 = divRoundNearest(meas.lambda, 100);
-	div_t lambdaT = div(lambdax10, 10);
+	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
+	div_t lambdaT = div(lambdax100, 100);
 
 	char log[64];
 	snprintf(log, sizeof(log),
-			"Ti %3d C %4d - To %3d C %4d - L %4d %4d\r\n",
+			"Ti %3d C %4u - To %3d C %4u - L %4u %4u\r\n",
 			meas.tempI, meas.tempIVoltage, meas.tempO, meas.tempOVoltage,
 			meas.lambda, meas.lambdaVoltage);
 	printString(log);
@@ -105,39 +108,35 @@ void display(measurement meas) {
 	char line0[17];
 	char line1[17];
 	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	snprintf(line1, sizeof(line1), "L   %d.%01d %s   ",
-			lambdaT.quot, abs(lambdaT.rem), toInfo(meas.lambda));
+	snprintf(line1, sizeof(line1), "L  %d.%02d %s   ",
+			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100));
 	lcd_setcursor(0, 1);
 	lcd_string(line0);
 	lcd_setcursor(0, 2);
 	lcd_string(line1);
 }
 
-int32_t average(int32_t value, int32_t average, uint8_t weight) {
-	return divRoundNearest(value + (average * weight), weight + 1);
-}
-
-int16_t toTempI(int16_t mV) {
+int16_t toTempI(uint16_t mV) {
 	int temp = divRoundNearest(mV, 5);
 
 	return temp;
 }
 
-int16_t toTempO(int16_t mV) {
+int16_t toTempO(uint16_t mV) {
 	uint8_t length = sizeof(tempOTable) / sizeof(tempOTable[0]);
 	int16_t temp = lookupLinInter(mV, tempOTable, length);
 
 	return temp;
 }
 
-int16_t toLambda(int16_t mV) {
+int16_t toLambda(uint16_t mV) {
 	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
 	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
 
 	return lambda;
 }
 
-int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
+int16_t lookupLinInter(uint16_t mV, const tableEntry table[], uint8_t length) {
 	if (mV < table[0].mV) {
 		return table[0].value;
 	} else if (mV > table[length - 1].mV) {
@@ -151,24 +150,22 @@ int16_t lookupLinInter(int16_t mV, const tableEntry table[], uint8_t length) {
 		}
 	}
 
-	int16_t diffVoltage = table[i + 1].mV - table[i].mV;
+	uint16_t diffVoltage = table[i + 1].mV - table[i].mV;
 	int16_t diffValue = table[i + 1].value - table[i].value;
 	int16_t value = table[i].value + divRoundNearest(
-			(int32_t)(mV - table[i].mV) * diffValue, diffVoltage);
+			(uint32_t)(mV - table[i].mV) * diffValue, diffVoltage);
 
 	return value;
 }
 
-const char* toInfo(int16_t lambda) {
-	if (lambda > 1900) {
+const char* toInfo(uint16_t lambda) {
+	if (lambda > 190) {
 		return LEAN;
-	} else if (lambda > 1500 && lambda <= 1900) {
+	} else if (lambda > 150 && lambda <= 190) {
 		return OKAY;
-	} else if (lambda >= 1300 && lambda <= 1500) {
+	} else if (lambda >= 130 && lambda <= 150) {
 		return IDEAL;
 	} else {
 		return RICH;
 	}
 }
-
-
