@@ -172,8 +172,7 @@ bool testMeasure(void) {
 
 	assertTrue(meas.tempIVoltage > 4900);
 	assertTrue(meas.tempOVoltage > 4900);
-	// lambdaVoltage is divided by the OP amplification factor 11
-	assertTrue(meas.lambdaVoltage > (4900 / 11));
+	assertTrue(meas.lambdaVoltage > 4900);
 
 	// verify that temperatures and lambda are calculated correctly
 	assertTrue(meas.tempI == toTempI(meas.tempIVoltage));
@@ -184,13 +183,13 @@ bool testMeasure(void) {
 }
 
 bool testToLambdaValue(void) {
-	int16_t lambda = toLambda(12);
+	int16_t lambda = toLambda(132);
 
 	return lambda == 1500;
 }
 
 bool testToLambdaInter(void) {
-	int16_t lambda = toLambda(50);
+	int16_t lambda = toLambda(550);
 
 	return lambda == 1073;
 }

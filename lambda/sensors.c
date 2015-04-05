@@ -21,25 +21,26 @@
 /**
  * Table used to look up the lambda value at 12 V heater voltage
  * and 220°C exhaust gas temperature. Most values are approximated
- * from the characteristic curve in the data sheet.
+ * from the characteristic curve in the data sheet. The voltage
+ * of the sensor is amplified by factor 11.
  * TODO real data?
  */
 static const tableEntry lambdaTable[] = {
-	{ 4, 2000 },
-	{ 5, 1900 },
-	{ 6, 1800 },
-	{ 8, 1700 },
-	{ 10, 1600 },
-	{ 12, 1500 },
-	{ 15, 1400 },
-	{ 20, 1300 },
-	{ 28, 1200 },
-	{ 40, 1100 },
-	{ 68, 1025 },
-	{ 400, 1000 },
-	{ 800, 980 },
-	{ 860, 900 },
-	{ 880, 800 }
+	{ 44, 2000 },
+	{ 55, 1900 },
+	{ 66, 1800 },
+	{ 80, 1700 },
+	{ 110, 1600 },
+	{ 132, 1500 },
+	{ 165, 1400 },
+	{ 220, 1300 },
+	{ 308, 1200 },
+	{ 440, 1100 },
+	{ 748, 1025 },
+	{ 4400, 1000 },
+	{ 8800, 980 },
+	{ 9460, 900 },
+	{ 9680, 800 }
 };
 
 /**
@@ -78,7 +79,7 @@ measurement measure(void) {
 			((tempOVoltageAvg - 4) >> 3);
 
 	// OP factor is 11
-	uint32_t lambdaVoltage = divRoundNearest(getVoltage(PC2), 11);
+	uint32_t lambdaVoltage = getVoltage(PC2);
 	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 			((lambdaVoltageAvg - 4) >> 3);
 
