@@ -1,0 +1,9 @@
+* C
+- What do static inline volatile extern in C do?
+- Read up on "global" variables and modules
+
+* Functionality
+- Add beeper and beep when air gate valve should be closed and heating of
+  oxygen sensor should be switched off (or switch it off automatically?)
+- Add pushbutton to enter a menu
+  - Show min/max measurements of previous/current run?
