@@ -12,11 +12,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/io.h>
-#include "USART.h"
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"
-#include "lcdroutines.h"
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -61,9 +59,9 @@ static const tableEntry tempOTable[] = {
 /**
  * Global variables holding averaged voltages.
  */
-uint32_t lambdaVoltageAvg = 4;
-uint32_t tempIVoltageAvg = 4;
-uint32_t tempOVoltageAvg = 4;
+uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
+uint32_t tempIVoltageAvg = 100 << 3; // 20°C
+uint32_t tempOVoltageAvg = 644 << 3; // 20°C
 
 /**
  * Measures the "input" and "output" temperatures and the lambda value,
@@ -78,7 +76,6 @@ measurement measure(void) {
 	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
 			((tempOVoltageAvg - 4) >> 3);
 
-	// OP factor is 11
 	uint32_t lambdaVoltage = getVoltage(PC2);
 	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 			((lambdaVoltageAvg - 4) >> 3);
@@ -93,28 +90,6 @@ measurement measure(void) {
 	meas.lambda = toLambda(meas.lambdaVoltage);
 
 	return meas;
-}
-
-void display(measurement meas) {
-	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
-	div_t lambdaT = div(lambdax100, 100);
-
-	char log[64];
-	snprintf(log, sizeof(log),
-			"Ti %3d C %4u - To %3d C %4u - L %4u %4u\r\n",
-			meas.tempI, meas.tempIVoltage, meas.tempO, meas.tempOVoltage,
-			meas.lambda, meas.lambdaVoltage);
-	printString(log);
-
-	char line0[17];
-	char line1[17];
-	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	snprintf(line1, sizeof(line1), "L  %d.%02d %s   ",
-			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100));
-	lcd_setcursor(0, 1);
-	lcd_string(line0);
-	lcd_setcursor(0, 2);
-	lcd_string(line1);
 }
 
 int16_t toTempI(uint16_t mV) {

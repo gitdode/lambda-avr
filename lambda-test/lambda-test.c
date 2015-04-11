@@ -24,15 +24,51 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include "USART.h"
+#include "interrupts.h"
 #include "adc.h"
 #include "integers.h"
 #include "sensors.h"
+#include "display.h"
 #include "avrjunit.h"
 
 static const tableEntry testTable[] = {
 		{10, 10},
 		{20, 20}
 };
+
+/* Module interrupts */
+
+bool testSetupPorts(void) {
+	setupPorts();
+
+	// test that pull-up resistor for the mouton is enabled
+	assertTrue(bit_is_set(PORTB, PB0));
+
+	return true;
+}
+
+bool testSetupSleepMode(void) {
+	setupSleepMode();
+
+	// set_sleep_mode(SLEEP_MODE_ADC);
+	assertTrue(bit_is_set(SMCR, SM0));
+
+	return true;
+}
+
+bool testInitInterrupts(void) {
+	initInterrupts();
+
+	// ADC interrupt enabled
+	assertTrue(bit_is_set(ADCSRA, ADIE));
+	// PC interrupts enabled
+	assertTrue(bit_is_set(PCICR, PCIE0));
+	assertTrue(bit_is_set(PCMSK0, PB0));
+	// sei(); // enable global interrupts
+	assertTrue(bit_is_set(SREG, SREG_I));
+
+	return true;
+}
 
 /* Module adc */
 
@@ -53,20 +89,8 @@ bool testSetupADC(void) {
 	return true;
 }
 
-bool testSetupSleepMode(void) {
-	setupSleepMode();
-
-	// set_sleep_mode(SLEEP_MODE_ADC);
-	assertTrue(bit_is_set(SMCR, SM0));
-	// sei(); // enable global interrupts
-	assertTrue(bit_is_set(SREG, SREG_I));
-	// ADC interrupt enabled
-	assertTrue(bit_is_set(ADCSRA, ADIE));
-
-	return true;
-}
-
 bool testGetVoltage(void) {
+	initInterrupts();
 	setupADC();
 	setupSleepMode();
 
@@ -264,10 +288,38 @@ bool testToInfoRich(void) {
 	return ! strcmp(info, RICH);
 }
 
+/* Module display */
+
+// TODO assertions
+bool testCycle(void) {
+
+	return true;
+}
+
+// TODO assertions
+bool testUpdateInitial(void) {
+
+	return true;
+}
+
+// TODO assertions
+bool testUpdate(void) {
+	// set first display option so display() won't actually log something
+	// via USART which would break the test result XML
+	// TODO elegant solution for this and testing display()?
+
+	// measurement meas = {0, 0, 0, 0, 0, 0};
+	// update(meas);
+
+	return true;
+}
+
 // these long function names passed along as strings use a lot of memory
 test tests[] = {
+		{"interrupts", "testSetupPorts", testSetupPorts},
+		{"interrupts", "testSetupSleepMode", testSetupSleepMode},
+		{"interrupts", "testInitInterrupts", testInitInterrupts},
 		{"adc", "testSetupADC", testSetupADC},
-		{"adc", "testSetupSleepMode", testSetupSleepMode},
 		{"adc", "testGetVoltage", testGetVoltage},
 		{"integers", "testDivRoundNearest", testDivRoundNearest},
 		{"integers", "testDivRoundNearestNumNeg", testDivRoundNearestNumNeg},
@@ -290,7 +342,10 @@ test tests[] = {
 		{"sensors", "testToInfoLean", testToInfoLean},
 		{"sensors", "testToInfoOkay", testToInfoOkay},
 		{"sensors", "testToInfoIdeal", testToInfoIdeal},
-		{"sensors", "testToInfoRich", testToInfoRich}
+		{"sensors", "testToInfoRich", testToInfoRich},
+		{"display", "testCycle", testCycle},
+		{"display", "testUpdateInitial", testUpdateInitial},
+		{"display", "testUpdate", testUpdate}
 };
 
 int main(void) {

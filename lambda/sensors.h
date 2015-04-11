@@ -45,12 +45,6 @@ typedef struct {
 measurement measure(void);
 
 /**
- * Formats the given values, displays them on an 16x2 LCD
- * and prints them over USART.
- */
-void display(measurement);
-
-/**
  * Returns the temperature for the given voltage of a type K thermocouple
  * amplified with an AD8495 (5 mV/°C). Type K thermocouple voltages are
  * about linear between 0 and 800°C.

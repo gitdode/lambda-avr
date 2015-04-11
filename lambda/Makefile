@@ -14,7 +14,8 @@ MAIN = lambda.c
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
-LOCAL_SOURCE = USART.c adc.c sensors.c integers.c lcdroutines.c
+LOCAL_SOURCE = USART.c interrupts.c adc.c sensors.c integers.c lcdroutines.c \
+display.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = 

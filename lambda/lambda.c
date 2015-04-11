@@ -21,10 +21,12 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include "USART.h"
+#include "lcdroutines.h"
 #include "adc.h"
+#include "interrupts.h"
 #include "sensors.h"
 #include "integers.h"
-#include "lcdroutines.h"
+#include "display.h"
 
 /**
  * Initializes the USART transmitter and receiver, the lcd, sets up the ADC
@@ -35,13 +37,15 @@
 int main(void) {
 	initUSART();
 	lcd_init();
+	setupPorts();
 	setupADC();
 	setupSleepMode();
+	initInterrupts();
 
 	// main loop
 	while (1) {
 		measurement meas = measure();
-		display(meas);
+		update(meas);
 		_delay_ms(1000);
 	}
 

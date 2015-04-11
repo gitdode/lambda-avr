@@ -18,7 +18,8 @@ LOCAL_SOURCE = avrjunit.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = ../lambda/
-EXTRA_SOURCE_FILES = USART.c adc.c sensors.c integers.c
+EXTRA_SOURCE_FILES = USART.c interrupts.c adc.c sensors.c integers.c \
+lcdroutines.c display.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
