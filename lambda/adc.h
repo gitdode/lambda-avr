@@ -19,6 +19,10 @@
 // #define TEMPO_OP_OFFSET_MV 441
 #define TEMPO_OP_OFFSET_MV 454
 
+#define ADC_TEMPI PC5  // PC5 on diagram
+#define ADC_TEMPO PC0  // PC4 on diagram
+#define ADC_LAMBDA PC2 // PC3 on diagram
+
 /**
  * Sets up reference voltage and clock prescaler of the ADC and enables it.
  */

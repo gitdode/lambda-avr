@@ -18,10 +18,6 @@
 #define IDEAL "Ideal"
 #define RICH "Fett!"
 
-#define ADC_TEMPI PC5  // PC5 on diagram
-#define ADC_TEMPO PC0  // PC4 on diagram
-#define ADC_LAMBDA PC2 // PC3 on diagram
-
 /**
  * Entry for the lookup tables.
  */

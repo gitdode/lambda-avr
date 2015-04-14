@@ -78,7 +78,7 @@ bool testSetupADC(void) {
 	// AVCC is set as AREF
 	assertTrue(bit_is_set(ADMUX, REFS0));
 	// digital inputs are disabled
-	uint8_t adcPorts = (1 << PC0) | (1 << PC2) | (1 << PC5);
+	uint8_t adcPorts = (1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA);
 	assertTrue((DIDR0 & adcPorts) == adcPorts);
 	// ADC clock prescaler/8
 	uint8_t prescalerBy8 = (1 << ADPS1) | (1 << ADPS0);
