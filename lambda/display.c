@@ -44,16 +44,13 @@ ISR(PCINT0_vect) {
 void cycle(void) {
 	position++;
 	if (position == MENU_MIN_VALUES) {
-		// PORTB |= (1 << PB1);
 		hint = " <";
 		display(measMin);
 	} else if (position == MENU_MAX_VALUES) {
-		// PORTB |= (1 << PB1);
 		hint = " >";
 		display(measMax);
 	} else {
 		position = MENU_OFF;
-		// PORTB &= ~(1 << PB1);
 		hint = "  ";
 		display(measCur);
 	}

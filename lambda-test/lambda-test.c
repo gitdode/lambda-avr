@@ -183,7 +183,7 @@ bool testMeasure(void) {
 
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
-	PORTC |= ((1 << PC5) | (1 << PC0) | (1 << PC2));
+	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA));
 
 	_delay_ms(10);
 
