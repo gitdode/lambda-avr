@@ -11,6 +11,7 @@
 
 void setupPorts(void) {
 	// pull-up resistor for the mouton
+	// INT0 and INT1 are assigned to the LCD, a bit of a shame
 	PORTB |= (1 << PB0);
 
 	// PB1 as output

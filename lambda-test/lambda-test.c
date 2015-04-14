@@ -41,7 +41,7 @@ static const tableEntry testTable[] = {
 bool testSetupPorts(void) {
 	setupPorts();
 
-	// test that pull-up resistor for the mouton is enabled
+	// test that the pull-up resistor for the mouton is enabled
 	assertTrue(bit_is_set(PORTB, PB0));
 
 	return true;

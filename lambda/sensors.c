@@ -57,7 +57,7 @@ static const tableEntry tempOTable[] = {
 };
 
 /**
- * Global variables holding averaged voltages.
+ * Variables holding averaged voltages.
  */
 uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
 uint32_t tempIVoltageAvg = 100 << 3; // 20°C
@@ -68,15 +68,15 @@ uint32_t tempOVoltageAvg = 644 << 3; // 20°C
  * calculates an exponential moving average and displays the translated values.
  */
 measurement measure(void) {
-	uint32_t tempIVoltage = getVoltage(PC5);
+	uint32_t tempIVoltage = getVoltage(ADC_TEMPI);
 	tempIVoltageAvg = tempIVoltage + tempIVoltageAvg -
 			((tempIVoltageAvg - 4) >> 3);
 
-	uint32_t tempOVoltage = getVoltage(PC0);
+	uint32_t tempOVoltage = getVoltage(ADC_TEMPO);
 	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
 			((tempOVoltageAvg - 4) >> 3);
 
-	uint32_t lambdaVoltage = getVoltage(PC2);
+	uint32_t lambdaVoltage = getVoltage(ADC_LAMBDA);
 	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 			((lambdaVoltageAvg - 4) >> 3);
 

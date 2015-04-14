@@ -18,12 +18,12 @@
 
 #define LCD_PORT PORTD
 #define LCD_DDR	 DDRD
-#define LCD_RS   PD6
-#define LCD_EN   PD7
-#define LCD_DB4  PD5
-#define LCD_DB5  PD2
-#define LCD_DB6  PD3
-#define LCD_DB7  PD4
+#define LCD_RS   PD6 // PD7 on diagram
+#define LCD_EN   PD7 // PD6 on diagram
+#define LCD_DB4  PD5 // PD5 on diagram
+#define LCD_DB5  PD2 // PD4 on diagram
+#define LCD_DB6  PD3 // PD3 on diagram
+#define LCD_DB7  PD4 // PD2 on diagram
  
 ////////////////////////////////////////////////////////////////////////////////
 // LCD Ausführungszeiten (MS=Millisekunden, US=Mikrosekunden)
