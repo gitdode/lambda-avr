@@ -15,7 +15,7 @@ void cycle(void);
 
 /**
  * Updates the measurements, tracks min and max values since last start/reset
- * and display the current measurements unless the "menu" is active.
+ * and displays the current measurements unless the "menu" is active.
  */
 void update(measurement);
 
