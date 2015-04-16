@@ -62,10 +62,22 @@ bool testInitInterrupts(void) {
 	// ADC interrupt enabled
 	assertTrue(bit_is_set(ADCSRA, ADIE));
 	// PC interrupts enabled
-	assertTrue(bit_is_set(PCICR, PCIE0));
-	assertTrue(bit_is_set(PCMSK0, PB0));
+	// assertTrue(bit_is_set(PCICR, PCIE0));
+	// assertTrue(bit_is_set(PCMSK0, PB0));
+	// enable timer 0 overflow interrupt
+	assertTrue(bit_is_set(TIMSK0, TOIE0));
 	// sei(); // enable global interrupts
 	assertTrue(bit_is_set(SREG, SREG_I));
+
+	return true;
+}
+
+bool testInitTimers(void) {
+	initInterrupts();
+
+	// timer clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
+	uint8_t prescalerBy64 = (1 << CS00) | (1 << CS01);
+	assertTrue((TCCR0B & prescalerBy64) == prescalerBy64);
 
 	return true;
 }
@@ -292,6 +304,7 @@ bool testToInfoRich(void) {
 
 // TODO assertions
 bool testCycle(void) {
+	cycle();
 
 	return true;
 }
@@ -304,21 +317,28 @@ bool testUpdateInitial(void) {
 
 // TODO assertions
 bool testUpdate(void) {
-	// set first display option so display() won't actually log something
-	// via USART which would break the test result XML
-	// TODO elegant solution for this and testing display()?
-
-	// measurement meas = {0, 0, 0, 0, 0, 0};
-	// update(meas);
+	measurement meas = {0, 0, 0, 0, 0, 0};
+	update(meas);
 
 	return true;
 }
 
-// these long function names passed along as strings use a lot of memory
+// TODO test display() with no display connected?
+bool testDisplay(void) {
+	measurement meas = {0, 0, 0, 0, 0, 0};
+	display(meas, "  ");
+
+	return true;
+}
+
+
+// TODO these long function names passed along as strings use a lot of memory
+// use PROGMEM?
 test tests[] = {
 		{"interrupts", "testSetupPorts", testSetupPorts},
 		{"interrupts", "testSetupSleepMode", testSetupSleepMode},
 		{"interrupts", "testInitInterrupts", testInitInterrupts},
+		{"interrupts", "testInitTimers", testInitInterrupts},
 		{"adc", "testSetupADC", testSetupADC},
 		{"adc", "testGetVoltage", testGetVoltage},
 		{"integers", "testDivRoundNearest", testDivRoundNearest},
@@ -345,7 +365,8 @@ test tests[] = {
 		{"sensors", "testToInfoRich", testToInfoRich},
 		{"display", "testCycle", testCycle},
 		{"display", "testUpdateInitial", testUpdateInitial},
-		{"display", "testUpdate", testUpdate}
+		{"display", "testUpdate", testUpdate},
+		{"display", "testDisplay", testDisplay}
 };
 
 int main(void) {

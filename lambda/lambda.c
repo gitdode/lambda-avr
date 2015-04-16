@@ -31,17 +31,15 @@
 #include "display.h"
 
 volatile bool buttonPressed = false;
-volatile uint8_t updateCount = 0;
-volatile uint8_t logCount = 0;
+volatile uint8_t intCount = 0;
 
 /**
  * Called every 16.32 ms.
  */
 ISR(TIMER0_OVF_vect) {
-	updateCount++;
-	logCount++;
+	intCount++;
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
-		PORTB ^= (1 << PB1);
+		// PORTB ^= (1 << PB1);
 		cycle();
 		buttonPressed = true;
 	} else if (bit_is_set(PINB, PB0)) {
@@ -64,14 +62,16 @@ int main(void) {
 
 	// main loop
 	while (1) {
-		if (updateCount >= 6) {
-			updateCount = 0;
-			measurement meas = measure(); // about 50 ms
-			update(meas); // about 100 ms
-			if (logCount >= 61) {
-				logCount = 0;
-				print(meas); // about 400 ms
-			}
+		measurement meas;
+		if (intCount >= 60) {
+			intCount = 0;
+			meas = measure();
+			update(meas);
+			print(meas);
+		}
+		if (buttonPressed) {
+			// update display immediately
+			update(meas);
 		}
 	}
 

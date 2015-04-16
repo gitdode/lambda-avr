@@ -27,6 +27,6 @@ void print(measurement);
 /**
  * Formats the given measurement values and displays them on an 16x2 LCD.
  */
-void display(measurement, char[]);
+void display(measurement, char*);
 
 #endif /* DISPLAY_H_ */

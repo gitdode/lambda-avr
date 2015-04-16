@@ -45,11 +45,11 @@ void update(measurement meas) {
 	measMax.lambda = MAX(measMax.lambda, meas.lambda);
 
 	if (position == MENU_MIN_VALUES) {
-		display(measMin, "  <");
+		display(measMin, "|<");
 	} else if (position == MENU_MAX_VALUES) {
-		display(measMax, "  >");
+		display(measMax, ">|");
 	} else {
-		display(meas, "   ");
+		display(meas, "  ");
 	}
 }
 
@@ -62,7 +62,7 @@ void print(measurement meas) {
 	printString(log);
 }
 
-void display(measurement meas, char hint[]) {
+void display(measurement meas, char* hint) {
 	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
 	div_t lambdaT = div(lambdax100, 100);
 
