@@ -39,6 +39,6 @@ void initInterrupts(void) {
 
 void initTimers(void) {
 	// timer in normal mode is default
-	// timer clock prescaler /64 = 7.8 kHz overflowing every 32 ms
+	// timer clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
 	TCCR0B |= (1 << CS00) | (1 << CS01);
 }
