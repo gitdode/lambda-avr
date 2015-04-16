@@ -15,7 +15,7 @@ void setupPorts(void) {
 	PORTB |= (1 << PB0);
 
 	// PB1 as output
-	// DDRB |= (1 << PB1);
+	DDRB |= (1 << PB1);
 }
 
 void setupSleepMode(void) {
@@ -27,9 +27,18 @@ void initInterrupts(void) {
 	ADCSRA |= (1 << ADIE);
 
 	// enable PC interrupts
-	PCICR |= (1 << PCIE0);
-	PCMSK0 |= (1 << PB0);
+	// PCICR |= (1 << PCIE0);
+	// PCMSK0 |= (1 << PB0);
+
+	// enable timer 0 overflow interrupt
+	TIMSK0 |= (1 << TOIE0);
 
 	// enable global interrupts
 	sei();
+}
+
+void initTimers(void) {
+	// timer in normal mode is default
+	// timer clock prescaler /64 = 7.8 kHz overflowing every 32 ms
+	TCCR0B |= (1 << CS00) | (1 << CS01);
 }

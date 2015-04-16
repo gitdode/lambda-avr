@@ -23,4 +23,9 @@ void setupSleepMode(void);
  */
 void initInterrupts(void);
 
+/**
+ * Inits the timers.
+ */
+void initTimers(void);
+
 #endif /* INTERRUPTS_H_ */

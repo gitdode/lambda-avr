@@ -18,8 +18,10 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <util/delay.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "USART.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -28,11 +30,28 @@
 #include "integers.h"
 #include "display.h"
 
+volatile bool buttonPressed = false;
+volatile uint8_t updateCount = 0;
+volatile uint8_t logCount = 0;
+
 /**
- * Initializes the USART transmitter and receiver, the lcd, sets up the ADC
- * and sleep mode and then infinitely measures with a 1 second delay
- * in between.
- * TODO replace delay by a timer?
+ * Called every 16.32 ms.
+ */
+ISR(TIMER0_OVF_vect) {
+	updateCount++;
+	logCount++;
+	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
+		PORTB ^= (1 << PB1);
+		cycle();
+		buttonPressed = true;
+	} else if (bit_is_set(PINB, PB0)) {
+		buttonPressed = false;
+	}
+}
+
+/**
+ * Does initialization and measures, displays and logs the measurements
+ * infinitely.
  */
 int main(void) {
 	initUSART();
@@ -41,12 +60,19 @@ int main(void) {
 	setupADC();
 	setupSleepMode();
 	initInterrupts();
+	initTimers();
 
 	// main loop
 	while (1) {
-		measurement meas = measure();
-		update(meas);
-		_delay_ms(1000);
+		if (updateCount >= 6) {
+			updateCount = 0;
+			measurement meas = measure(); // about 50 ms
+			update(meas); // about 100 ms
+			if (logCount >= 61) {
+				logCount = 0;
+				print(meas); // about 400 ms
+			}
+		}
 	}
 
 	// never reached

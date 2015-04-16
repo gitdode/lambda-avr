@@ -24,41 +24,18 @@
 #define MENU_MAX_VALUES 2
 
 uint8_t position = MENU_OFF;
-char* hint = "  ";
-measurement measCur;
+
 measurement measMin = {0, 20, 0, 20, 0, 2000};
 measurement measMax = {0, 0, 0, 0, 0, 0};
 
-/**
- * Cycles through the "menu" (display options) when the menu button is pressed.
- */
-ISR(PCINT0_vect) {
-	if (bit_is_clear(PINB, PB0)) {
-		_delay_ms(30);
-		if (bit_is_clear(PINB, PB0)) {
-			cycle();
-		}
-	}
-}
-
 void cycle(void) {
 	position++;
-	if (position == MENU_MIN_VALUES) {
-		hint = " <";
-		display(measMin);
-	} else if (position == MENU_MAX_VALUES) {
-		hint = " >";
-		display(measMax);
-	} else {
+	if (position > MENU_MAX_VALUES) {
 		position = MENU_OFF;
-		hint = "  ";
-		display(measCur);
 	}
 }
 
 void update(measurement meas) {
-	measCur = meas;
-
 	measMin.tempI = MIN(measMin.tempI, meas.tempI);
 	measMin.tempO = MIN(measMin.tempO, meas.tempO);
 	measMin.lambda = MIN(measMin.lambda, meas.lambda);
@@ -67,21 +44,27 @@ void update(measurement meas) {
 	measMax.tempO = MAX(measMax.tempO, meas.tempO);
 	measMax.lambda = MAX(measMax.lambda, meas.lambda);
 
-	if (position == MENU_OFF) {
-		display(meas);
+	if (position == MENU_MIN_VALUES) {
+		display(measMin, "  <");
+	} else if (position == MENU_MAX_VALUES) {
+		display(measMax, "  >");
+	} else {
+		display(meas, "   ");
 	}
 }
 
-void display(measurement meas) {
-	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
-	div_t lambdaT = div(lambdax100, 100);
-
+void print(measurement meas) {
 	char log[64];
 	snprintf(log, sizeof(log),
-			"Ti %3d C %4u - To %3d C %4u - L %4u %4u %s\r\n",
+			"Ti %3d C %4u - To %3d C %4u - L %4u %4u\r\n",
 			meas.tempI, meas.tempIVoltage, meas.tempO, meas.tempOVoltage,
-			meas.lambda, meas.lambdaVoltage, hint);
+			meas.lambda, meas.lambdaVoltage);
 	printString(log);
+}
+
+void display(measurement meas, char hint[]) {
+	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
+	div_t lambdaT = div(lambdax100, 100);
 
 	char line0[17];
 	char line1[17];
