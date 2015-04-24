@@ -38,11 +38,11 @@ void cycle(void) {
 void update(measurement meas) {
 	measMin.tempI = MIN(measMin.tempI, meas.tempI);
 	measMin.tempO = MIN(measMin.tempO, meas.tempO);
-	measMin.lambda = MIN(measMin.lambda, meas.lambda);
+	measMin.lambda = MAX(measMin.lambda, meas.lambda);
 
 	measMax.tempI = MAX(measMax.tempI, meas.tempI);
 	measMax.tempO = MAX(measMax.tempO, meas.tempO);
-	measMax.lambda = MAX(measMax.lambda, meas.lambda);
+	measMax.lambda = MIN(measMax.lambda, meas.lambda);
 
 	if (position == MENU_MIN_VALUES) {
 		display(measMin, "|<");

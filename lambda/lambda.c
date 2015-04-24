@@ -29,19 +29,21 @@
 #include "sensors.h"
 #include "integers.h"
 #include "display.h"
+#include "alert.h"
 
 volatile bool buttonPressed = false;
 volatile uint8_t intCount = 0;
 
 /**
- * Called every 16.32 ms.
+ * Called every 16 ms.
  */
 ISR(TIMER0_OVF_vect) {
 	intCount++;
+	oscillate();
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
-		// PORTB ^= (1 << PB1);
-		cycle();
 		buttonPressed = true;
+		cycle();
+		beep(3, 3);
 	} else if (bit_is_set(PINB, PB0)) {
 		buttonPressed = false;
 	}
@@ -63,8 +65,9 @@ int main(void) {
 	// main loop
 	while (1) {
 		measurement meas;
-		if (intCount >= 60) {
+		if (intCount >= 61) {
 			intCount = 0;
+			// causes a click in the beep, because of sleep mode?
 			meas = measure();
 			update(meas);
 			print(meas);
