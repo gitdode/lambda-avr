@@ -304,7 +304,7 @@ bool testToInfoRich(void) {
 
 // TODO assertions
 bool testCycle(void) {
-	cycle();
+	cycleDisplay();
 
 	return true;
 }
@@ -318,7 +318,7 @@ bool testUpdateInitial(void) {
 // TODO assertions
 bool testUpdate(void) {
 	measurement meas = {0, 0, 0, 0, 0, 0};
-	update(meas);
+	updateMeas(meas);
 
 	return true;
 }
@@ -326,7 +326,7 @@ bool testUpdate(void) {
 // TODO test display() with no display connected?
 bool testDisplay(void) {
 	measurement meas = {0, 0, 0, 0, 0, 0};
-	display(meas, "  ");
+	displayMeas(meas, "  ");
 
 	return true;
 }

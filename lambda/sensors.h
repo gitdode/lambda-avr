@@ -40,9 +40,16 @@ typedef struct {
 
 /**
  * Measures the "input" and "output" temperatures and the lambda value
- * and displays the measured values.
+ * and returns them.
  */
 measurement measure(void);
+
+/**
+ * Reads measurement data from the given array of strings, used to simulate
+ * a burnoff with data logged during real burnoffs. The voltages are not used,
+ * the space separated fields are tempI, tempO and lambda.
+ */
+measurement readMeas(char* usartData[]);
 
 /**
  * Returns the temperature for the given voltage of a type K thermocouple

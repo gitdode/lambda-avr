@@ -11,22 +11,27 @@
 /**
  * Cycles through the "menu" (display options).
  */
-void cycle(void);
+void cycleDisplay(void);
 
 /**
  * Updates the measurements, tracks min and max values since last start/reset
  * and displays the selected measurement values.
  */
-void update(measurement);
+void updateMeas(measurement);
 
 /**
  * Formats the given measurement values and prints them via USART.
  */
-void print(measurement);
+void printMeas(measurement);
 
 /**
  * Formats the given measurement values and displays them on an 16x2 LCD.
  */
-void display(measurement, char*);
+void displayMeas(measurement, char*);
+
+/**
+ * Displays the given two lines of text.
+ */
+void displayText(char*, char*);
 
 #endif /* DISPLAY_H_ */

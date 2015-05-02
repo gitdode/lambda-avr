@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -30,22 +31,40 @@
 #include "integers.h"
 #include "display.h"
 #include "alert.h"
+#include "command.h"
 
 volatile bool buttonPressed = false;
+volatile bool usartReceived = false;
 volatile uint8_t intCount = 0;
+volatile uint8_t dataCount = 0;
+
+char usartData[64];
 
 /**
  * Called every 16 ms.
  */
 ISR(TIMER0_OVF_vect) {
 	intCount++;
-	oscillate();
+	oscillateBeep();
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
 		buttonPressed = true;
-		cycle();
-		beep(3, 3);
+		cycleDisplay();
 	} else if (bit_is_set(PINB, PB0)) {
 		buttonPressed = false;
+	}
+}
+
+ISR(USART_RX_vect) {
+	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
+		char data = UDR0;
+		loop_until_bit_is_set(UCSR0A, UDRE0);
+		UDR0 = data;
+		if (dataCount < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
+			usartData[dataCount++] = data;
+		} else {
+			usartData[dataCount++] = 0;
+			usartReceived = true;
+		}
 	}
 }
 
@@ -62,19 +81,29 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
+	alert(1, 2, "     Hello!     ", "");
+
+	measurement meas;
+	// memset(&meas, 0, sizeof(meas));
+
 	// main loop
 	while (1) {
-		measurement meas;
-		if (intCount >= 61) {
+		if (intCount >= 62 && ! isSimulation()) {
 			intCount = 0;
 			// causes a click in the beep, because of sleep mode?
 			meas = measure();
-			update(meas);
-			print(meas);
+			printMeas(meas);
+			updateMeas(meas);
 		}
 		if (buttonPressed) {
 			// update display immediately
-			update(meas);
+			updateMeas(meas);
+		}
+		if (usartReceived) {
+			command(usartData);
+			memset(usartData, 0, sizeof(usartData));
+			dataCount = 0;
+			usartReceived = false;
 		}
 	}
 

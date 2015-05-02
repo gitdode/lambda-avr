@@ -13,6 +13,9 @@ void setupPorts(void) {
 	// pull-up resistor for the mouton
 	// INT0 and INT1 are assigned to the LCD, a bit of a shame
 	PORTB |= (1 << PB0);
+
+	// enable beep output pin
+	DDRB |= (1 << PB1);
 }
 
 void setupSleepMode(void) {
@@ -26,6 +29,11 @@ void initInterrupts(void) {
 	// enable timer 0 overflow interrupt
 	TIMSK0 |= (1 << TOIE0);
 
+	// enable RC complete interrupt 0
+	UCSR0B |= (1 << RXCIE0);
+	// enable data register empty interrupt 0
+	// UCSR0B |= (1 << UDRIE0);
+
 	// enable global interrupts
 	sei();
 }
@@ -36,11 +44,13 @@ void initTimers(void) {
 	TCCR0B |= (1 << CS01) | (1 << CS00);
 
 	// toggle pin PB1 on compare match
-	TCCR1A |= (1 << COM1A0);
+	// TCCR1A |= (1 << COM1A0);
 	// CTC mode, TOP OCR1A
 	TCCR1B |= (1 << WGM12);
 	// timer clock prescaler/8
 	TCCR1B |= (1 << CS11);
-	// toggles PB1 at 3.9 kHz generating a 1.95 kHz beep
+	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
+	// OCR1A = 16;
+	// less noisy
 	OCR1A = 32;
 }

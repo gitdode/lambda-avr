@@ -11,7 +11,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <avr/io.h>
+#include "USART.h"
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"
@@ -88,6 +90,15 @@ measurement measure(void) {
 	meas.tempI = toTempI(meas.tempIVoltage);
 	meas.tempO = toTempO(meas.tempOVoltage);
 	meas.lambda = toLambda(meas.lambdaVoltage);
+
+	return meas;
+}
+
+measurement readMeas(char* fields[]) {
+	measurement meas;
+	meas.tempI  = strtol(fields[0], NULL, 10);
+	meas.tempO  = strtol(fields[1], NULL, 10);
+	meas.lambda = strtol(fields[2], NULL, 10);
 
 	return meas;
 }

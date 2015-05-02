@@ -9,13 +9,15 @@ F_CPU = 1000000
 BAUD = 9600
 ## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
+SIMULATION = 1
+
 ## This is where your main() routine lives 
 MAIN = lambda.c
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
 LOCAL_SOURCE = USART.c interrupts.c adc.c sensors.c integers.c lcdroutines.c \
-display.c alert.c
+display.c alert.c command.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = 

@@ -10,25 +10,28 @@
 #include <avr/io.h>
 #include "USART.h"
 #include "alert.h"
+#include "sensors.h"
+#include "display.h"
 
 uint8_t oscCount = 0;
 uint8_t beepCount = 0;
-uint8_t beepLength = 0;
+uint16_t beepLength = 0;
+bool alertActive = false;
 
-void oscillate(void) {
+void oscillateBeep(void) {
 	if (beepCount == 0) {
 		return;
 	}
 	if (oscCount == 0) {
 		// turn beep on
-		DDRB |= (1 << PB1);
+		TCCR1A |= (1 << COM1A0);
 	}
 	if (oscCount == beepLength) {
 		// turn beep off
-		DDRB &= ~(1 << PB1);
+		TCCR1A &= ~(1 << COM1A0);
 		beepCount--;
 		if (beepCount == 0) {
-			// clear alert
+			alertActive = false;
 		}
 	}
 	oscCount == beepLength * 2 ? oscCount = 0 : oscCount++;
@@ -41,9 +44,18 @@ void beep(uint8_t beeps, uint8_t length) {
 }
 
 void alert(uint8_t beeps, uint8_t length, char* line0, char* line1) {
+	alertActive = true;
 	oscCount = 0;
 	beepCount = beeps;
 	beepLength = length;
-	// set alert
-	// set display text
+	displayText(line0, line1);
+}
+
+void cancelAlert(void) {
+	TCCR1A &= ~(1 << COM1A0);
+	alertActive = false;
+}
+
+bool isAlertActive(void) {
+	return alertActive;
 }
