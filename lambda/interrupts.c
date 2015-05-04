@@ -19,7 +19,8 @@ void setupPorts(void) {
 }
 
 void setupSleepMode(void) {
-	set_sleep_mode(SLEEP_MODE_ADC);
+	// SLEEP_MODE_ADC corrupts USART TX/RX data and causes a click in the beep
+	set_sleep_mode(SLEEP_MODE_IDLE);
 }
 
 void initInterrupts(void) {
@@ -43,6 +44,7 @@ void initTimers(void) {
 	// timer clock prescaler/64 = 15.625 kHz overflowing every 16 ms
 	TCCR0B |= (1 << CS01) | (1 << CS00);
 
+	// TODO use timer2 which continues running during SLEEP_MODE_ADC?
 	// toggle pin PB1 on compare match
 	// TCCR1A |= (1 << COM1A0);
 	// CTC mode, TOP OCR1A
@@ -51,6 +53,6 @@ void initTimers(void) {
 	TCCR1B |= (1 << CS11);
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// OCR1A = 16;
-	// less noisy
+	// less noisy 1.8 kHz
 	OCR1A = 32;
 }

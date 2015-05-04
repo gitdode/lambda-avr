@@ -52,6 +52,8 @@ void alert(uint8_t beeps, uint8_t length, char* line0, char* line1) {
 }
 
 void cancelAlert(void) {
+	beepCount = 0;
+	// turn beep off
 	TCCR1A &= ~(1 << COM1A0);
 	alertActive = false;
 }

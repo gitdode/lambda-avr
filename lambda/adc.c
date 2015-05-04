@@ -14,8 +14,7 @@
 #include "adc.h"
 
 /**
- * Sets up a fake ISR to just return to where sleep_mode() was called
- * when ADC conversion is complete (ADC_vect).
+ * Returns to where sleep_mode() was called when ADC conversion is complete.
  */
 EMPTY_INTERRUPT(ADC_vect);
 
@@ -32,7 +31,6 @@ void setupADC(void) {
 }
 
 uint16_t getVoltage(uint8_t pin) {
-
 	ADMUX = (0b11110000 & ADMUX) | pin;
 
 	uint32_t overValue = 0;

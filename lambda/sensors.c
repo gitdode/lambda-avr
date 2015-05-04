@@ -59,7 +59,7 @@ static const tableEntry tempOTable[] = {
 };
 
 /**
- * Variables holding averaged voltages.
+ * Variables holding averaged voltages*8.
  */
 uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
 uint32_t tempIVoltageAvg = 100 << 3; // 20°C
@@ -96,9 +96,9 @@ measurement measure(void) {
 
 measurement readMeas(char* fields[]) {
 	measurement meas;
-	meas.tempI  = strtol(fields[0], NULL, 10);
-	meas.tempO  = strtol(fields[1], NULL, 10);
-	meas.lambda = strtol(fields[2], NULL, 10);
+	meas.tempI  = atoi(fields[0]);
+	meas.tempO  = atoi(fields[1]);
+	meas.lambda = atoi(fields[2]);
 
 	return meas;
 }

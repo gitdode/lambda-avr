@@ -12,4 +12,6 @@ void command(char* data);
 
 bool isSimulation(void);
 
+bool isLogging(void);
+
 #endif /* COMMAND_H_ */

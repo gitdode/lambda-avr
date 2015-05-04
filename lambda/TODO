@@ -3,5 +3,9 @@
 - Read up on "global" variables and modules
 
 * Functionality
-- Add beeper and beep when air gate valve should be closed and heating of
-  oxygen sensor should be switched off (or switch it off automatically?)
+- Add rules and alerts according to FIRE RULEZ!
+  
+* Circuit
+- Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
+  really so unstable?
+- Verify ADC voltages against voltmeter with other uC (ADC_OFFSET_MV)

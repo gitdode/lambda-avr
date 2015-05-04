@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "USART.h"
@@ -57,8 +56,6 @@ ISR(TIMER0_OVF_vect) {
 ISR(USART_RX_vect) {
 	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
 		char data = UDR0;
-		loop_until_bit_is_set(UCSR0A, UDRE0);
-		UDR0 = data;
 		if (dataCount < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
 			usartData[dataCount++] = data;
 		} else {
@@ -84,15 +81,15 @@ int main(void) {
 	alert(1, 2, "     Hello!     ", "");
 
 	measurement meas;
-	// memset(&meas, 0, sizeof(meas));
 
 	// main loop
 	while (1) {
 		if (intCount >= 62 && ! isSimulation()) {
 			intCount = 0;
-			// causes a click in the beep, because of sleep mode?
 			meas = measure();
-			printMeas(meas);
+			if (isLogging()) {
+				printMeas(meas);
+			}
 			updateMeas(meas);
 		}
 		if (buttonPressed) {
