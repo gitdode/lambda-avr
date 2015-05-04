@@ -72,7 +72,7 @@ bool testInitInterrupts(void) {
 	// enable timer 0 overflow interrupt
 	assertTrue(bit_is_set(TIMSK0, TOIE0));
 	// USART RX complete interrupt 0 enabled
-	assertTrue(bit_is_set(UCSR0B, RXCIE0));
+	// assertTrue(bit_is_set(UCSR0B, RXCIE0));
 
 	// sei(); // enable global interrupts
 	assertTrue(bit_is_set(SREG, SREG_I));
