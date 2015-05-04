@@ -30,7 +30,7 @@ void initInterrupts(void) {
 	// enable timer 0 overflow interrupt
 	TIMSK0 |= (1 << TOIE0);
 
-	// enable RC complete interrupt 0
+	// enable USART RX complete interrupt 0
 	UCSR0B |= (1 << RXCIE0);
 	// enable data register empty interrupt 0
 	// UCSR0B |= (1 << UDRIE0);

@@ -44,14 +44,19 @@ bool testSetupPorts(void) {
 	// test that the pull-up resistor for the mouton is enabled
 	assertTrue(bit_is_set(PORTB, PB0));
 
+	// test that the beep output pin is enabled
+	assertTrue(bit_is_set(DDRB, PB1));
+
 	return true;
 }
 
 bool testSetupSleepMode(void) {
 	setupSleepMode();
 
-	// set_sleep_mode(SLEEP_MODE_ADC);
-	assertTrue(bit_is_set(SMCR, SM0));
+	// set_sleep_mode(SLEEP_MODE_IDLE);
+	assertFalse(bit_is_set(SMCR, SM2));
+	assertFalse(bit_is_set(SMCR, SM1));
+	assertFalse(bit_is_set(SMCR, SM0));
 
 	return true;
 }
@@ -66,6 +71,9 @@ bool testInitInterrupts(void) {
 	// assertTrue(bit_is_set(PCMSK0, PB0));
 	// enable timer 0 overflow interrupt
 	assertTrue(bit_is_set(TIMSK0, TOIE0));
+	// USART RX complete interrupt 0 enabled
+	assertTrue(bit_is_set(UCSR0B, RXCIE0));
+
 	// sei(); // enable global interrupts
 	assertTrue(bit_is_set(SREG, SREG_I));
 
@@ -75,9 +83,18 @@ bool testInitInterrupts(void) {
 bool testInitTimers(void) {
 	initInterrupts();
 
-	// timer clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
+	// timer0 clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
 	uint8_t prescalerBy64 = (1 << CS00) | (1 << CS01);
 	assertTrue((TCCR0B & prescalerBy64) == prescalerBy64);
+
+	// timer1 CTC mode, TOP OCR1A
+	assertTrue(bit_is_set(TCCR1B, WGM12));
+	// timer clock prescaler/8
+	assertTrue(bit_is_set(TCCR1B, CS11));
+	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
+	// assertTrue(OCR1A == 16);
+	// less noisy 1.8 kHz
+	assertTrue(OCR1A == 32);
 
 	return true;
 }

@@ -53,6 +53,9 @@ ISR(TIMER0_OVF_vect) {
 	}
 }
 
+/**
+ * Called when data was received via USART.
+ */
 ISR(USART_RX_vect) {
 	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
 		char data = UDR0;
