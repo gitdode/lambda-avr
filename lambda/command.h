@@ -8,10 +8,19 @@
 #ifndef COMMAND_H_
 #define COMMAND_H_
 
-void command(char* data);
-
+/**
+ * Returns true if simulation mode is enabled, false otherwise.
+ */
 bool isSimulation(void);
 
+/**
+ * Returns true if logging is enabled, false otherwise.
+ */
 bool isLogging(void);
+
+/**
+ * Evaluates and runs the given command and/or data.
+ */
+void runCommand(char* data);
 
 #endif /* COMMAND_H_ */

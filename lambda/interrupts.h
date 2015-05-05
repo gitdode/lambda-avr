@@ -8,12 +8,21 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
-bool isButtonPressed(void);
-
+/**
+ * Returns true if a CR or LF terminated line of data was received via USART.
+ */
 bool isUSARTReceived(void);
 
-void getUSARTData(char*, uint8_t);
+/**
+ * Appends the data received via USART to the given string with the given
+ * length.
+ */
+void getUSARTData(char* data, uint8_t length);
 
+/**
+ * Returns true if the current timer interrupt count is equal or greater to
+ * the given count and resets it if the given boolean is true.
+ */
 bool hasIntCount(uint8_t count, bool reset);
 
 /**

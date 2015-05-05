@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <avr/io.h>
-#include "USART.h"
 #include "alert.h"
 #include "sensors.h"
 #include "display.h"

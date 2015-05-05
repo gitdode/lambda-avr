@@ -18,13 +18,24 @@
 bool simulation = false;
 bool logging = false;
 
-void command(char* data) {
+bool isSimulation(void) {
+	return simulation;
+}
+
+bool isLogging(void) {
+	return logging;
+}
+
+void runCommand(char* data) {
 	char* fields[8];
 	char* token = strtok(data, " ");
 	uint8_t index = 0;
 	while (token != NULL) {
 		fields[index++] = token;
 		token = strtok(NULL, " ");
+	}
+	for (; index < 8; index++) {
+		fields[index] = '\0';
 	}
 	if (strcmp(fields[0], "se") == 0) {
 		// simulation enable
@@ -49,7 +60,6 @@ void command(char* data) {
 	else if (strcmp(fields[0], "cm") == 0) {
 		// cycle menu
 		cycleDisplay();
-		// updateMeas(meas);
 	}
 	else if (strcmp(fields[0], "ta") == 0) {
 		// test alert
@@ -59,12 +69,4 @@ void command(char* data) {
 		measurement meas = readMeas(fields);
 		updateMeas(meas);
 	}
-}
-
-bool isSimulation(void) {
-	return simulation;
-}
-
-bool isLogging(void) {
-	return logging;
 }

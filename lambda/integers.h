@@ -12,6 +12,9 @@
 #ifndef INTEGERS_H_
 #define INTEGERS_H_
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 /**
  * Divides the given numerator by the given denominator,
  * rounds to the nearest int and returns it.

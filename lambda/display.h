@@ -9,29 +9,41 @@
 #define DISPLAY_H_
 
 /**
- * Cycles through the "menu" (display options).
+ * Cycles through the "menu" (display options). Returns quickly so it can
+ * be called from an ISR.
  */
 void cycleDisplay(void);
 
 /**
  * Updates the measurements, tracks min and max values since last start/reset
- * and displays the selected measurement values.
+ * and updates the display.
  */
 void updateMeas(measurement);
 
 /**
- * Formats the given measurement values and prints them via USART.
+ * Updates the display with the selected measurement values.
  */
-void printMeas(measurement);
+void updateDisplay(void);
 
 /**
- * Formats the given measurement values and displays them on an 16x2 LCD.
+ * Updates the display if an update is pending.
  */
-void displayMeas(measurement, char*);
+void updateDisplayIfRequested(void);
+
+/**
+ * Formats the given measurement values and prints them via USART.
+ */
+void printMeas(measurement meas);
+
+/**
+ * Formats the given measurement values and displays them on an 16x2 LCD along
+ * with the given hint.
+ */
+void displayMeas(measurement meas, char* hint);
 
 /**
  * Displays the given two lines of text.
  */
-void displayText(char*, char*);
+void displayText(char* line0, char* line1);
 
 #endif /* DISPLAY_H_ */

@@ -17,19 +17,19 @@
 #include "display.h"
 #include "alert.h"
 
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
-
 #define MENU_OFF 0
 #define MENU_MIN_VALUES 1
 #define MENU_MAX_VALUES 2
 
 uint8_t position = MENU_OFF;
+bool updatePending = false;
 
+measurement measLatest;
 measurement measMin = {0, 20, 0, 20, 0, 1000};
 measurement measMax = {0, 0, 0, 0, 0, 2000};
 
 void cycleDisplay(void) {
+	updatePending = true;
 	if (isAlertActive()) {
 		// button pressed during alert
 		cancelAlert();
@@ -43,9 +43,8 @@ void cycleDisplay(void) {
 }
 
 void updateMeas(measurement meas) {
-	if (isAlertActive()) {
-		return;
-	}
+	measLatest = meas;
+
 	measMin.tempI = MIN(measMin.tempI, meas.tempI);
 	measMin.tempO = MIN(measMin.tempO, meas.tempO);
 	measMin.lambda = MAX(measMin.lambda, meas.lambda);
@@ -54,12 +53,28 @@ void updateMeas(measurement meas) {
 	measMax.tempO = MAX(measMax.tempO, meas.tempO);
 	measMax.lambda = MIN(measMax.lambda, meas.lambda);
 
+	updateDisplay();
+}
+
+void updateDisplay(void) {
+	if (isAlertActive()) {
+		return;
+	}
+
 	if (position == MENU_MIN_VALUES) {
 		displayMeas(measMin, "|<");
 	} else if (position == MENU_MAX_VALUES) {
 		displayMeas(measMax, ">|");
 	} else {
-		displayMeas(meas, "  ");
+		displayMeas(measLatest, "  ");
+	}
+
+	updatePending = false;
+}
+
+void updateDisplayIfRequested() {
+	if (updatePending) {
+		updateDisplay();
 	}
 }
 

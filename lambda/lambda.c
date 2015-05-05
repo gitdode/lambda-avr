@@ -32,8 +32,8 @@
 #include "command.h"
 
 /**
- * Does initialization and measures, displays and logs the measurements
- * infinitely.
+ * Does initialization, measures, displays and logs the measurements and
+ * runs commands sent via USART.
  */
 int main(void) {
 	initUSART();
@@ -57,15 +57,12 @@ int main(void) {
 			}
 			updateMeas(meas);
 		}
-		if (isButtonPressed()) {
-			// update display immediately
-			updateMeas(meas);
-		}
 		if (isUSARTReceived()) {
 			char data[64];
 			getUSARTData(data, sizeof(data));
-			command(data);
+			runCommand(data);
 		}
+		updateDisplayIfRequested();
 	}
 
 	// never reached

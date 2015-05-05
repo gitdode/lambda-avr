@@ -51,11 +51,6 @@ ISR(USART_RX_vect) {
 }
 
 // TODO doesn't really belong in this source file
-bool isButtonPressed(void) {
-	return buttonPressed;
-}
-
-// TODO doesn't really belong in this source file
 bool isUSARTReceived(void) {
 	return usartReceived;
 }
@@ -116,15 +111,12 @@ void initTimers(void) {
 	// timer clock prescaler/64 = 15.625 kHz overflowing every 16 ms
 	TCCR0B |= (1 << CS01) | (1 << CS00);
 
-	// TODO use timer2 which continues running during SLEEP_MODE_ADC?
-	// toggle pin PB1 on compare match
-	// TCCR1A |= (1 << COM1A0);
-	// CTC mode, TOP OCR1A
+	// Clear Timer on Compare Match mode, TOP OCR1A
 	TCCR1B |= (1 << WGM12);
 	// timer clock prescaler/8
 	TCCR1B |= (1 << CS11);
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// OCR1A = 16;
-	// less noisy 1.8 kHz
+	// 1.8 kHz is less noisy on the small piezo beeper
 	OCR1A = 32;
 }
