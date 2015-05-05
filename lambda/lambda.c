@@ -27,46 +27,9 @@
 #include "adc.h"
 #include "interrupts.h"
 #include "sensors.h"
-#include "integers.h"
 #include "display.h"
 #include "alert.h"
 #include "command.h"
-
-volatile bool buttonPressed = false;
-volatile bool usartReceived = false;
-volatile uint8_t intCount = 0;
-volatile uint8_t dataCount = 0;
-
-char usartData[64];
-
-/**
- * Called every 16 ms.
- */
-ISR(TIMER0_OVF_vect) {
-	intCount++;
-	oscillateBeep();
-	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
-		buttonPressed = true;
-		cycleDisplay();
-	} else if (bit_is_set(PINB, PB0)) {
-		buttonPressed = false;
-	}
-}
-
-/**
- * Called when data was received via USART.
- */
-ISR(USART_RX_vect) {
-	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
-		char data = UDR0;
-		if (dataCount < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
-			usartData[dataCount++] = data;
-		} else {
-			usartData[dataCount++] = 0;
-			usartReceived = true;
-		}
-	}
-}
 
 /**
  * Does initialization and measures, displays and logs the measurements
@@ -87,23 +50,21 @@ int main(void) {
 
 	// main loop
 	while (1) {
-		if (intCount >= 62 && ! isSimulation()) {
-			intCount = 0;
+		if (hasIntCount(62, true) && ! isSimulation()) {
 			meas = measure();
 			if (isLogging()) {
 				printMeas(meas);
 			}
 			updateMeas(meas);
 		}
-		if (buttonPressed) {
+		if (isButtonPressed()) {
 			// update display immediately
 			updateMeas(meas);
 		}
-		if (usartReceived) {
-			command(usartData);
-			memset(usartData, 0, sizeof(usartData));
-			dataCount = 0;
-			usartReceived = false;
+		if (isUSARTReceived()) {
+			char data[64];
+			getUSARTData(data, sizeof(data));
+			command(data);
 		}
 	}
 

@@ -8,6 +8,14 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
+bool isButtonPressed(void);
+
+bool isUSARTReceived(void);
+
+void getUSARTData(char*, uint8_t);
+
+bool hasIntCount(uint8_t count, bool reset);
+
 /**
  * Sets up ports.
  */

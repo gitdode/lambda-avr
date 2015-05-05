@@ -5,9 +5,81 @@
  *      Author: dode@luniks.net
  */
 
+#include <stdbool.h>
+#include <string.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include "interrupts.h"
+#include "sensors.h"
+#include "display.h"
+#include "alert.h"
+
+volatile bool buttonPressed = false;
+volatile bool usartReceived = false;
+volatile uint8_t intCount = 0;
+
+char usartData[64];
+
+/**
+ * Called every 16 ms.
+ */
+ISR(TIMER0_OVF_vect) {
+	intCount++;
+	oscillateBeep();
+	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
+		buttonPressed = true;
+		cycleDisplay();
+	} else if (bit_is_set(PINB, PB0)) {
+		buttonPressed = false;
+	}
+}
+
+/**
+ * Called when data was received via USART.
+ */
+ISR(USART_RX_vect) {
+	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
+		char data = UDR0;
+		uint8_t length = strlen(usartData);
+		if (length < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
+			usartData[length] = data;
+		} else {
+			usartData[length] = '\0';
+			usartReceived = true;
+		}
+	}
+}
+
+// TODO doesn't really belong in this source file
+bool isButtonPressed(void) {
+	return buttonPressed;
+}
+
+// TODO doesn't really belong in this source file
+bool isUSARTReceived(void) {
+	return usartReceived;
+}
+
+// TODO doesn't really belong in this source file
+void getUSARTData(char* data, uint8_t size) {
+	if (size > 0) {
+	    data[0] = '\0';
+	    strncat(data, usartData, size - 1);
+	}
+	memset(usartData, 0, sizeof(usartData));
+	usartReceived = false;
+}
+
+bool hasIntCount(uint8_t count, bool reset) {
+	if (intCount >= count) {
+		if (reset) {
+			intCount = 0;
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
 
 void setupPorts(void) {
 	// pull-up resistor for the mouton
@@ -31,7 +103,7 @@ void initInterrupts(void) {
 	TIMSK0 |= (1 << TOIE0);
 
 	// enable USART RX complete interrupt 0
-	// UCSR0B |= (1 << RXCIE0);
+	UCSR0B |= (1 << RXCIE0);
 	// enable data register empty interrupt 0
 	// UCSR0B |= (1 << UDRIE0);
 
