@@ -12,6 +12,7 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include "adc.h"
+#include "pins.h"
 
 /**
  * Returns to where sleep_mode() was called when ADC conversion is complete.

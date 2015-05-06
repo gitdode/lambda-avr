@@ -17,6 +17,7 @@
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"
+#include "pins.h"
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage

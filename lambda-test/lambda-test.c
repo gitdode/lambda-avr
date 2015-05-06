@@ -29,6 +29,7 @@
 #include "integers.h"
 #include "sensors.h"
 #include "display.h"
+#include "pins.h"
 #include "avrjunit.h"
 
 static const tableEntry testTable[] = {

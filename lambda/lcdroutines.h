@@ -13,19 +13,6 @@
 #endif
  
 ////////////////////////////////////////////////////////////////////////////////
-// Pinbelegung für das LCD, an verwendete Pins anpassen
-// Alle LCD Pins dürfen an beliebige Pins am selben Port angeschlossen werden
-
-#define LCD_PORT PORTD
-#define LCD_DDR	 DDRD
-#define LCD_RS   PD6 // PD7 on diagram
-#define LCD_EN   PD7 // PD6 on diagram
-#define LCD_DB4  PD5 // PD5 on diagram
-#define LCD_DB5  PD2 // PD4 on diagram
-#define LCD_DB6  PD3 // PD3 on diagram
-#define LCD_DB7  PD4 // PD2 on diagram
- 
-////////////////////////////////////////////////////////////////////////////////
 // LCD Ausführungszeiten (MS=Millisekunden, US=Mikrosekunden)
  
 #define LCD_BOOTUP_MS           15

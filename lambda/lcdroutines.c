@@ -5,8 +5,9 @@
 // Die Pinbelegung ist über defines in lcd-routines.h einstellbar
  
 #include <avr/io.h>
-#include "lcdroutines.h"
 #include <util/delay.h>
+#include "lcdroutines.h"
+#include "pins.h"
 
  
 ////////////////////////////////////////////////////////////////////////////////
