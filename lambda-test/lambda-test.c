@@ -94,7 +94,7 @@ bool testInitTimers(void) {
 	assertTrue(bit_is_set(TCCR1B, CS11));
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// assertTrue(OCR1A == 16);
-	// less noisy 1.8 kHz
+	// 1.8 kHz is less noisy on the small piezo beeper
 	assertTrue(OCR1A == 32);
 
 	return true;
@@ -127,12 +127,6 @@ bool testGetVoltage(void) {
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
 	PORTC |= (1 << PC1);
-	// PORTC = 0xff;
-
-	// it seems that sleep_mode() causes some interference when called
-	// immediately after sending data over USART - some buffer not yet empty?
-	// loop_until_bit_is_set(UCSR0A, UDRE0);
-	_delay_ms(10);
 
 	uint16_t mV = getVoltage(PC1);
 
@@ -214,8 +208,6 @@ bool testMeasure(void) {
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
 	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA));
-
-	_delay_ms(10);
 
 	// do many measurements so the averaged voltages are near the measured
 	// voltages (close to AREF)
