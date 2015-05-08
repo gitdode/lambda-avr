@@ -13,5 +13,5 @@
 * Circuit
 - Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
   really so unstable?
-- Verify ADC voltages against voltmeter with other uC (ADC_OFFSET_MV)
 - Put button and beeper pins in pins.h (watch out with OCR1A)
+- Reset min/max measurements when enabling simulation mode
