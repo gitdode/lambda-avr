@@ -35,8 +35,8 @@ static void lcd_out( uint8_t data )
 void lcd_init( void )
 {
   // verwendete Pins auf Ausgang schalten
-  LCD_DDR |= (1 << LCD_EN);
   LCD_DDR |= (1 << LCD_RS);
+  LCD_DDR |= (1 << LCD_EN);
   LCD_DDR |= (1 << LCD_DB4);
   LCD_DDR |= (1 << LCD_DB5);
   LCD_DDR |= (1 << LCD_DB6);
