@@ -1,5 +1,5 @@
 * C
-- What do static inline volatile extern in C do?
+- What do static inline extern in C do?
 - Read up on "global" variables and modules
 - Flexarray? http://en.wikipedia.org/wiki/Sizeof
 - License? (github)
@@ -14,4 +14,3 @@
 - Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
   really so unstable?
 - Put button and beeper pins in pins.h (watch out with OCR1A)
-- Reset min/max measurements when enabling simulation mode

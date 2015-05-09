@@ -108,12 +108,12 @@ void initInterrupts(void) {
 
 void initTimers(void) {
 	// timer in normal mode is default
-	// timer clock prescaler/64 = 15.625 kHz overflowing every 16 ms
+	// timer0 clock prescaler/64 = 15.625 kHz overflowing every 16 ms
 	TCCR0B |= (1 << CS01) | (1 << CS00);
 
-	// Clear Timer on Compare Match mode, TOP OCR1A
+	// timer1 Clear Timer on Compare Match mode, TOP OCR1A
 	TCCR1B |= (1 << WGM12);
-	// timer clock prescaler/8
+	// timer1 clock prescaler/8
 	TCCR1B |= (1 << CS11);
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// OCR1A = 16;

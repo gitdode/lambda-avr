@@ -84,13 +84,9 @@ measurement measure(void) {
 			((lambdaVoltageAvg - 4) >> 3);
 
 	measurement meas;
-	meas.tempIVoltage = (tempIVoltageAvg >> 3);
-	meas.tempOVoltage = (tempOVoltageAvg >> 3);
-	meas.lambdaVoltage = (lambdaVoltageAvg >> 3);
-
-	meas.tempI = toTempI(meas.tempIVoltage);
-	meas.tempO = toTempO(meas.tempOVoltage);
-	meas.lambda = toLambda(meas.lambdaVoltage);
+	meas.tempI = toTempI(tempIVoltageAvg >> 3);
+	meas.tempO = toTempO(tempOVoltageAvg >> 3);
+	meas.lambda = toLambda(lambdaVoltageAvg >> 3);
 
 	return meas;
 }

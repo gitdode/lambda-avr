@@ -15,10 +15,15 @@
 void cycleDisplay(void);
 
 /**
- * Updates the measurements, tracks min and max values since last start/reset
+ * Updates the measurements, tracks max values since last start/reset
  * and updates the display.
  */
 void updateMeas(measurement);
+
+/**
+ * Resets max measurements to initial values.
+ */
+void resetMeas(void);
 
 /**
  * Updates the display with the selected measurement values.
