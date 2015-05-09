@@ -39,11 +39,13 @@ void runCommand(char* data) {
 	}
 	if (strcmp(fields[0], "se") == 0) {
 		// simulation enable
+		resetMeas();
 		simulation = true;
 		beep(1, 2);
 	}
 	else if (strcmp(fields[0], "sd") == 0) {
 		// simulation disable
+		resetMeas();
 		simulation = false;
 		beep(1, 2);
 	}

@@ -30,11 +30,8 @@ typedef struct {
  * Measured values.
  */
 typedef struct {
-	uint16_t tempIVoltage;
 	int16_t tempI;
-	uint16_t tempOVoltage;
 	int16_t tempO;
-	uint16_t lambdaVoltage;
 	int16_t lambda;
 } measurement;
 

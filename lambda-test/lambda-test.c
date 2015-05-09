@@ -88,9 +88,9 @@ bool testInitTimers(void) {
 	uint8_t prescalerBy64 = (1 << CS00) | (1 << CS01);
 	assertTrue((TCCR0B & prescalerBy64) == prescalerBy64);
 
-	// timer1 CTC mode, TOP OCR1A
+	// timer1 Clear Timer on Compare Match mode, TOP OCR1A
 	assertTrue(bit_is_set(TCCR1B, WGM12));
-	// timer clock prescaler/8
+	// timer1 clock prescaler/8
 	assertTrue(bit_is_set(TCCR1B, CS11));
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// assertTrue(OCR1A == 16);
@@ -216,14 +216,11 @@ bool testMeasure(void) {
 		meas = measure();
 	}
 
-	assertTrue(meas.tempIVoltage > 4900);
-	assertTrue(meas.tempOVoltage > 4900);
-	assertTrue(meas.lambdaVoltage > 4900);
-
 	// verify that temperatures and lambda are calculated correctly
-	assertTrue(meas.tempI == toTempI(meas.tempIVoltage));
-	assertTrue(meas.tempO == toTempO(meas.tempOVoltage));
-	assertTrue(meas.lambda == toLambda(meas.lambdaVoltage));
+	// for voltages > 4950 and <= 5000 mV
+	assertTrue(meas.tempI > 990 && meas.tempI <= 1000);
+	assertTrue(meas.tempO == 400);
+	assertTrue(meas.lambda == 997);
 
 	return true;
 }
@@ -327,7 +324,7 @@ bool testUpdateInitial(void) {
 
 // TODO assertions
 bool testUpdate(void) {
-	measurement meas = {0, 0, 0, 0, 0, 0};
+	measurement meas = {0, 0, 0};
 	updateMeas(meas);
 
 	return true;
@@ -335,7 +332,7 @@ bool testUpdate(void) {
 
 // TODO test display() with no display connected?
 bool testDisplay(void) {
-	measurement meas = {0, 0, 0, 0, 0, 0};
+	measurement meas = {0, 0, 0};
 	displayMeas(meas, "  ");
 
 	return true;
