@@ -51,10 +51,6 @@ void updateMeas(measurement meas) {
 }
 
 void resetMeas(void) {
-	measLatest.tempI = 0;
-	measLatest.tempO = 0;
-	measLatest.lambda = 2000;
-
 	measMax.tempI = 0;
 	measMax.tempO = 0;
 	measMax.lambda = 2000;

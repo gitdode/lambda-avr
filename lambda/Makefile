@@ -9,8 +9,6 @@ F_CPU = 1000000
 BAUD = 9600
 ## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
-SIMULATION = 1
-
 ## This is where your main() routine lives 
 MAIN = lambda.c
 
@@ -31,7 +29,7 @@ EXTRA_SOURCE_FILES =
 
 PROGRAMMER_TYPE = avrisp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
+PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM0
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########
