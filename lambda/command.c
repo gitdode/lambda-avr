@@ -14,6 +14,7 @@
 #include "display.h"
 #include "alert.h"
 #include "command.h"
+#include "strings.h"
 
 bool simulation = false;
 bool logging = false;
@@ -28,15 +29,7 @@ bool isLogging(void) {
 
 void runCommand(char* data) {
 	char* fields[8];
-	char* token = strtok(data, " ");
-	uint8_t index = 0;
-	while (token != NULL) {
-		fields[index++] = token;
-		token = strtok(NULL, " ");
-	}
-	for (; index < 8; index++) {
-		fields[index] = '\0';
-	}
+	split(data, " ", fields, 8);
 	if (strcmp(fields[0], "se") == 0) {
 		// simulation enable
 		resetMeas();
@@ -72,3 +65,4 @@ void runCommand(char* data) {
 		updateMeas(meas);
 	}
 }
+

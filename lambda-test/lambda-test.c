@@ -24,13 +24,15 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include "USART.h"
+#include "avrjunit.h"
 #include "interrupts.h"
 #include "adc.h"
 #include "integers.h"
 #include "sensors.h"
 #include "display.h"
 #include "pins.h"
-#include "avrjunit.h"
+#include "command.h"
+#include "strings.h"
 
 static const tableEntry testTable[] = {
 		{10, 10},
@@ -338,6 +340,57 @@ bool testDisplay(void) {
 	return true;
 }
 
+/* Module command */
+
+bool testIsSimulation(void) {
+	assertFalse(isSimulation());
+	runCommand("se");
+	assertTrue(isSimulation());
+	runCommand("sd");
+	assertFalse(isSimulation());
+
+	return true;
+}
+
+bool testIsLogging(void) {
+	assertFalse(isLogging());
+	runCommand("le");
+	assertTrue(isLogging());
+	runCommand("ld");
+	assertFalse(isLogging());
+
+	return true;
+}
+
+/* Module strings */
+
+bool testSplit(void) {
+	char* string = "f1 f2  f3 ";
+	char* fields[4];
+	split(string, " ", fields, 4);
+
+	assertTrue(strcmp("f1", fields[0]) == 0);
+	assertTrue(strcmp("f2", fields[1]) == 0);
+	assertTrue(strcmp("f3", fields[2]) == 0);
+	assertTrue(strcmp("", fields[3]) == 0);
+
+	return true;
+}
+
+/*
+ * Whoa. Trying to write more elements than its size in the fields array
+ * seems to cause the AVR to reset and rerun the tests in an infinite loop.
+ */
+bool testSplitSizeTooSmall(void) {
+	char* string = "f1 f2";
+	char* fields[1];
+	split(string, " ", fields, 1);
+
+	assertTrue(strcmp("f1", fields[0]) == 0);
+
+	return true;
+}
+
 
 // TODO these long function names passed along as strings use a lot of memory
 // use PROGMEM?
@@ -373,7 +426,11 @@ test tests[] = {
 		{"display", "testCycle", testCycle},
 		{"display", "testUpdateInitial", testUpdateInitial},
 		{"display", "testUpdate", testUpdate},
-		{"display", "testDisplay", testDisplay}
+		{"display", "testDisplay", testDisplay},
+		{"command", "testIsSimulation", testIsSimulation},
+		{"command", "testIsLogging", testIsLogging},
+		{"strings", "testSplit", testSplit},
+		{"strings", "testSplitSizeTooSmall", testSplitSizeTooSmall}
 };
 
 int main(void) {
