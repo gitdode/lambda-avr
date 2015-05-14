@@ -86,6 +86,6 @@ int16_t lookupLinInter(uint16_t mV, const tableEntry table[], uint8_t length);
  * For a wood fire, residual oxygen between 5% and 7% (lambda 1.3 and 1.5) is
  * a good value, below is rich and above is lean.
  */
-const char* toInfo(uint16_t lambda);
+char* toInfo(uint16_t lambda);
 
 #endif /* SENSORS_H_ */

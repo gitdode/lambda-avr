@@ -14,11 +14,11 @@
 #include "display.h"
 #include "alert.h"
 
-volatile bool buttonPressed = false;
-volatile bool usartReceived = false;
-volatile uint8_t intCount = 0;
+static volatile bool buttonPressed = false;
+static volatile bool usartReceived = false;
+static volatile uint8_t intCount = 0;
 
-char usartData[64];
+static char usartData[64];
 
 /**
  * Called every 16 ms.
@@ -116,7 +116,7 @@ void initTimers(void) {
 	// timer1 clock prescaler/8
 	TCCR1B |= (1 << CS11);
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
-	// OCR1A = 16;
+	// OCR1A = 15;
 	// 1.8 kHz is less noisy on the small piezo beeper
-	OCR1A = 32;
+	OCR1A = 31;
 }

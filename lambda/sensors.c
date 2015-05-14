@@ -62,9 +62,9 @@ static const tableEntry tempOTable[] = {
 /**
  * Variables holding averaged voltages*8.
  */
-uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
-uint32_t tempIVoltageAvg = 100 << 3; // 20°C
-uint32_t tempOVoltageAvg = 644 << 3; // 20°C
+static uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
+static uint32_t tempIVoltageAvg = 100 << 3; // 20°C
+static uint32_t tempOVoltageAvg = 644 << 3; // 20°C
 
 /**
  * Measures the "input" and "output" temperatures and the lambda value,
@@ -93,6 +93,7 @@ measurement measure(void) {
 
 measurement readMeas(char* fields[]) {
 	measurement meas;
+	// TODO can check if fields[] has 3 elements?
 	meas.tempI  = atoi(fields[0]);
 	meas.tempO  = atoi(fields[1]);
 	meas.lambda = atoi(fields[2]);
@@ -142,7 +143,7 @@ int16_t lookupLinInter(uint16_t mV, const tableEntry table[], uint8_t length) {
 	return value;
 }
 
-const char* toInfo(uint16_t lambda) {
+char* toInfo(uint16_t lambda) {
 	if (lambda > 190) {
 		return LEAN;
 	} else if (lambda > 150 && lambda <= 190) {

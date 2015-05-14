@@ -10,6 +10,7 @@
  */
 
 #include <stdbool.h>
+#include <avr/pgmspace.h>
 
 #ifndef AVRJUNIT_H_
 #define AVRJUNIT_H_
@@ -25,13 +26,19 @@
 #define assertFalse(exp) if (exp) return false
 
 /**
- * A test case with its class, name and pointer to the test function,
+ * Function pointer for test functions taking no parameters and returning
+ * true on success and false on failure.
+ */
+typedef bool (*fptr)(void);
+
+/**
+ * A test case with its class, name and test function pointer,
  * which should return true on success and false on failure.
  */
-typedef struct {
-	char* class;
-	char* name;
-	bool (*test)(void);
+typedef struct PROGMEM {
+	const char* class;
+	const char* name;
+	fptr function;
 } test;
 
 /**
@@ -42,6 +49,6 @@ typedef struct {
  * on the receiving side with a command like:
  * (stty sane; cat > tests.xml) < /dev/ttyUSB0
  */
-void runTests(char* suite, test tests[], uint16_t count);
+void runTests(char* const suite, test const tests[], uint16_t const count);
 
 #endif /* AVRJUNIT_H_ */

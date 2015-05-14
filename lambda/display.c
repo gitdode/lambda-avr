@@ -20,11 +20,35 @@
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
 
-uint8_t position = MENU_OFF;
-bool updatePending = false;
+static uint8_t position = MENU_OFF;
+static bool updatePending = false;
+static measurement measLatest;
+static measurement measMax = {0, 0, 2000};
 
-measurement measLatest;
-measurement measMax = {0, 0, 2000};
+// TODO unused/unnecessary "getter" does not add on program or data memory
+// since only called from test, still a good idea?
+uint8_t getPosition(void) {
+	return position;
+}
+
+/**
+ * Formats the given measurement values and displays them on an 16x2 LCD along
+ * with the given hint.
+ */
+static void displayMeas(measurement meas, char* hint) {
+	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
+	div_t lambdaT = div(lambdax100, 100);
+
+	char line0[17];
+	char line1[17];
+	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
+	snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
+			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
+	lcd_setcursor(0, 1);
+	lcd_string(line0);
+	lcd_setcursor(0, 2);
+	lcd_string(line1);
+}
 
 void cycleDisplay(void) {
 	updatePending = true;
@@ -58,47 +82,24 @@ void resetMeas(void) {
 	updatePending = true;
 }
 
-void updateDisplay(void) {
-	if (isAlertActive()) {
-		return;
-	}
+void updateDisplayIfPending() {
+	if (updatePending && ! isAlertActive()) {
+		updatePending = false;
 
-	updatePending = false;
-
-	if (position == MENU_MAX_VALUES) {
-		displayMeas(measMax, "|>");
-	} else {
-		displayMeas(measLatest, "  ");
+		if (position == MENU_MAX_VALUES) {
+			displayMeas(measMax, "|>");
+		} else {
+			displayMeas(measLatest, "  ");
+		}
 	}
 }
 
-void updateDisplayIfRequested() {
-	if (updatePending) {
-		updateDisplay();
-	}
-}
-
-void printMeas(measurement meas) {
+void logMeas(measurement meas) {
 	char log[64];
 	snprintf(log, sizeof(log),
 			"Ti %3d C - To %3d C - L %4u \r\n",
 			meas.tempI, meas.tempO, meas.lambda);
 	printString(log);
-}
-
-void displayMeas(measurement meas, char* hint) {
-	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
-	div_t lambdaT = div(lambdax100, 100);
-
-	char line0[17];
-	char line1[17];
-	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
-			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
-	lcd_setcursor(0, 1);
-	lcd_string(line0);
-	lcd_setcursor(0, 2);
-	lcd_string(line1);
 }
 
 void displayText(char* line0, char* line1) {

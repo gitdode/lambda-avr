@@ -21,6 +21,7 @@
 #include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include "USART.h"
@@ -96,31 +97,14 @@ bool testIsLogging(void) {
 
 /* Module display */
 
-// TODO assertions
 bool testCycle(void) {
+	// extern uint8_t position;
+
+	assertTrue(getPosition() == 0);
 	cycleDisplay();
-
-	return true;
-}
-
-// TODO assertions
-bool testUpdateInitial(void) {
-
-	return true;
-}
-
-// TODO assertions
-bool testUpdate(void) {
-	measurement meas = {0, 0, 0};
-	updateMeas(meas);
-
-	return true;
-}
-
-// TODO test display() with no display connected?
-bool testDisplay(void) {
-	measurement meas = {0, 0, 0};
-	displayMeas(meas, "  ");
+	assertTrue(getPosition() == 1);
+	cycleDisplay();
+	assertTrue(getPosition() == 0);
 
 	return true;
 }
@@ -280,6 +264,17 @@ bool testMeasure(void) {
 	return true;
 }
 
+bool testReadMeas(void) {
+	char* fields[] = {"1", "2", "3"};
+
+	measurement meas = readMeas(fields);
+	assertTrue(meas.tempI == 1);
+	assertTrue(meas.tempO == 2);
+	assertTrue(meas.lambda == 3);
+
+	return true;
+}
+
 bool testToLambdaValue(void) {
 	int16_t lambda = toLambda(132);
 
@@ -391,46 +386,84 @@ bool testSplitSizeTooSmall(void) {
 	return true;
 }
 
+const char adc_P[] PROGMEM = "adc";
+const char command_P[] PROGMEM = "command";
+const char display_P[] PROGMEM = "display";
+const char integers_P[] PROGMEM = "integers";
+const char interrupts_P[] PROGMEM = "interrupts";
+const char sensors_P[] PROGMEM = "sensors";
+const char strings_P[] PROGMEM = "strings";
 
-// TODO these long function names passed along as strings use a lot of memory
-// use PROGMEM?
-test tests[] = {
-		{"adc", "testSetupADC", testSetupADC},
-		{"adc", "testGetVoltage", testGetVoltage},
-		{"command", "testIsSimulation", testIsSimulation},
-		{"command", "testIsLogging", testIsLogging},
-		{"display", "testCycle", testCycle},
-		{"display", "testUpdateInitial", testUpdateInitial},
-		{"display", "testUpdate", testUpdate},
-		{"display", "testDisplay", testDisplay},
-		{"integers", "testDivRoundNearest", testDivRoundNearest},
-		{"integers", "testDivRoundNearestNumNeg", testDivRoundNearestNumNeg},
-		{"integers", "testDivRoundNearestDenNeg", testDivRoundNearestDenNeg},
-		{"integers", "testDivRoundNearestBothNeg", testDivRoundNearestBothNeg},
-		{"integers", "testDivRoundUp", testDivRoundUp},
-		{"integers", "testDivRoundUpNumNeg", testDivRoundUpNumNeg},
-		{"integers", "testDivRoundUpDenNeg", testDivRoundUpDenNeg},
-		{"integers", "testDivRoundUpBothNeg", testDivRoundUpBothNeg},
-		{"interrupts", "testSetupPorts", testSetupPorts},
-		{"interrupts", "testSetupSleepMode", testSetupSleepMode},
-		{"interrupts", "testInitInterrupts", testInitInterrupts},
-		{"interrupts", "testInitTimers", testInitInterrupts},
-		{"sensors", "testMeasure", testMeasure},
-		{"sensors", "testToLambdaValue", testToLambdaValue},
-		{"sensors", "testToLambdaInter", testToLambdaInter},
-		{"sensors", "testToTempI", testToTempI},
-		{"sensors", "testToTempOValue", testToTempOValue},
-		{"sensors", "testToTempOInter", testToTempOInter},
-		{"sensors", "testLookupLinInterValue", testLookupLinInterValue},
-		{"sensors", "testLookupLinInterInter", testLookupLinInterInter},
-		{"sensors", "testLookupLinInterBelow", testLookupLinInterBelow},
-		{"sensors", "testLookupLinInterAbove", testLookupLinInterAbove},
-		{"sensors", "testToInfoLean", testToInfoLean},
-		{"sensors", "testToInfoOkay", testToInfoOkay},
-		{"sensors", "testToInfoIdeal", testToInfoIdeal},
-		{"sensors", "testToInfoRich", testToInfoRich},
-		{"strings", "testSplit", testSplit},
-		{"strings", "testSplitSizeTooSmall", testSplitSizeTooSmall}
+const char t01_P[] PROGMEM = "testSetupADC";
+const char t02_P[] PROGMEM = "testGetVoltage";
+const char t03_P[] PROGMEM = "testIsSimulation";
+const char t04_P[] PROGMEM = "testIsLogging";
+const char t05_P[] PROGMEM = "testCycle";
+const char t06_P[] PROGMEM = "testDivRoundNearest";
+const char t07_P[] PROGMEM = "testDivRoundNearestNumNeg";
+const char t08_P[] PROGMEM = "testDivRoundNearestDenNeg";
+const char t09_P[] PROGMEM = "testDivRoundNearestBothNeg";
+const char t10_P[] PROGMEM = "testDivRoundUp";
+const char t11_P[] PROGMEM = "testDivRoundUpNumNeg";
+const char t12_P[] PROGMEM = "testDivRoundUpDenNeg";
+const char t13_P[] PROGMEM = "testDivRoundUpBothNeg";
+const char t14_P[] PROGMEM = "testSetupPorts";
+const char t15_P[] PROGMEM = "testSetupSleepMode";
+const char t16_P[] PROGMEM = "testInitInterrupts";
+const char t17_P[] PROGMEM = "testInitInterrupts";
+const char t18_P[] PROGMEM = "testMeasure";
+const char t19_P[] PROGMEM = "testReadMeas";
+const char t20_P[] PROGMEM = "testToLambdaValue";
+const char t21_P[] PROGMEM = "testToLambdaInter";
+const char t22_P[] PROGMEM = "testToTempI";
+const char t23_P[] PROGMEM = "testToTempOValue";
+const char t24_P[] PROGMEM = "testToTempOInter";
+const char t25_P[] PROGMEM = "testLookupLinInterValue";
+const char t26_P[] PROGMEM = "testLookupLinInterInter";
+const char t27_P[] PROGMEM = "testLookupLinInterBelow";
+const char t28_P[] PROGMEM = "testLookupLinInterAbove";
+const char t29_P[] PROGMEM = "testToInfoLean";
+const char t30_P[] PROGMEM = "testToInfoOkay";
+const char t31_P[] PROGMEM = "testToInfoIdeal";
+const char t32_P[] PROGMEM = "testToInfoRich";
+const char t33_P[] PROGMEM = "testSplit";
+const char t34_P[] PROGMEM = "testSplitSizeTooSmall";
+
+test const tests[] = { // PROGMEM?
+		{adc_P, 		t01_P, testSetupADC},
+		{adc_P, 		t02_P, testGetVoltage},
+		{command_P, 	t03_P, testIsSimulation},
+		{command_P, 	t04_P, testIsLogging},
+		{display_P, 	t05_P, testCycle},
+		{integers_P, 	t06_P, testDivRoundNearest},
+		{integers_P, 	t07_P, testDivRoundNearestNumNeg},
+		{integers_P, 	t08_P, testDivRoundNearestDenNeg},
+		{integers_P, 	t09_P, testDivRoundNearestBothNeg},
+		{integers_P, 	t10_P, testDivRoundUp},
+		{integers_P, 	t11_P, testDivRoundUpNumNeg},
+		{integers_P, 	t12_P, testDivRoundUpDenNeg},
+		{integers_P, 	t13_P, testDivRoundUpBothNeg},
+		{interrupts_P, 	t14_P, testSetupPorts},
+		{interrupts_P, 	t15_P, testSetupSleepMode},
+		{interrupts_P, 	t16_P, testInitInterrupts},
+		{interrupts_P, 	t17_P, testInitInterrupts},
+		{sensors_P, 	t18_P, testMeasure},
+		{sensors_P, 	t19_P, testReadMeas},
+		{sensors_P, 	t20_P, testToLambdaValue},
+		{sensors_P, 	t21_P, testToLambdaInter},
+		{sensors_P, 	t22_P, testToTempI},
+		{sensors_P, 	t23_P, testToTempOValue},
+		{sensors_P, 	t24_P, testToTempOInter},
+		{sensors_P, 	t25_P, testLookupLinInterValue},
+		{sensors_P, 	t26_P, testLookupLinInterInter},
+		{sensors_P, 	t27_P, testLookupLinInterBelow},
+		{sensors_P, 	t28_P, testLookupLinInterAbove},
+		{sensors_P, 	t29_P, testToInfoLean},
+		{sensors_P, 	t30_P, testToInfoOkay},
+		{sensors_P, 	t31_P, testToInfoIdeal},
+		{sensors_P, 	t32_P, testToInfoRich},
+		{strings_P, 	t33_P, testSplit},
+		{strings_P, 	t34_P, testSplitSizeTooSmall}
 };
 
 int main(void) {

@@ -11,10 +11,11 @@
  */
 
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include "USART.h"
 #include "avrjunit.h"
 
-void runTests(char* suite, test tests[], uint16_t count) {
+void runTests(char* const suite, test const tests[], uint16_t const count) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	char tsbuf[128];
 	snprintf(tsbuf, sizeof(tsbuf),
@@ -23,12 +24,17 @@ void runTests(char* suite, test tests[], uint16_t count) {
 	printString(tsbuf);
 
 	for (uint16_t i = 0; i < count; i++) {
-		int result = (*tests[i].test)();
+		char cbuf[24];
+		char nbuf[64];
 		char tcbuf[128];
+		// TODO use strncat (macro?)
+		strcpy_P(cbuf, (const char*)pgm_read_word(&(tests[i].class)));
+		strcpy_P(nbuf, (const char*)pgm_read_word(&(tests[i].name)));
 		snprintf(tcbuf, sizeof(tcbuf),
-				"<testcase classname=\"%s\" name=\"%s\">\n",
-				tests[i].class, tests[i].name);
+				"<testcase classname=\"%s\" name=\"%s\">\n", cbuf, nbuf);
 		printString(tcbuf);
+		fptr function = (fptr)pgm_read_word(&tests[i].function);
+		bool result = function();
 		if (! result) {
 			// failure
 			printString("<failure type=\"failure\">failed</failure>\n");

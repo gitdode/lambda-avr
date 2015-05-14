@@ -53,7 +53,7 @@ int main(void) {
 		if (hasIntCount(62, true) && ! isSimulation()) {
 			meas = measure();
 			if (isLogging()) {
-				printMeas(meas);
+				logMeas(meas);
 			}
 			updateMeas(meas);
 		}
@@ -62,7 +62,7 @@ int main(void) {
 			getUSARTData(data, sizeof(data));
 			runCommand(data);
 		}
-		updateDisplayIfRequested();
+		updateDisplayIfPending();
 	}
 
 	// never reached

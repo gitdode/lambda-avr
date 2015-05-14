@@ -16,8 +16,8 @@
 #include "command.h"
 #include "strings.h"
 
-bool simulation = false;
-bool logging = false;
+static bool simulation = false;
+static bool logging = false;
 
 bool isSimulation(void) {
 	return simulation;
