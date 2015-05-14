@@ -23,16 +23,10 @@
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
 
-static uint8_t position = MENU_OFF;
-static bool updatePending = false;
-static Measurement measLatest;
-static Measurement measMax = {0, 0, 2000};
-
-// TODO unused/unnecessary "getter" does not add on program or data memory
-// since only called from test, still a good idea?
-uint8_t getPosition(void) {
-	return position;
-}
+uint8_t position = MENU_OFF;
+bool updatePending = false;
+Measurement measLatest = {0, 0, 0};
+Measurement measMax = {0, 0, 2000};
 
 /**
  * Formats the given measurement values and displays them on an 16x2 LCD along

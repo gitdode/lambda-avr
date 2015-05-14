@@ -45,7 +45,7 @@ Measurement measure(void);
  * a burnoff with data logged during real burnoffs. The voltages are not used,
  * the space separated fields are tempI, tempO and lambda.
  */
-Measurement readMeas(char* const usartData[]);
+Measurement readMeas(char* const usartData[], size_t size);
 
 /**
  * Returns the temperature for the given voltage of a type K thermocouple
@@ -78,7 +78,7 @@ int16_t toLambda(uint16_t mV);
  * Thanks to http://stackoverflow.com/a/7091629/709426 and
  * http://en.wikipedia.org/wiki/Linear_interpolation
  */
-int16_t lookupLinInter(uint16_t mV, TableEntry const table[], uint8_t length);
+int16_t lookupLinInter(uint16_t mV, TableEntry const table[], size_t length);
 
 /**
  * Returns a descriptive term such as "Lean" for the given lambda value x1000.

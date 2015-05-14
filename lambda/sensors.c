@@ -90,9 +90,11 @@ Measurement measure(void) {
 	return meas;
 }
 
-Measurement readMeas(char* const fields[]) {
+Measurement readMeas(char* const fields[], size_t const size) {
 	Measurement meas;
-	// TODO can check if fields[] has 3 elements?
+	if (size < 3) {
+		return meas;
+	}
 	meas.tempI  = atoi(fields[0]);
 	meas.tempO  = atoi(fields[1]);
 	meas.lambda = atoi(fields[2]);
@@ -107,29 +109,29 @@ int16_t toTempI(uint16_t const mV) {
 }
 
 int16_t toTempO(uint16_t const mV) {
-	uint8_t length = sizeof(tempOTable) / sizeof(tempOTable[0]);
-	int16_t temp = lookupLinInter(mV, tempOTable, length);
+	size_t size = sizeof(tempOTable) / sizeof(tempOTable[0]);
+	int16_t temp = lookupLinInter(mV, tempOTable, size);
 
 	return temp;
 }
 
 int16_t toLambda(uint16_t const mV) {
-	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
-	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
+	size_t size = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
+	int16_t lambda = lookupLinInter(mV, lambdaTable, size);
 
 	return lambda;
 }
 
 int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
-		uint8_t const length) {
+		size_t const size) {
 	if (mV < table[0].mV) {
 		return table[0].value;
-	} else if (mV > table[length - 1].mV) {
-		return table[length - 1].value;
+	} else if (mV > table[size - 1].mV) {
+		return table[size - 1].value;
 	}
 
 	uint8_t i = 0;
-	for (; i < length - 1; i++) {
+	for (; i < size - 1; i++) {
 		if (table[i + 1].mV > mV) {
 			break;
 		}

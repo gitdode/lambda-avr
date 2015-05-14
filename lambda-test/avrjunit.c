@@ -14,7 +14,7 @@
 #include "USART.h"
 #include "avrjunit.h"
 
-void runTests(char* const suite, TestCase const tests[], uint16_t const count) {
+void runTests(char* const suite, TestCase const tests[], size_t const count) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	char tsbuf[128];
 	snprintf(tsbuf, sizeof(tsbuf),

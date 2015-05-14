@@ -43,7 +43,7 @@ ISR(TIMER0_OVF_vect) {
 ISR(USART_RX_vect) {
 	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
 		char data = UDR0;
-		uint8_t length = strlen(usartData);
+		size_t length = strlen(usartData);
 		if (length < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
 			usartData[length] = data;
 		} else {
@@ -59,7 +59,7 @@ bool isUSARTReceived(void) {
 }
 
 // TODO doesn't really belong in this source file
-void getUSARTData(char* const data, uint8_t const size) {
+void getUSARTData(char* const data, size_t const size) {
 	if (size > 0) {
 	    data[0] = '\0';
 	    strncat(data, usartData, size - 1);

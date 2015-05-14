@@ -20,7 +20,7 @@ bool isUSARTReceived(void);
  * Appends the data received via USART to the given string with the given
  * length.
  */
-void getUSARTData(char* data, uint8_t length);
+void getUSARTData(char* data, size_t length);
 
 /**
  * Returns true if the current timer interrupt count is equal or greater to

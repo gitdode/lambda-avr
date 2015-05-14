@@ -34,7 +34,7 @@ typedef bool (*FuncPtr)(void);
  * A test case with its class, name and test function pointer,
  * which should return true on success and false on failure.
  * The strings class and name are expected to be stored in program space
- * like so: const char class[] PROGMEM = "class";
+ * like so: const char testName[] PROGMEM = "testName";
  */
 typedef struct PROGMEM {
 	PGM_P class;

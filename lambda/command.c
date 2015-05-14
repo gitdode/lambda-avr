@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include "sensors.h"
 #include "display.h"
@@ -31,40 +32,43 @@ bool isLogging(void) {
 }
 
 void runCommand(char* const data) {
-	char* fields[8];
-	split(data, " ", fields, 8);
-	if (strcmp(fields[0], "se") == 0) {
+	size_t fieldCount = 8;
+	char* fields[fieldCount];
+	split(data, " ", fields, fieldCount);
+	if (strcmp_P(fields[0], PSTR("se")) == 0) {
 		// simulation enable
 		resetMeas();
 		simulation = true;
 		beep(1, 2);
 	}
-	else if (strcmp(fields[0], "sd") == 0) {
+	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
 		// simulation disable
 		resetMeas();
 		simulation = false;
 		beep(1, 2);
 	}
-	else if (strcmp(fields[0], "le") == 0) {
+	else if (strcmp_P(fields[0], PSTR("le")) == 0) {
 		// logging enable
 		logging = true;
 		beep(1, 2);
 	}
-	else if (strcmp(fields[0], "ld") == 0) {
+	else if (strcmp_P(fields[0], PSTR("ld")) == 0) {
 		// logging disable
 		logging = false;
 		beep(1, 2);
 	}
-	else if (strcmp(fields[0], "cm") == 0) {
+	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {
 		// cycle menu
 		cycleDisplay();
 	}
-	else if (strcmp(fields[0], "ta") == 0) {
+	else if (strcmp_P(fields[0], PSTR("ta")) == 0) {
 		// test alert
-		alert(1, 20, "Beep!", fields[1]);
+		char buf[16];
+		strcpy_P(buf, PSTR("Beep Beep Beep!"));
+		alert(3, 10, buf, fields[1]);
 	}
 	else if (simulation) {
-		Measurement meas = readMeas(fields);
+		Measurement meas = readMeas(fields, fieldCount);
 		updateMeas(meas);
 	}
 }

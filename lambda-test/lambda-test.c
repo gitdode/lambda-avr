@@ -28,6 +28,7 @@
 #include "avrjunit.h"
 #include "interrupts.h"
 #include "adc.h"
+#include "alert.h"
 #include "integers.h"
 #include "sensors.h"
 #include "display.h"
@@ -98,13 +99,129 @@ bool testIsLogging(void) {
 /* Module display */
 
 bool testCycle(void) {
-	// extern uint8_t position;
+	extern uint8_t position;
+	extern bool updatePending;
 
-	assertTrue(getPosition() == 0);
+	extern uint8_t beepCount;
+	extern uint16_t beepLength;
+
+	updatePending = false;
+
+	assertTrue(position == 0);
+	assertFalse(updatePending);
+
 	cycleDisplay();
-	assertTrue(getPosition() == 1);
+	assertTrue(position == 1);
+	assertTrue(updatePending);
+	assertTrue(beepCount == 1);
+	assertTrue(beepLength == 2);
+
 	cycleDisplay();
-	assertTrue(getPosition() == 0);
+	assertTrue(position == 0);
+
+	return true;
+}
+
+bool testCycleCancelAlert(void) {
+	extern uint8_t position;
+	extern bool updatePending;
+
+	updatePending = false;
+
+	alert(1, 1, "", "");
+	assertTrue(isAlertActive());
+
+	cycleDisplay();
+	assertFalse(isAlertActive());
+	assertTrue(position == 0);
+	assertTrue(updatePending);
+
+	return true;
+}
+
+bool testUpdateMeas(void) {
+	extern bool updatePending;
+	extern Measurement measLatest;
+	extern Measurement measMax; // = {0, 0, 2000};
+
+	updatePending = false;
+
+	// initial measurements
+	assertTrue(measLatest.tempI == 0);
+	assertTrue(measLatest.tempO == 0);
+	assertTrue(measLatest.lambda == 0);
+	// initial max measurements
+	assertTrue(measMax.tempI == 0);
+	assertTrue(measMax.tempO == 0);
+	assertTrue(measMax.lambda == 2000);
+
+	Measurement meas1 = {1, 2, 3};
+	updateMeas(meas1);
+	// updated measurements
+	assertTrue(measLatest.tempI == 1);
+	assertTrue(measLatest.tempO == 2);
+	assertTrue(measLatest.lambda == 3);
+	// updated max measurements
+	assertTrue(measMax.tempI == 1);
+	assertTrue(measMax.tempO == 2);
+	assertTrue(measMax.lambda == 3);
+	assertTrue(updatePending);
+
+	Measurement meas2 = {0, 0, 10};
+	updateMeas(meas2);
+	// updated max measurements
+	assertTrue(measMax.tempI == 1);
+	assertTrue(measMax.tempO == 2);
+	assertTrue(measMax.lambda == 3);
+
+	return true;
+}
+
+bool testResetMeas(void) {
+	extern bool updatePending;
+	extern Measurement measLatest;
+	extern Measurement measMax;
+
+	updatePending = false;
+
+	resetMeas();
+	// reset max measurements
+	assertTrue(measMax.tempI == 0);
+	assertTrue(measMax.tempO == 0);
+	assertTrue(measMax.lambda == 2000);
+	assertTrue(updatePending);
+
+	return true;
+}
+
+bool testUpdateDisplayIfPending(void) {
+	extern bool updatePending;
+
+	updatePending = true;
+
+	updateDisplayIfPending();
+	assertFalse(updatePending);
+
+	return true;
+}
+
+bool testUpdateDisplayIfPendingAlertActive(void) {
+	extern bool updatePending;
+
+	updatePending = true;
+	alert(1, 1, "", "");
+	assertTrue(isAlertActive());
+
+	// update should be skipped if alert is active
+	updateDisplayIfPending();
+	assertTrue(updatePending);
+
+	return true;
+}
+
+bool testDisplayText(void) {
+	// won't actually display anything
+	displayText("testDisplayText", "testDisplayTextLineTooLong");
 
 	return true;
 }
@@ -267,10 +384,21 @@ bool testMeasure(void) {
 bool testReadMeas(void) {
 	char* fields[] = {"1", "2", "3"};
 
-	Measurement meas = readMeas(fields);
+	Measurement meas = readMeas(fields, 3);
 	assertTrue(meas.tempI == 1);
 	assertTrue(meas.tempO == 2);
 	assertTrue(meas.lambda == 3);
+
+	return true;
+}
+
+bool testReadMeasTooFewFields(void) {
+	char* fields[] = {"1"};
+
+	Measurement meas = readMeas(fields, 1);
+	assertTrue(meas.tempI == 0);
+	assertTrue(meas.tempO == 0);
+	assertTrue(meas.lambda == 0);
 
 	return true;
 }
@@ -372,10 +500,6 @@ bool testSplit(void) {
 	return true;
 }
 
-/*
- * Whoa. Trying to write more elements than its size in the fields array
- * seems to cause the AVR to reset and rerun the tests in an infinite loop.
- */
 bool testSplitSizeTooSmall(void) {
 	char string[] = "f1 f2";
 	char* fields[1];
@@ -396,83 +520,97 @@ const char sensors_P[] PROGMEM = "sensors";
 const char strings_P[] PROGMEM = "strings";
 
 /* Test names */
-const char t01_P[] PROGMEM = "testSetupADC";
-const char t02_P[] PROGMEM = "testGetVoltage";
-const char t03_P[] PROGMEM = "testIsSimulation";
-const char t04_P[] PROGMEM = "testIsLogging";
-const char t05_P[] PROGMEM = "testCycle";
-const char t06_P[] PROGMEM = "testDivRoundNearest";
-const char t07_P[] PROGMEM = "testDivRoundNearestNumNeg";
-const char t08_P[] PROGMEM = "testDivRoundNearestDenNeg";
-const char t09_P[] PROGMEM = "testDivRoundNearestBothNeg";
-const char t10_P[] PROGMEM = "testDivRoundUp";
-const char t11_P[] PROGMEM = "testDivRoundUpNumNeg";
-const char t12_P[] PROGMEM = "testDivRoundUpDenNeg";
-const char t13_P[] PROGMEM = "testDivRoundUpBothNeg";
-const char t14_P[] PROGMEM = "testSetupPorts";
-const char t15_P[] PROGMEM = "testSetupSleepMode";
-const char t16_P[] PROGMEM = "testInitInterrupts";
-const char t17_P[] PROGMEM = "testInitTimers";
-const char t18_P[] PROGMEM = "testMeasure";
-const char t19_P[] PROGMEM = "testReadMeas";
-const char t20_P[] PROGMEM = "testToLambdaValue";
-const char t21_P[] PROGMEM = "testToLambdaInter";
-const char t22_P[] PROGMEM = "testToTempI";
-const char t23_P[] PROGMEM = "testToTempOValue";
-const char t24_P[] PROGMEM = "testToTempOInter";
-const char t25_P[] PROGMEM = "testLookupLinInterValue";
-const char t26_P[] PROGMEM = "testLookupLinInterInter";
-const char t27_P[] PROGMEM = "testLookupLinInterBelow";
-const char t28_P[] PROGMEM = "testLookupLinInterAbove";
-const char t29_P[] PROGMEM = "testToInfoLean";
-const char t30_P[] PROGMEM = "testToInfoOkay";
-const char t31_P[] PROGMEM = "testToInfoIdeal";
-const char t32_P[] PROGMEM = "testToInfoRich";
-const char t33_P[] PROGMEM = "testSplit";
-const char t34_P[] PROGMEM = "testSplitSizeTooSmall";
+const char testSetupADC_P[] PROGMEM = "testSetupADC";
+const char testGetVoltage_P[] PROGMEM = "testGetVoltage";
+const char testIsSimulation_P[] PROGMEM = "testIsSimulation";
+const char testIsLogging_P[] PROGMEM = "testIsLogging";
+const char testCycle_P[] PROGMEM = "testCycle";
+const char testCycleCancelAlert_P[] PROGMEM = "testCycleCancelAlert";
+const char testUpdateMeas_P[] PROGMEM = "testUpdateMeas";
+const char testResetMeas_P[] PROGMEM = "testResetMeas";
+const char testUpdateDisplayIfPending_P[] PROGMEM = "testUpdateDisplayIfPending";
+const char testUpdateDisplayIfPendingAlertActive_P[] PROGMEM = "testUpdateDisplayIfPendingAlertActive";
+const char testDisplayText_P[] PROGMEM = "testDisplayText";
+const char testDivRoundNearest_P[] PROGMEM = "testDivRoundNearest";
+const char testDivRoundNearestNumNeg_P[] PROGMEM = "testDivRoundNearestNumNeg";
+const char testDivRoundNearestDenNeg_P[] PROGMEM = "testDivRoundNearestDenNeg";
+const char testDivRoundNearestBothNeg_P[] PROGMEM = "testDivRoundNearestBothNeg";
+const char testDivRoundUp_P[] PROGMEM = "testDivRoundUp";
+const char testDivRoundUpNumNeg_P[] PROGMEM = "testDivRoundUpNumNeg";
+const char testDivRoundUpDenNeg_P[] PROGMEM = "testDivRoundUpDenNeg";
+const char testDivRoundUpBothNeg_P[] PROGMEM = "testDivRoundUpBothNeg";
+const char testSetupPorts_P[] PROGMEM = "testSetupPorts";
+const char testSetupSleepMode_P[] PROGMEM = "testSetupSleepMode";
+const char testInitInterrupts_P[] PROGMEM = "testInitInterrupts";
+const char testInitTimers_P[] PROGMEM = "testInitTimers";
+const char testMeasure_P[] PROGMEM = "testMeasure";
+const char testReadMeas_P[] PROGMEM = "testReadMeas";
+const char testReadMeasTooFewFields_P[] PROGMEM = "testReadMeasTooFewFields";
+const char testToLambdaValue_P[] PROGMEM = "testToLambdaValue";
+const char testToLambdaInter_P[] PROGMEM = "testToLambdaInter";
+const char testToTempI_P[] PROGMEM = "testToTempI";
+const char testToTempOValue_P[] PROGMEM = "testToTempOValue";
+const char testToTempOInter_P[] PROGMEM = "testToTempOInter";
+const char testLookupLinInterValue_P[] PROGMEM = "testLookupLinInterValue";
+const char testLookupLinInterInter_P[] PROGMEM = "testLookupLinInterInter";
+const char testLookupLinInterBelow_P[] PROGMEM = "testLookupLinInterBelow";
+const char testLookupLinInterAbove_P[] PROGMEM = "testLookupLinInterAbove";
+const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
+const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
+const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
+const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
+const char testSplit_P[] PROGMEM = "testSplit";
+const char testSplitSizeTooSmall_P[] PROGMEM = "testSplitSizeTooSmall";
 
 /* Tests */
 TestCase const tests[] = {
-		{adc_P, 		t01_P, testSetupADC},
-		{adc_P, 		t02_P, testGetVoltage},
-		{command_P, 	t03_P, testIsSimulation},
-		{command_P, 	t04_P, testIsLogging},
-		{display_P, 	t05_P, testCycle},
-		{integers_P, 	t06_P, testDivRoundNearest},
-		{integers_P, 	t07_P, testDivRoundNearestNumNeg},
-		{integers_P, 	t08_P, testDivRoundNearestDenNeg},
-		{integers_P, 	t09_P, testDivRoundNearestBothNeg},
-		{integers_P, 	t10_P, testDivRoundUp},
-		{integers_P, 	t11_P, testDivRoundUpNumNeg},
-		{integers_P, 	t12_P, testDivRoundUpDenNeg},
-		{integers_P, 	t13_P, testDivRoundUpBothNeg},
-		{interrupts_P, 	t14_P, testSetupPorts},
-		{interrupts_P, 	t15_P, testSetupSleepMode},
-		{interrupts_P, 	t16_P, testInitInterrupts},
-		{interrupts_P, 	t17_P, testInitTimers},
-		{sensors_P, 	t18_P, testMeasure},
-		{sensors_P, 	t19_P, testReadMeas},
-		{sensors_P, 	t20_P, testToLambdaValue},
-		{sensors_P, 	t21_P, testToLambdaInter},
-		{sensors_P, 	t22_P, testToTempI},
-		{sensors_P, 	t23_P, testToTempOValue},
-		{sensors_P, 	t24_P, testToTempOInter},
-		{sensors_P, 	t25_P, testLookupLinInterValue},
-		{sensors_P, 	t26_P, testLookupLinInterInter},
-		{sensors_P, 	t27_P, testLookupLinInterBelow},
-		{sensors_P, 	t28_P, testLookupLinInterAbove},
-		{sensors_P, 	t29_P, testToInfoLean},
-		{sensors_P, 	t30_P, testToInfoOkay},
-		{sensors_P, 	t31_P, testToInfoIdeal},
-		{sensors_P, 	t32_P, testToInfoRich},
-		{strings_P, 	t33_P, testSplit},
-		{strings_P, 	t34_P, testSplitSizeTooSmall}
+		{adc_P, testSetupADC_P, testSetupADC},
+		{adc_P, testGetVoltage_P, testGetVoltage},
+		{command_P, testIsSimulation_P, testIsSimulation},
+		{command_P, testIsLogging_P, testIsLogging},
+		{display_P, testCycle_P, testCycle},
+		{display_P, testCycleCancelAlert_P, testCycleCancelAlert},
+		{display_P, testUpdateMeas_P, testUpdateMeas},
+		{display_P, testResetMeas_P, testResetMeas},
+		{display_P, testUpdateDisplayIfPending_P, testUpdateDisplayIfPending},
+		{display_P, testUpdateDisplayIfPendingAlertActive_P, testUpdateDisplayIfPendingAlertActive},
+		{display_P, testDisplayText_P, testDisplayText},
+		{integers_P, testDivRoundNearest_P, testDivRoundNearest},
+		{integers_P, testDivRoundNearestNumNeg_P, testDivRoundNearestNumNeg},
+		{integers_P, testDivRoundNearestDenNeg_P, testDivRoundNearestDenNeg},
+		{integers_P, testDivRoundNearestBothNeg_P, testDivRoundNearestBothNeg},
+		{integers_P, testDivRoundUp_P, testDivRoundUp},
+		{integers_P, testDivRoundUpNumNeg_P, testDivRoundUpNumNeg},
+		{integers_P, testDivRoundUpDenNeg_P, testDivRoundUpDenNeg},
+		{integers_P, testDivRoundUpBothNeg_P, testDivRoundUpBothNeg},
+		{interrupts_P, testSetupPorts_P, testSetupPorts},
+		{interrupts_P, testSetupSleepMode_P, testSetupSleepMode},
+		{interrupts_P, testInitInterrupts_P, testInitInterrupts},
+		{interrupts_P, testInitTimers_P, testInitTimers},
+		{sensors_P, testMeasure_P, testMeasure},
+		{sensors_P, testReadMeas_P, testReadMeas},
+		{sensors_P, testReadMeasTooFewFields_P, testReadMeasTooFewFields},
+		{sensors_P, testToLambdaValue_P, testToLambdaValue},
+		{sensors_P, testToLambdaInter_P, testToLambdaInter},
+		{sensors_P, testToTempI_P, testToTempI},
+		{sensors_P, testToTempOValue_P, testToTempOValue},
+		{sensors_P, testToTempOInter_P, testToTempOInter},
+		{sensors_P, testLookupLinInterValue_P, testLookupLinInterValue},
+		{sensors_P, testLookupLinInterInter_P, testLookupLinInterInter},
+		{sensors_P, testLookupLinInterBelow_P, testLookupLinInterBelow},
+		{sensors_P, testLookupLinInterAbove_P, testLookupLinInterAbove},
+		{sensors_P, testToInfoLean_P, testToInfoLean},
+		{sensors_P, testToInfoOkay_P, testToInfoOkay},
+		{sensors_P, testToInfoIdeal_P, testToInfoIdeal},
+		{sensors_P, testToInfoRich_P, testToInfoRich},
+		{strings_P, testSplit_P, testSplit},
+		{strings_P, testSplitSizeTooSmall_P, testSplitSizeTooSmall}
 };
 
 int main(void) {
 	initUSART();
 
-	uint16_t count = sizeof(tests) / sizeof(tests[0]);
+	size_t count = sizeof(tests) / sizeof(tests[0]);
 	runTests("lambda", tests, count);
 
 	return 0;

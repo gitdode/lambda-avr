@@ -15,9 +15,10 @@
 #include "sensors.h"
 #include "display.h"
 
+uint8_t beepCount = 0;
+uint16_t beepLength = 0;
+
 static uint8_t oscCount = 0;
-static uint8_t beepCount = 0;
-static uint16_t beepLength = 0;
 static bool alertActive = false;
 
 void oscillateBeep(void) {
