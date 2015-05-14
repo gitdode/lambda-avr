@@ -257,7 +257,7 @@ bool testMeasure(void) {
 
 	// verify that temperatures and lambda are calculated correctly
 	// for voltages > 4950 and <= 5000 mV
-	assertTrue(meas.tempI > 990 && meas.tempI <= 1000);
+	assertTrue(meas.tempI >= 990 && meas.tempI <= 1000);
 	assertTrue(meas.tempO == 400);
 	assertTrue(meas.lambda == 997);
 
@@ -330,7 +330,7 @@ bool testLookupLinInterInter(void) {
 }
 
 bool testToInfoLean(void) {
-	const char* info = toInfo(191);
+	char* info = toInfo(191);
 
 	return ! strcmp(info, LEAN);
 }
@@ -352,7 +352,7 @@ bool testToInfoIdeal(void) {
 }
 
 bool testToInfoRich(void) {
-	const char* info = toInfo(129);
+	char* info = toInfo(129);
 
 	return ! strcmp(info, RICH);
 }
@@ -360,7 +360,7 @@ bool testToInfoRich(void) {
 /* Module strings */
 
 bool testSplit(void) {
-	char* string = "f1 f2  f3 ";
+	char string[] = "f1 f2  f3 ";
 	char* fields[4];
 	split(string, " ", fields, 4);
 
@@ -377,7 +377,7 @@ bool testSplit(void) {
  * seems to cause the AVR to reset and rerun the tests in an infinite loop.
  */
 bool testSplitSizeTooSmall(void) {
-	char* string = "f1 f2";
+	char string[] = "f1 f2";
 	char* fields[1];
 	split(string, " ", fields, 1);
 
