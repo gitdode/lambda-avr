@@ -220,7 +220,7 @@ bool testInitInterrupts(void) {
 }
 
 bool testInitTimers(void) {
-	initInterrupts();
+	initTimers();
 
 	// timer0 clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
 	uint8_t prescalerBy64 = (1 << CS00) | (1 << CS01);
@@ -231,9 +231,9 @@ bool testInitTimers(void) {
 	// timer1 clock prescaler/8
 	assertTrue(bit_is_set(TCCR1B, CS11));
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
-	// assertTrue(OCR1A == 16);
+	// assertTrue(OCR1A == 15);
 	// 1.8 kHz is less noisy on the small piezo beeper
-	assertTrue(OCR1A == 32);
+	assertTrue(OCR1A == 31);
 
 	return true;
 }
@@ -410,7 +410,7 @@ const char t13_P[] PROGMEM = "testDivRoundUpBothNeg";
 const char t14_P[] PROGMEM = "testSetupPorts";
 const char t15_P[] PROGMEM = "testSetupSleepMode";
 const char t16_P[] PROGMEM = "testInitInterrupts";
-const char t17_P[] PROGMEM = "testInitInterrupts";
+const char t17_P[] PROGMEM = "testInitTimers";
 const char t18_P[] PROGMEM = "testMeasure";
 const char t19_P[] PROGMEM = "testReadMeas";
 const char t20_P[] PROGMEM = "testToLambdaValue";
@@ -446,7 +446,7 @@ test const tests[] = { // PROGMEM?
 		{interrupts_P, 	t14_P, testSetupPorts},
 		{interrupts_P, 	t15_P, testSetupSleepMode},
 		{interrupts_P, 	t16_P, testInitInterrupts},
-		{interrupts_P, 	t17_P, testInitInterrupts},
+		{interrupts_P, 	t17_P, testInitTimers},
 		{sensors_P, 	t18_P, testMeasure},
 		{sensors_P, 	t19_P, testReadMeas},
 		{sensors_P, 	t20_P, testToLambdaValue},
