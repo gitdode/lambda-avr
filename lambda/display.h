@@ -1,8 +1,11 @@
 /*
  * display.h
  *
+ * Functions to format, display and log measurements.
+ *
  *  Created on: 10.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #ifndef DISPLAY_H_
@@ -19,7 +22,7 @@ void cycleDisplay(void);
  * Updates the measurements, tracks max values since last start/reset
  * and flags pending display update.
  */
-void updateMeas(measurement);
+void updateMeas(Measurement);
 
 /**
  * Resets max measurements to initial values and flags pending display update.
@@ -34,7 +37,7 @@ void updateDisplayIfPending(void);
 /**
  * Formats the given measurement values and prints them via USART.
  */
-void logMeas(measurement meas);
+void logMeas(Measurement meas);
 
 /**
  * Displays the given two lines of text.

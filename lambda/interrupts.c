@@ -1,8 +1,11 @@
 /*
  * interrupts.c
  *
+ * ISRs and functions to handle and set up interrupts and timers.
+ *
  *  Created on: 10.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #include <stdbool.h>
@@ -56,7 +59,7 @@ bool isUSARTReceived(void) {
 }
 
 // TODO doesn't really belong in this source file
-void getUSARTData(char* data, uint8_t size) {
+void getUSARTData(char* const data, uint8_t const size) {
 	if (size > 0) {
 	    data[0] = '\0';
 	    strncat(data, usartData, size - 1);
@@ -65,7 +68,7 @@ void getUSARTData(char* data, uint8_t size) {
 	usartReceived = false;
 }
 
-bool hasIntCount(uint8_t count, bool reset) {
+bool hasIntCount(uint8_t const count, bool const reset) {
 	if (intCount >= count) {
 		if (reset) {
 			intCount = 0;

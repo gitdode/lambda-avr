@@ -1,8 +1,11 @@
 /*
  * alert.c
  *
+ * Functions to beep and show an alert on the display.
+ *
  *  Created on: 24.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #include <stdio.h>
@@ -36,13 +39,14 @@ void oscillateBeep(void) {
 	oscCount == beepLength * 2 ? oscCount = 0 : oscCount++;
 }
 
-void beep(uint8_t beeps, uint8_t length) {
+void beep(uint8_t const beeps, uint8_t const length) {
 	oscCount = 0;
 	beepCount = beeps;
 	beepLength = length;
 }
 
-void alert(uint8_t beeps, uint8_t length, char* line0, char* line1) {
+void alert(uint8_t const beeps, uint8_t const length,
+		char* const line0, char* const line1) {
 	alertActive = true;
 	oscCount = 0;
 	beepCount = beeps;

@@ -6,7 +6,6 @@
  *  Created on: 11.03.2015
  *      Author: dode@luniks.net
  *
- * DISCLAIMER: I'm new to C.
  */
 
 #include <avr/interrupt.h>
@@ -31,7 +30,7 @@ void setupADC(void) {
 	ADCSRA |= (1 << ADEN);
 }
 
-uint16_t getVoltage(uint8_t pin) {
+uint16_t getVoltage(uint8_t const pin) {
 	ADMUX = (0b11110000 & ADMUX) | pin;
 
 	uint32_t overValue = 0;

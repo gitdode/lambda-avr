@@ -6,7 +6,6 @@
  *  Created on: 02.03.2015
  *      Author: dode@luniks.net
  *
- * DISCLAIMER: I'm new to C.
  */
 
 #include <stdio.h>
@@ -26,7 +25,7 @@
  * of the sensor is amplified by factor 11.
  * TODO real data?
  */
-static const tableEntry lambdaTable[] = {
+static TableEntry const lambdaTable[] = {
 	{ 44, 2000 },
 	{ 55, 1900 },
 	{ 66, 1800 },
@@ -50,7 +49,7 @@ static const tableEntry lambdaTable[] = {
  * inverting OP with an offset of 454 mV at 5000 mV supply voltage
  * and an amplification factor of 6.17.
  */
-static const tableEntry tempOTable[] = {
+static TableEntry const tempOTable[] = {
 	// { -57, -50 },
 	{ 454, 0 },
 	{ 1403, 100 },
@@ -70,7 +69,7 @@ static uint32_t tempOVoltageAvg = 644 << 3; // 20°C
  * Measures the "input" and "output" temperatures and the lambda value,
  * calculates an exponential moving average and displays the translated values.
  */
-measurement measure(void) {
+Measurement measure(void) {
 	uint32_t tempIVoltage = getVoltage(ADC_TEMPI);
 	tempIVoltageAvg = tempIVoltage + tempIVoltageAvg -
 			((tempIVoltageAvg - 4) >> 3);
@@ -83,7 +82,7 @@ measurement measure(void) {
 	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 			((lambdaVoltageAvg - 4) >> 3);
 
-	measurement meas;
+	Measurement meas;
 	meas.tempI = toTempI(tempIVoltageAvg >> 3);
 	meas.tempO = toTempO(tempOVoltageAvg >> 3);
 	meas.lambda = toLambda(lambdaVoltageAvg >> 3);
@@ -91,8 +90,8 @@ measurement measure(void) {
 	return meas;
 }
 
-measurement readMeas(char* fields[]) {
-	measurement meas;
+Measurement readMeas(char* const fields[]) {
+	Measurement meas;
 	// TODO can check if fields[] has 3 elements?
 	meas.tempI  = atoi(fields[0]);
 	meas.tempO  = atoi(fields[1]);
@@ -101,27 +100,28 @@ measurement readMeas(char* fields[]) {
 	return meas;
 }
 
-int16_t toTempI(uint16_t mV) {
+int16_t toTempI(uint16_t const mV) {
 	int temp = divRoundNearest(mV, 5);
 
 	return temp;
 }
 
-int16_t toTempO(uint16_t mV) {
+int16_t toTempO(uint16_t const mV) {
 	uint8_t length = sizeof(tempOTable) / sizeof(tempOTable[0]);
 	int16_t temp = lookupLinInter(mV, tempOTable, length);
 
 	return temp;
 }
 
-int16_t toLambda(uint16_t mV) {
+int16_t toLambda(uint16_t const mV) {
 	uint8_t length = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
 	int16_t lambda = lookupLinInter(mV, lambdaTable, length);
 
 	return lambda;
 }
 
-int16_t lookupLinInter(uint16_t mV, const tableEntry table[], uint8_t length) {
+int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
+		uint8_t const length) {
 	if (mV < table[0].mV) {
 		return table[0].value;
 	} else if (mV > table[length - 1].mV) {
@@ -143,7 +143,7 @@ int16_t lookupLinInter(uint16_t mV, const tableEntry table[], uint8_t length) {
 	return value;
 }
 
-char* toInfo(uint16_t lambda) {
+char* toInfo(uint16_t const lambda) {
 	if (lambda > 190) {
 		return LEAN;
 	} else if (lambda > 150 && lambda <= 190) {

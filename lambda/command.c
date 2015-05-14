@@ -1,8 +1,11 @@
 /*
  * command.c
  *
+ * Functions to evaluate and run commands sent via USART.
+ *
  *  Created on: 02.05.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #include <stdio.h>
@@ -27,7 +30,7 @@ bool isLogging(void) {
 	return logging;
 }
 
-void runCommand(char* data) {
+void runCommand(char* const data) {
 	char* fields[8];
 	split(data, " ", fields, 8);
 	if (strcmp(fields[0], "se") == 0) {
@@ -61,7 +64,7 @@ void runCommand(char* data) {
 		alert(1, 20, "Beep!", fields[1]);
 	}
 	else if (simulation) {
-		measurement meas = readMeas(fields);
+		Measurement meas = readMeas(fields);
 		updateMeas(meas);
 	}
 }

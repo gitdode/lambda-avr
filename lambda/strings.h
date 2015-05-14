@@ -1,6 +1,8 @@
 /*
  * strings.h
  *
+ * Functions to help with strings.
+ *
  *  Created on: 10.05.2015
  *      Author: dode@luniks.net
  */

@@ -1,6 +1,8 @@
 /*
  * pins.h
  *
+ * Assignment of ADC and LCD pins.
+ *
  *  Created on: 06.05.2015
  *      Author: dode@luniks.net
  */

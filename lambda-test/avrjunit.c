@@ -7,7 +7,6 @@
  *  Created on: 06.03.2015
  *      Author: dode@luniks.net
  *
- * DISCLAIMER: I'm new to C.
  */
 
 #include <stdio.h>
@@ -15,7 +14,7 @@
 #include "USART.h"
 #include "avrjunit.h"
 
-void runTests(char* const suite, test const tests[], uint16_t const count) {
+void runTests(char* const suite, TestCase const tests[], uint16_t const count) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	char tsbuf[128];
 	snprintf(tsbuf, sizeof(tsbuf),
@@ -28,13 +27,13 @@ void runTests(char* const suite, test const tests[], uint16_t const count) {
 		char nbuf[64];
 		char tcbuf[128];
 		// TODO use strncat (macro?)
-		strcpy_P(cbuf, (const char*)pgm_read_word(&(tests[i].class)));
-		strcpy_P(nbuf, (const char*)pgm_read_word(&(tests[i].name)));
+		strcpy_P(cbuf, (PGM_P)pgm_read_word(&(tests[i].class)));
+		strcpy_P(nbuf, (PGM_P)pgm_read_word(&(tests[i].name)));
 		snprintf(tcbuf, sizeof(tcbuf),
 				"<testcase classname=\"%s\" name=\"%s\">\n", cbuf, nbuf);
 		printString(tcbuf);
-		fptr function = (fptr)pgm_read_word(&tests[i].function);
-		bool result = function();
+		FuncPtr test = (FuncPtr)pgm_read_word(&tests[i].function);
+		bool result = test();
 		if (! result) {
 			// failure
 			printString("<failure type=\"failure\">failed</failure>\n");

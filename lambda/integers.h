@@ -6,7 +6,6 @@
  *  Created on: 07.03.2015
  *      Author: dode@luniks.net
  *
- * DISCLAIMER: I'm new to C.
  */
 
 #ifndef INTEGERS_H_

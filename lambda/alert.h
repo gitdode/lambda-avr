@@ -1,8 +1,11 @@
 /*
  * alert.h
  *
+ * Functions to beep and show an alert on the display.
+ *
  *  Created on: 24.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #ifndef ALERT_H_

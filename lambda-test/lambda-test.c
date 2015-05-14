@@ -35,7 +35,7 @@
 #include "command.h"
 #include "strings.h"
 
-static const tableEntry testTable[] = {
+static TableEntry const testTable[] = {
 		{10, 10},
 		{20, 20}
 };
@@ -250,7 +250,7 @@ bool testMeasure(void) {
 
 	// do many measurements so the averaged voltages are near the measured
 	// voltages (close to AREF)
-	measurement meas;
+	Measurement meas;
 	for (uint8_t i = 0; i < 64; i++) {
 		meas = measure();
 	}
@@ -267,7 +267,7 @@ bool testMeasure(void) {
 bool testReadMeas(void) {
 	char* fields[] = {"1", "2", "3"};
 
-	measurement meas = readMeas(fields);
+	Measurement meas = readMeas(fields);
 	assertTrue(meas.tempI == 1);
 	assertTrue(meas.tempO == 2);
 	assertTrue(meas.lambda == 3);
@@ -386,6 +386,7 @@ bool testSplitSizeTooSmall(void) {
 	return true;
 }
 
+/* Test "classes" */
 const char adc_P[] PROGMEM = "adc";
 const char command_P[] PROGMEM = "command";
 const char display_P[] PROGMEM = "display";
@@ -394,6 +395,7 @@ const char interrupts_P[] PROGMEM = "interrupts";
 const char sensors_P[] PROGMEM = "sensors";
 const char strings_P[] PROGMEM = "strings";
 
+/* Test names */
 const char t01_P[] PROGMEM = "testSetupADC";
 const char t02_P[] PROGMEM = "testGetVoltage";
 const char t03_P[] PROGMEM = "testIsSimulation";
@@ -429,7 +431,8 @@ const char t32_P[] PROGMEM = "testToInfoRich";
 const char t33_P[] PROGMEM = "testSplit";
 const char t34_P[] PROGMEM = "testSplitSizeTooSmall";
 
-test const tests[] = { // PROGMEM?
+/* Tests */
+TestCase const tests[] = {
 		{adc_P, 		t01_P, testSetupADC},
 		{adc_P, 		t02_P, testGetVoltage},
 		{command_P, 	t03_P, testIsSimulation},

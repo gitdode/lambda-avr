@@ -1,8 +1,11 @@
 /*
  * interrupts.h
  *
+ * ISRs and functions to handle and set up interrupts and timers.
+ *
  *  Created on: 10.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #ifndef INTERRUPTS_H_

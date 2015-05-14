@@ -46,7 +46,7 @@ int main(void) {
 
 	alert(1, 2, "     Hello!     ", "");
 
-	measurement meas;
+	Measurement meas;
 
 	// main loop
 	while (1) {

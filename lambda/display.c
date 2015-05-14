@@ -1,8 +1,11 @@
 /*
  * display.c
  *
+ * Functions to format, display and log measurements.
+ *
  *  Created on: 10.04.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #include <stdbool.h>
@@ -22,8 +25,8 @@
 
 static uint8_t position = MENU_OFF;
 static bool updatePending = false;
-static measurement measLatest;
-static measurement measMax = {0, 0, 2000};
+static Measurement measLatest;
+static Measurement measMax = {0, 0, 2000};
 
 // TODO unused/unnecessary "getter" does not add on program or data memory
 // since only called from test, still a good idea?
@@ -35,7 +38,7 @@ uint8_t getPosition(void) {
  * Formats the given measurement values and displays them on an 16x2 LCD along
  * with the given hint.
  */
-static void displayMeas(measurement meas, char* hint) {
+static void displayMeas(Measurement const meas, char* const hint) {
 	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
 	div_t lambdaT = div(lambdax100, 100);
 
@@ -64,7 +67,7 @@ void cycleDisplay(void) {
 	beep(1, 2);
 }
 
-void updateMeas(measurement meas) {
+void updateMeas(Measurement const meas) {
 	measLatest = meas;
 
 	measMax.tempI = MAX(measMax.tempI, meas.tempI);
@@ -94,7 +97,7 @@ void updateDisplayIfPending() {
 	}
 }
 
-void logMeas(measurement meas) {
+void logMeas(Measurement const meas) {
 	char log[64];
 	snprintf(log, sizeof(log),
 			"Ti %3d C - To %3d C - L %4u \r\n",
@@ -102,7 +105,7 @@ void logMeas(measurement meas) {
 	printString(log);
 }
 
-void displayText(char* line0, char* line1) {
+void displayText(char* const line0, char* const line1) {
 	lcd_clear();
 	lcd_setcursor(0, 1);
 	lcd_string(line0);

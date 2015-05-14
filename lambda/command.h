@@ -1,8 +1,11 @@
 /*
  * command.h
  *
+ * Functions to evaluate and run commands sent via USART.
+ *
  *  Created on: 02.05.2015
  *      Author: dode@luniks.net
+ *
  */
 
 #ifndef COMMAND_H_
