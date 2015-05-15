@@ -21,14 +21,15 @@ bool testOscillateBeep(void) {
 	beepCount = 0;
 	oscCount = 0;
 
-	// alert with two beep2 with a length of 2
-	alert(2, 2, "a", "b");
+	// alert with two beep2 with a length of 2 and tone 31
+	alert(2, 2, 31, "a", "b");
 	oscillateBeep();
 	oscillateBeep();
 
 	// beep on, alertActive true
 	assertTrue(beepCount == 2);
 	assertTrue(oscCount == 2);
+	assertTrue(OCR1A = 31);
 	assertTrue(bit_is_set(TCCR1A, COM1A0));
 	assertTrue(isAlertActive());
 
@@ -71,11 +72,12 @@ bool testBeep(void) {
 	beepLength = 0;
 	oscCount = 0;
 
-	beep(1, 2);
+	beep(1, 2, 31);
 
 	assertTrue(beepCount == 1);
 	assertTrue(beepLength == 2);
 	assertTrue(oscCount == 0);
+	assertTrue(OCR1A = 31);
 
 	return true;
 }
@@ -89,11 +91,12 @@ bool testAlert(void) {
 	beepLength = 0;
 	oscCount = 0;
 
-	alert(1, 2, "a", "b");
+	alert(1, 2, 31, "a", "b");
 
 	assertTrue(beepCount == 1);
 	assertTrue(beepLength == 2);
 	assertTrue(oscCount == 0);
+	assertTrue(OCR1A = 31);
 	assertTrue(isAlertActive());
 
 	return true;
@@ -108,11 +111,12 @@ bool testCancelAlert(void) {
 	beepLength = 0;
 	oscCount = 0;
 
-	alert(1, 2, "a", "b");
+	alert(1, 2, 31, "a", "b");
 
 	assertTrue(beepCount == 1);
 	assertTrue(beepLength == 2);
 	assertTrue(oscCount == 0);
+	assertTrue(OCR1A = 31);
 	assertTrue(isAlertActive());
 
 	cancelAlert();

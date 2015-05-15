@@ -57,7 +57,7 @@ void cycleDisplay(void) {
 	if (position > MENU_MAX_VALUES) {
 		position = MENU_OFF;
 	}
-	beep(1, 2);
+	beep(1, 2, 31);
 }
 
 void updateMeas(Measurement const meas) {

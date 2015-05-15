@@ -44,7 +44,7 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
-	alert(1, 2, "     Hello!     ", "");
+	alert(1, 2, 31, "     Hello!     ", "");
 
 	Measurement meas;
 

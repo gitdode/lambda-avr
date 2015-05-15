@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <avr/io.h>
+#include "integers.h"
 #include "alert.h"
 #include "sensors.h"
 #include "display.h"
@@ -41,14 +42,18 @@ void oscillateBeep(void) {
 	oscCount == beepLength * 2 - 1 ? oscCount = 0 : oscCount++;
 }
 
-void beep(uint8_t const beeps, uint8_t const length) {
+void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
+	TCNT1 = 0;
+	OCR1A = tone;
 	oscCount = 0;
 	beepCount = beeps;
 	beepLength = length;
 }
 
-void alert(uint8_t const beeps, uint8_t const length,
+void alert(uint8_t const beeps, uint8_t const length, uint16_t tone,
 		char* const line0, char* const line1) {
+	TCNT1 = 0;
+	OCR1A = tone;
 	alertActive = true;
 	oscCount = 0;
 	beepCount = beeps;

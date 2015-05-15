@@ -39,23 +39,23 @@ void runCommand(char* const data) {
 		// simulation enable
 		resetMeas();
 		simulation = true;
-		beep(1, 2);
+		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
 		// simulation disable
 		resetMeas();
 		simulation = false;
-		beep(1, 2);
+		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("le")) == 0) {
 		// logging enable
 		logging = true;
-		beep(1, 2);
+		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("ld")) == 0) {
 		// logging disable
 		logging = false;
-		beep(1, 2);
+		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {
 		// cycle menu
@@ -65,7 +65,19 @@ void runCommand(char* const data) {
 		// test alert
 		char buf[16];
 		strcpy_P(buf, PSTR("Beep Beep Beep!"));
-		alert(3, 10, buf, fields[1]);
+		alert(3, 10, 15, buf, fields[1]);
+	}
+	else if (strcmp_P(fields[0], PSTR("tb")) == 0) {
+		// test beep
+		uint8_t length = 2;
+		if (fields[1] != '\0') {
+			length = atoi(fields[1]);
+		}
+		uint16_t tone = 31;
+		if (fields[2] != '\0') {
+			tone = atoi(fields[2]);
+		}
+		beep(1, length, tone);
 	}
 	else if (simulation) {
 		Measurement meas = readMeas(fields, fieldCount);

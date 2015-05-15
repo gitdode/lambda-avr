@@ -14,16 +14,18 @@
 void oscillateBeep(void);
 
 /**
- * Beeps the given number of beeps with the given length. Returns quickly so
- * it can be called from an ISR.
+ * Beeps the given number of beeps with the given length and tone.
+ * Returns quickly so it can be called from an ISR.
  */
-void beep(uint8_t beeps, uint8_t length);
+void beep(uint8_t beeps, uint8_t length, uint16_t tone);
 
 /**
- * Beeps the given number of beeps with the given length and displays the
- * given two texts on the first and second line of the display, respectively.
+ * Beeps the given number of beeps with the given length and tone and displays
+ * the given two texts on the first and second line of the display,
+ * respectively.
  */
-void alert(uint8_t beeps, uint8_t length, char* line0, char* line1);
+void alert(uint8_t beeps, uint8_t length, uint16_t tone,
+		char* line0, char* line1);
 
 /**
  * Stops beeping and blocking display updates.
