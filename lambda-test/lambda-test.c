@@ -23,21 +23,13 @@
 int main(void) {
 	initUSART();
 
-	extern const TestCase adcTests[];
-	extern const TestCase commandTests[];
-	extern const TestCase displayTests[];
-	extern const TestCase integersTests[];
-	extern const TestCase interruptsTests[];
-	extern const TestCase sensorsTests[];
-	extern const TestCase stringsTests[];
+	extern TestClass adcClass;
+	extern TestClass commandClass;
 
-	runTests("lambda", adcTests, 2);
-	runTests("lambda", commandTests, 2);
-	runTests("lambda", displayTests, 7);
-	runTests("lambda", integersTests, 8);
-	runTests("lambda", interruptsTests, 4);
-	runTests("lambda", sensorsTests, 16);
-	runTests("lambda", stringsTests, 2);
+	beginSuite("lambda");
+	runClass(adcClass);
+	runClass(commandClass);
+	endSuite();
 
 	return 0;
 }

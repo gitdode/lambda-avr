@@ -42,6 +42,11 @@ typedef struct PROGMEM {
 	FuncPtr function;
 } TestCase;
 
+typedef struct {
+	const TestCase* tests;
+	size_t size;
+} TestClass;
+
 /**
  * Runs the test cases in the given array and prints the results
  * via USART in JUnit XML format, using the given test suite name.
@@ -50,6 +55,10 @@ typedef struct PROGMEM {
  * on the receiving side with a command like so:
  * (stty speed 9600 sane -echo; cat > tests.xml) < /dev/ttyUSB0
  */
-void runTests(char* const suite, TestCase const tests[], uint16_t const count);
+void beginSuite(char* const suite);
+
+void endSuite(void);
+
+void runClass(TestClass class);
 
 #endif /* AVRJUNIT_H_ */

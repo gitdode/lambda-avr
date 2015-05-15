@@ -47,14 +47,16 @@ bool testGetVoltage(void) {
 }
 
 /* Test "class" */
-const char adc_P[] PROGMEM = "adc";
+static const char class[] PROGMEM = "adc";
 
 /* Test names */
-const char testSetupADC_P[] PROGMEM = "testSetupADC";
-const char testGetVoltage_P[] PROGMEM = "testGetVoltage";
+static const char testSetupADC_P[] PROGMEM = "testSetupADC";
+static const char testGetVoltage_P[] PROGMEM = "testGetVoltage";
 
 /* Tests */
-TestCase const adcTests[] = {
-		{adc_P, testSetupADC_P, testSetupADC},
-		{adc_P, testGetVoltage_P, testGetVoltage}
+static TestCase const tests[] = {
+		{class, testSetupADC_P, testSetupADC},
+		{class, testGetVoltage_P, testGetVoltage}
 };
+
+TestClass adcClass = {tests, sizeof(tests) / sizeof(tests[0])};

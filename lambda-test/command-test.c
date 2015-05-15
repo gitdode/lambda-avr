@@ -34,14 +34,16 @@ bool testIsLogging(void) {
 }
 
 /* Test "class" */
-const char command_P[] PROGMEM = "command";
+static const char class[] PROGMEM = "command";
 
 /* Test names */
-const char testIsSimulation_P[] PROGMEM = "testIsSimulation";
-const char testIsLogging_P[] PROGMEM = "testIsLogging";
+static const char testIsSimulation_P[] PROGMEM = "testIsSimulation";
+static const char testIsLogging_P[] PROGMEM = "testIsLogging";
 
 /* Tests */
-TestCase const commandTests[] = {
-		{command_P, testIsSimulation_P, testIsSimulation},
-		{command_P, testIsLogging_P, testIsLogging},
+static TestCase const tests[] = {
+		{class, testIsSimulation_P, testIsSimulation},
+		{class, testIsLogging_P, testIsLogging},
 };
+
+TestClass commandClass = {tests, sizeof(tests) / sizeof(tests[0])};
