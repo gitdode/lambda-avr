@@ -43,8 +43,8 @@ void oscillateBeep(void) {
 }
 
 void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
-	TCNT1 = 0;
 	OCR1A = tone;
+	if (TCNT1 >= tone) TCNT1 = 0;
 	oscCount = 0;
 	beepCount = beeps;
 	beepLength = length;
@@ -52,8 +52,8 @@ void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 
 void alert(uint8_t const beeps, uint8_t const length, uint16_t tone,
 		char* const line0, char* const line1) {
-	TCNT1 = 0;
 	OCR1A = tone;
+	if (TCNT1 >= tone) TCNT1 = 0;
 	alertActive = true;
 	oscCount = 0;
 	beepCount = beeps;
