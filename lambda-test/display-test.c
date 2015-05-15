@@ -144,24 +144,26 @@ bool testDisplayText(void) {
 }
 
 /* Test "class" */
-const char display_P[] PROGMEM = "display";
+static const char class[] PROGMEM = "display";
 
 /* Test names */
-const char testCycle_P[] PROGMEM = "testCycle";
-const char testCycleCancelAlert_P[] PROGMEM = "testCycleCancelAlert";
-const char testUpdateMeas_P[] PROGMEM = "testUpdateMeas";
-const char testResetMeas_P[] PROGMEM = "testResetMeas";
-const char testUpdateDisplayIfPending_P[] PROGMEM = "testUpdateDisplayIfPending";
-const char testUpdateDisplayIfPendingAlertActive_P[] PROGMEM = "testUpdateDisplayIfPendingAlertActive";
-const char testDisplayText_P[] PROGMEM = "testDisplayText";
+static const char testCycle_P[] PROGMEM = "testCycle";
+static const char testCycleCancelAlert_P[] PROGMEM = "testCycleCancelAlert";
+static const char testUpdateMeas_P[] PROGMEM = "testUpdateMeas";
+static const char testResetMeas_P[] PROGMEM = "testResetMeas";
+static const char testUpdateDisplayIfPending_P[] PROGMEM = "testUpdateDisplayIfPending";
+static const char testUpdateDisplayIfPendingAlertActive_P[] PROGMEM = "testUpdateDisplayIfPendingAlertActive";
+static const char testDisplayText_P[] PROGMEM = "testDisplayText";
 
 /* Tests */
-TestCase const displayTests[] = {
-		{display_P, testCycle_P, testCycle},
-		{display_P, testCycleCancelAlert_P, testCycleCancelAlert},
-		{display_P, testUpdateMeas_P, testUpdateMeas},
-		{display_P, testResetMeas_P, testResetMeas},
-		{display_P, testUpdateDisplayIfPending_P, testUpdateDisplayIfPending},
-		{display_P, testUpdateDisplayIfPendingAlertActive_P, testUpdateDisplayIfPendingAlertActive},
-		{display_P, testDisplayText_P, testDisplayText}
+static TestCase const tests[] = {
+		{class, testCycle_P, testCycle},
+		{class, testCycleCancelAlert_P, testCycleCancelAlert},
+		{class, testUpdateMeas_P, testUpdateMeas},
+		{class, testResetMeas_P, testResetMeas},
+		{class, testUpdateDisplayIfPending_P, testUpdateDisplayIfPending},
+		{class, testUpdateDisplayIfPendingAlertActive_P, testUpdateDisplayIfPendingAlertActive},
+		{class, testDisplayText_P, testDisplayText}
 };
+
+TestClass displayClass = {tests, sizeof(tests) / sizeof(tests[0])};

@@ -38,14 +38,16 @@ bool testSplitSizeTooSmall(void) {
 }
 
 /* Test "class" */
-const char strings_P[] PROGMEM = "strings";
+static const char class[] PROGMEM = "strings";
 
 /* Test names */
-const char testSplit_P[] PROGMEM = "testSplit";
-const char testSplitSizeTooSmall_P[] PROGMEM = "testSplitSizeTooSmall";
+static const char testSplit_P[] PROGMEM = "testSplit";
+static const char testSplitSizeTooSmall_P[] PROGMEM = "testSplitSizeTooSmall";
 
 /* Tests */
-TestCase const stringsTests[] = {
-		{strings_P, testSplit_P, testSplit},
-		{strings_P, testSplitSizeTooSmall_P, testSplitSizeTooSmall}
+static TestCase const tests[] = {
+		{class, testSplit_P, testSplit},
+		{class, testSplitSizeTooSmall_P, testSplitSizeTooSmall}
 };
+
+TestClass stringsClass = {tests, sizeof(tests) / sizeof(tests[0])};

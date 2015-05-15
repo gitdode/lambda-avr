@@ -78,26 +78,28 @@ bool testDivRoundUpBothNeg(void) {
 }
 
 /* Test "class" */
-const char integers_P[] PROGMEM = "integers";
+static const char class[] PROGMEM = "integers";
 
 /* Test names */
-const char testDivRoundNearest_P[] PROGMEM = "testDivRoundNearest";
-const char testDivRoundNearestNumNeg_P[] PROGMEM = "testDivRoundNearestNumNeg";
-const char testDivRoundNearestDenNeg_P[] PROGMEM = "testDivRoundNearestDenNeg";
-const char testDivRoundNearestBothNeg_P[] PROGMEM = "testDivRoundNearestBothNeg";
-const char testDivRoundUp_P[] PROGMEM = "testDivRoundUp";
-const char testDivRoundUpNumNeg_P[] PROGMEM = "testDivRoundUpNumNeg";
-const char testDivRoundUpDenNeg_P[] PROGMEM = "testDivRoundUpDenNeg";
-const char testDivRoundUpBothNeg_P[] PROGMEM = "testDivRoundUpBothNeg";
+static const char testDivRoundNearest_P[] PROGMEM = "testDivRoundNearest";
+static const char testDivRoundNearestNumNeg_P[] PROGMEM = "testDivRoundNearestNumNeg";
+static const char testDivRoundNearestDenNeg_P[] PROGMEM = "testDivRoundNearestDenNeg";
+static const char testDivRoundNearestBothNeg_P[] PROGMEM = "testDivRoundNearestBothNeg";
+static const char testDivRoundUp_P[] PROGMEM = "testDivRoundUp";
+static const char testDivRoundUpNumNeg_P[] PROGMEM = "testDivRoundUpNumNeg";
+static const char testDivRoundUpDenNeg_P[] PROGMEM = "testDivRoundUpDenNeg";
+static const char testDivRoundUpBothNeg_P[] PROGMEM = "testDivRoundUpBothNeg";
 
 /* Tests */
-TestCase const integersTests[] = {
-		{integers_P, testDivRoundNearest_P, testDivRoundNearest},
-		{integers_P, testDivRoundNearestNumNeg_P, testDivRoundNearestNumNeg},
-		{integers_P, testDivRoundNearestDenNeg_P, testDivRoundNearestDenNeg},
-		{integers_P, testDivRoundNearestBothNeg_P, testDivRoundNearestBothNeg},
-		{integers_P, testDivRoundUp_P, testDivRoundUp},
-		{integers_P, testDivRoundUpNumNeg_P, testDivRoundUpNumNeg},
-		{integers_P, testDivRoundUpDenNeg_P, testDivRoundUpDenNeg},
-		{integers_P, testDivRoundUpBothNeg_P, testDivRoundUpBothNeg},
+static TestCase const tests[] = {
+		{class, testDivRoundNearest_P, testDivRoundNearest},
+		{class, testDivRoundNearestNumNeg_P, testDivRoundNearestNumNeg},
+		{class, testDivRoundNearestDenNeg_P, testDivRoundNearestDenNeg},
+		{class, testDivRoundNearestBothNeg_P, testDivRoundNearestBothNeg},
+		{class, testDivRoundUp_P, testDivRoundUp},
+		{class, testDivRoundUpNumNeg_P, testDivRoundUpNumNeg},
+		{class, testDivRoundUpDenNeg_P, testDivRoundUpDenNeg},
+		{class, testDivRoundUpBothNeg_P, testDivRoundUpBothNeg},
 };
+
+TestClass integersClass = {tests, sizeof(tests) / sizeof(tests[0])};

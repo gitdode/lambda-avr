@@ -17,7 +17,7 @@
 void beginSuite(char* const suite) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	char tsbuf[128];
-	snprintf(tsbuf, sizeof(tsbuf),"<testsuite name=\"%s\"\n", suite);
+	snprintf(tsbuf, sizeof(tsbuf),"<testsuite name=\"%s\">\n", suite);
 	printString(tsbuf);
 }
 

@@ -151,42 +151,44 @@ bool testToInfoRich(void) {
 }
 
 /* Test "class" */
-const char sensors_P[] PROGMEM = "sensors";
+static const char class[] PROGMEM = "sensors";
 
 /* Test names */
-const char testMeasure_P[] PROGMEM = "testMeasure";
-const char testReadMeas_P[] PROGMEM = "testReadMeas";
-const char testReadMeasTooFewFields_P[] PROGMEM = "testReadMeasTooFewFields";
-const char testToLambdaValue_P[] PROGMEM = "testToLambdaValue";
-const char testToLambdaInter_P[] PROGMEM = "testToLambdaInter";
-const char testToTempI_P[] PROGMEM = "testToTempI";
-const char testToTempOValue_P[] PROGMEM = "testToTempOValue";
-const char testToTempOInter_P[] PROGMEM = "testToTempOInter";
-const char testLookupLinInterValue_P[] PROGMEM = "testLookupLinInterValue";
-const char testLookupLinInterInter_P[] PROGMEM = "testLookupLinInterInter";
-const char testLookupLinInterBelow_P[] PROGMEM = "testLookupLinInterBelow";
-const char testLookupLinInterAbove_P[] PROGMEM = "testLookupLinInterAbove";
-const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
-const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
-const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
-const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
+static const char testMeasure_P[] PROGMEM = "testMeasure";
+static const char testReadMeas_P[] PROGMEM = "testReadMeas";
+static const char testReadMeasTooFewFields_P[] PROGMEM = "testReadMeasTooFewFields";
+static const char testToLambdaValue_P[] PROGMEM = "testToLambdaValue";
+static const char testToLambdaInter_P[] PROGMEM = "testToLambdaInter";
+static const char testToTempI_P[] PROGMEM = "testToTempI";
+static const char testToTempOValue_P[] PROGMEM = "testToTempOValue";
+static const char testToTempOInter_P[] PROGMEM = "testToTempOInter";
+static const char testLookupLinInterValue_P[] PROGMEM = "testLookupLinInterValue";
+static const char testLookupLinInterInter_P[] PROGMEM = "testLookupLinInterInter";
+static const char testLookupLinInterBelow_P[] PROGMEM = "testLookupLinInterBelow";
+static const char testLookupLinInterAbove_P[] PROGMEM = "testLookupLinInterAbove";
+static const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
+static const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
+static const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
+static const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
 
 /* Tests */
-TestCase const sensorsTests[] = {
-		{sensors_P, testMeasure_P, testMeasure},
-		{sensors_P, testReadMeas_P, testReadMeas},
-		{sensors_P, testReadMeasTooFewFields_P, testReadMeasTooFewFields},
-		{sensors_P, testToLambdaValue_P, testToLambdaValue},
-		{sensors_P, testToLambdaInter_P, testToLambdaInter},
-		{sensors_P, testToTempI_P, testToTempI},
-		{sensors_P, testToTempOValue_P, testToTempOValue},
-		{sensors_P, testToTempOInter_P, testToTempOInter},
-		{sensors_P, testLookupLinInterValue_P, testLookupLinInterValue},
-		{sensors_P, testLookupLinInterInter_P, testLookupLinInterInter},
-		{sensors_P, testLookupLinInterBelow_P, testLookupLinInterBelow},
-		{sensors_P, testLookupLinInterAbove_P, testLookupLinInterAbove},
-		{sensors_P, testToInfoLean_P, testToInfoLean},
-		{sensors_P, testToInfoOkay_P, testToInfoOkay},
-		{sensors_P, testToInfoIdeal_P, testToInfoIdeal},
-		{sensors_P, testToInfoRich_P, testToInfoRich},
+static TestCase const tests[] = {
+		{class, testMeasure_P, testMeasure},
+		{class, testReadMeas_P, testReadMeas},
+		{class, testReadMeasTooFewFields_P, testReadMeasTooFewFields},
+		{class, testToLambdaValue_P, testToLambdaValue},
+		{class, testToLambdaInter_P, testToLambdaInter},
+		{class, testToTempI_P, testToTempI},
+		{class, testToTempOValue_P, testToTempOValue},
+		{class, testToTempOInter_P, testToTempOInter},
+		{class, testLookupLinInterValue_P, testLookupLinInterValue},
+		{class, testLookupLinInterInter_P, testLookupLinInterInter},
+		{class, testLookupLinInterBelow_P, testLookupLinInterBelow},
+		{class, testLookupLinInterAbove_P, testLookupLinInterAbove},
+		{class, testToInfoLean_P, testToInfoLean},
+		{class, testToInfoOkay_P, testToInfoOkay},
+		{class, testToInfoIdeal_P, testToInfoIdeal},
+		{class, testToInfoRich_P, testToInfoRich},
 };
+
+TestClass sensorsClass = {tests, sizeof(tests) / sizeof(tests[0])};

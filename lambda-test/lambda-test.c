@@ -25,10 +25,20 @@ int main(void) {
 
 	extern TestClass adcClass;
 	extern TestClass commandClass;
+	extern TestClass displayClass;
+	extern TestClass integersClass;
+	extern TestClass interruptsClass;
+	extern TestClass sensorsClass;
+	extern TestClass stringsClass;
 
 	beginSuite("lambda");
 	runClass(adcClass);
 	runClass(commandClass);
+	runClass(displayClass);
+	runClass(integersClass);
+	runClass(interruptsClass);
+	runClass(sensorsClass);
+	runClass(stringsClass);
 	endSuite();
 
 	return 0;

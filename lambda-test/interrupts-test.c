@@ -75,18 +75,20 @@ bool testInitTimers(void) {
 }
 
 /* Test "class" */
-const char interrupts_P[] PROGMEM = "interrupts";
+static const char class[] PROGMEM = "interrupts";
 
 /* Test names */
-const char testSetupPorts_P[] PROGMEM = "testSetupPorts";
-const char testSetupSleepMode_P[] PROGMEM = "testSetupSleepMode";
-const char testInitInterrupts_P[] PROGMEM = "testInitInterrupts";
-const char testInitTimers_P[] PROGMEM = "testInitTimers";
+static const char testSetupPorts_P[] PROGMEM = "testSetupPorts";
+static const char testSetupSleepMode_P[] PROGMEM = "testSetupSleepMode";
+static const char testInitInterrupts_P[] PROGMEM = "testInitInterrupts";
+static const char testInitTimers_P[] PROGMEM = "testInitTimers";
 
 /* Tests */
-TestCase const interruptsTests[] = {
-		{interrupts_P, testSetupPorts_P, testSetupPorts},
-		{interrupts_P, testSetupSleepMode_P, testSetupSleepMode},
-		{interrupts_P, testInitInterrupts_P, testInitInterrupts},
-		{interrupts_P, testInitTimers_P, testInitTimers},
+static TestCase const tests[] = {
+		{class, testSetupPorts_P, testSetupPorts},
+		{class, testSetupSleepMode_P, testSetupSleepMode},
+		{class, testInitInterrupts_P, testInitInterrupts},
+		{class, testInitTimers_P, testInitTimers},
 };
+
+TestClass interruptsClass = {tests, sizeof(tests) / sizeof(tests[0])};
