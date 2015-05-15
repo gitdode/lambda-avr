@@ -42,23 +42,30 @@ typedef struct PROGMEM {
 	FuncPtr function;
 } TestCase;
 
+/**
+ * A class of tests with its size.
+ */
 typedef struct {
 	const TestCase* tests;
 	size_t size;
 } TestClass;
 
 /**
- * Runs the test cases in the given array and prints the results
- * via USART in JUnit XML format, using the given test suite name.
- * The size of the array needs to be passed along.
- * The printed JUnit XML can be read and written to a file
- * on the receiving side with a command like so:
+ * Begins a test suite run with the given name printed via USART in JUnit XML
+ * format. The printed JUnit XML can be read and written to a file on the
+ * receiving side with a command like so:
  * (stty speed 9600 sane -echo; cat > tests.xml) < /dev/ttyUSB0
  */
 void beginSuite(char* const suite);
 
+/**
+ * Ends a test suite run.
+ */
 void endSuite(void);
 
+/**
+ * Runs the test cases in the given test class.
+ */
 void runClass(TestClass class);
 
 #endif /* AVRJUNIT_H_ */
