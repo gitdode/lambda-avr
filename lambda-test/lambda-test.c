@@ -24,6 +24,7 @@ int main(void) {
 	initUSART();
 
 	extern TestClass adcClass;
+	extern TestClass alertClass;
 	extern TestClass commandClass;
 	extern TestClass displayClass;
 	extern TestClass integersClass;
@@ -33,6 +34,7 @@ int main(void) {
 
 	beginSuite("lambda");
 	runClass(adcClass);
+	runClass(alertClass);
 	runClass(commandClass);
 	runClass(displayClass);
 	runClass(integersClass);

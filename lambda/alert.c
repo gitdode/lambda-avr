@@ -17,12 +17,13 @@
 
 uint8_t beepCount = 0;
 uint16_t beepLength = 0;
+uint8_t oscCount = 0;
 
-static uint8_t oscCount = 0;
 static bool alertActive = false;
 
 void oscillateBeep(void) {
 	if (beepCount == 0) {
+		oscCount = 0;
 		return;
 	}
 	if (oscCount == 0) {
@@ -37,7 +38,7 @@ void oscillateBeep(void) {
 			alertActive = false;
 		}
 	}
-	oscCount == beepLength * 2 ? oscCount = 0 : oscCount++;
+	oscCount == beepLength * 2 - 1 ? oscCount = 0 : oscCount++;
 }
 
 void beep(uint8_t const beeps, uint8_t const length) {
@@ -57,6 +58,7 @@ void alert(uint8_t const beeps, uint8_t const length,
 
 void cancelAlert(void) {
 	beepCount = 0;
+	oscCount = 0;
 	// turn beep off
 	TCCR1A &= ~(1 << COM1A0);
 	alertActive = false;
