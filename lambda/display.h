@@ -11,6 +11,8 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+#include "sensors.h"
+
 uint8_t getPosition(void);
 
 /**

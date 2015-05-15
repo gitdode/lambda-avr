@@ -16,7 +16,6 @@
 #include "USART.h"
 #include "lcdroutines.h"
 #include "integers.h"
-#include "sensors.h"
 #include "display.h"
 #include "alert.h"
 
