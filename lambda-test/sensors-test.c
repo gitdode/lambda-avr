@@ -8,12 +8,14 @@
  *
  */
 
+#include <stdio.h>
 #include <string.h>
 #include "avrjunit.h"
 #include "interrupts.h"
 #include "adc.h"
 #include "sensors.h"
 #include "pins.h"
+#include "USART.h"
 
 static TableEntry const testTable[] = {
 		{10, 10},
@@ -25,6 +27,7 @@ static TableEntry const testTable[] = {
 bool testMeasure(void) {
 	setupADC();
 	setupSleepMode();
+	initInterrupts();
 
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
@@ -38,10 +41,10 @@ bool testMeasure(void) {
 	}
 
 	// verify that temperatures and lambda are calculated correctly
-	// for voltages > 4950 and <= 5000 mV
-	assertTrue(meas.tempI >= 990 && meas.tempI <= 1000);
+	// for voltages > 4900 and <= 5000 mV
+	assertTrue(meas.tempI >= 980 && meas.tempI <= 1000);
 	assertTrue(meas.tempO == 400);
-	assertTrue(meas.lambda == 997);
+	assertTrue(meas.lambda >= 995 && meas.lambda <= 999);
 
 	return true;
 }
