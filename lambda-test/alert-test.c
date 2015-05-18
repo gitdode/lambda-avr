@@ -1,5 +1,5 @@
 /*
- * adc-test.c
+ * alert-test.c
  *
  * Unit tests for the lambda project.
  *

@@ -1,5 +1,5 @@
 /*
- * lambda-test.c
+ * interrupts-test.c
  *
  * Unit tests for the lambda project.
  *
