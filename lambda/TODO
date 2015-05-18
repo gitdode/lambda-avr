@@ -1,9 +1,6 @@
 * C
-- Use static global vars + getter or extern in tests?
-- Use const for "final" function parameters
 - Check other use of const (return value?)
 - Flexarray? http://en.wikipedia.org/wiki/Sizeof
-- License? (github)
 
 * AVR
 - What happens if USART data is sent to the AVR too fast (GtkTerm Send Raw File)

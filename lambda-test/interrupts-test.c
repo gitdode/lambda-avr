@@ -68,7 +68,7 @@ bool testInitTimers(void) {
 	assertTrue(bit_is_set(TCCR1B, CS11));
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// assertTrue(OCR1A == 15);
-	// 1.8 kHz is less noisy on the small piezo beeper
+	// 2 kHz is less noisy on the small piezo beeper
 	assertTrue(OCR1A == 31);
 
 	return true;

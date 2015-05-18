@@ -21,7 +21,7 @@ bool testOscillateBeep(void) {
 	beepCount = 0;
 	oscCount = 0;
 
-	// alert with two beep2 with a length of 2 and tone 31
+	// alert with two beeps with a length of 2 and tone 31
 	alert(2, 2, 31, "a", "b");
 	oscillateBeep();
 	oscillateBeep();

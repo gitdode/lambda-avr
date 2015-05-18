@@ -50,7 +50,7 @@ void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 	beepLength = length;
 }
 
-void alert(uint8_t const beeps, uint8_t const length, uint16_t tone,
+void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
 		char* const line0, char* const line1) {
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;

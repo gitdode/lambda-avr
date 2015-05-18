@@ -53,12 +53,10 @@ ISR(USART_RX_vect) {
 	}
 }
 
-// TODO doesn't really belong in this source file
 bool isUSARTReceived(void) {
 	return usartReceived;
 }
 
-// TODO doesn't really belong in this source file
 void getUSARTData(char* const data, size_t const size) {
 	if (size > 0) {
 	    data[0] = '\0';
@@ -81,7 +79,6 @@ bool hasIntCount(uint8_t const count, bool const reset) {
 
 void setupPorts(void) {
 	// pull-up resistor for the mouton
-	// INT0 and INT1 are assigned to the LCD, a bit of a shame
 	PORTB |= (1 << PB0);
 
 	// enable beep output pin
@@ -120,6 +117,6 @@ void initTimers(void) {
 	TCCR1B |= (1 << CS11);
 	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
 	// OCR1A = 15;
-	// 1.8 kHz is less noisy on the small piezo beeper
+	// 2 kHz is less noisy on the small piezo beeper
 	OCR1A = 31;
 }
