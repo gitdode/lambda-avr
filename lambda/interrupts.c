@@ -18,10 +18,7 @@
 #include "alert.h"
 
 static volatile bool buttonPressed = false;
-static volatile bool usartReceived = false;
 static volatile uint8_t intCount = 0;
-
-static char usartData[64];
 
 /**
  * Called every 16 ms.
@@ -35,35 +32,6 @@ ISR(TIMER0_OVF_vect) {
 	} else if (bit_is_set(PINB, PB0)) {
 		buttonPressed = false;
 	}
-}
-
-/**
- * Called when data was received via USART.
- */
-ISR(USART_RX_vect) {
-	if (bit_is_set(UCSR0A, RXC0) && ! usartReceived) {
-		char data = UDR0;
-		size_t length = strlen(usartData);
-		if (length < sizeof(usartData) - 1 && data != '\n' && data != '\r') {
-			usartData[length] = data;
-		} else {
-			usartData[length] = '\0';
-			usartReceived = true;
-		}
-	}
-}
-
-bool isUSARTReceived(void) {
-	return usartReceived;
-}
-
-void getUSARTData(char* const data, size_t const size) {
-	if (size > 0) {
-	    data[0] = '\0';
-	    strncat(data, usartData, size - 1);
-	}
-	memset(usartData, 0, sizeof(usartData));
-	usartReceived = false;
 }
 
 bool hasIntCount(uint8_t const count, bool const reset) {

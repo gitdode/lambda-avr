@@ -15,7 +15,6 @@
 #include "adc.h"
 #include "sensors.h"
 #include "pins.h"
-#include "USART.h"
 
 static TableEntry const testTable[] = {
 		{10, 10},

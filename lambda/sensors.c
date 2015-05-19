@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <avr/io.h>
-#include "USART.h"
 #include "adc.h"
 #include "sensors.h"
 #include "integers.h"

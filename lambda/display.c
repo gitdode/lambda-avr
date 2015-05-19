@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include "USART.h"
+#include "usart.h"
 #include "lcdroutines.h"
 #include "integers.h"
 #include "display.h"

@@ -15,12 +15,13 @@ MAIN = lambda-test.c
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
 LOCAL_SOURCE = avrjunit.c adc-test.c alert-test.c command-test.c \
-display-test.c integers-test.c interrupts-test.c sensors-test.c strings-test.c
+display-test.c integers-test.c interrupts-test.c sensors-test.c strings-test.c \
+usart-test.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = ../lambda/
-EXTRA_SOURCE_FILES = USART.c interrupts.c adc.c sensors.c integers.c \
-lcdroutines.c display.c alert.c command.c strings.c
+EXTRA_SOURCE_FILES = interrupts.c adc.c sensors.c integers.c \
+lcdroutines.c display.c alert.c command.c strings.c usart.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########

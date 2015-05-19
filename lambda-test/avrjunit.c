@@ -11,8 +11,8 @@
 
 #include <stdio.h>
 #include <avr/pgmspace.h>
-#include "USART.h"
 #include "avrjunit.h"
+#include "usart.h"
 
 void beginSuite(char* const suite) {
 	printString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -25,8 +25,8 @@ void endSuite() {
 	printString("</testsuite>\n");
 
 	// send EOT
-	printString("\n");
-	transmitByte(4);
+	char eot[] = {0x04, '\0'};
+	printString(eot);
 }
 
 void runClass(TestClass class) {
@@ -34,7 +34,7 @@ void runClass(TestClass class) {
 		char cbuf[24];
 		char nbuf[64];
 		char tcbuf[128];
-		// TODO use strncat (macro?)
+		// TODO use strncat_P (macro?)
 		strcpy_P(cbuf, (PGM_P)pgm_read_word(&(class.tests[i].class)));
 		strcpy_P(nbuf, (PGM_P)pgm_read_word(&(class.tests[i].name)));
 		snprintf(tcbuf, sizeof(tcbuf),
