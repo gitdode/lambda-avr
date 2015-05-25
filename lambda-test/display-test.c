@@ -34,6 +34,9 @@ bool testCycle(void) {
 	assertTrue(beepLength == 2);
 
 	cycleDisplay();
+	assertTrue(position == 2);
+
+	cycleDisplay();
 	assertTrue(position == 0);
 
 	return true;
@@ -43,6 +46,7 @@ bool testCycleCancelAlert(void) {
 	extern uint8_t position;
 	extern bool updatePending;
 
+	position = 0;
 	updatePending = false;
 
 	alert(1, 1, 31, "", "");
