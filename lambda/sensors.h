@@ -11,11 +11,7 @@
 #ifndef SENSORS_H_
 #define SENSORS_H_
 
-// TODO put in Makefile?
-#define LEAN "Mager"
-#define OKAY "Okay "
-#define IDEAL "Ideal"
-#define RICH "Fett!"
+#include <stdio.h>
 
 /**
  * Entry for the lookup tables.

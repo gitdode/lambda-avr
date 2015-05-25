@@ -15,7 +15,7 @@ MAIN = lambda.c
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
 LOCAL_SOURCE = usart.c interrupts.c adc.c sensors.c integers.c lcdroutines.c \
-display.c alert.c command.c strings.c
+display.c alert.c command.c strings.c rules.c
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = 
@@ -29,7 +29,7 @@ EXTRA_SOURCE_FILES =
 
 PROGRAMMER_TYPE = avrisp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
+PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM0
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########

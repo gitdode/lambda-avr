@@ -29,7 +29,7 @@ void updateMeas(Measurement);
 /**
  * Resets max measurements to initial values and flags pending display update.
  */
-void resetMeas(void);
+void resetDisplay(void);
 
 /**
  * Updates the display if an update is pending.
@@ -44,6 +44,6 @@ void logMeas(Measurement meas);
 /**
  * Displays the given two lines of text.
  */
-void displayText(char* line0, char* line1);
+void displayText(const char* line0, const char* line1);
 
 #endif /* DISPLAY_H_ */

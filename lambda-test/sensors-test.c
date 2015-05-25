@@ -15,6 +15,7 @@
 #include "adc.h"
 #include "sensors.h"
 #include "pins.h"
+#include "messages.h"
 
 static TableEntry const testTable[] = {
 		{10, 10},
@@ -127,21 +128,21 @@ bool testLookupLinInterInter(void) {
 bool testToInfoLean(void) {
 	char* info = toInfo(191);
 
-	return ! strcmp(info, LEAN);
+	return ! strcmp(info, MSG_LEAN);
 }
 
 bool testToInfoOkay(void) {
-	assertTrue(0 == strcmp(toInfo(190), OKAY));
-	assertTrue(0 == strcmp(toInfo(170), OKAY));
-	assertTrue(0 == strcmp(toInfo(151), OKAY));
+	assertTrue(0 == strcmp(toInfo(190), MSG_OKAY));
+	assertTrue(0 == strcmp(toInfo(170), MSG_OKAY));
+	assertTrue(0 == strcmp(toInfo(151), MSG_OKAY));
 
 	return true;
 }
 
 bool testToInfoIdeal(void) {
-	assertTrue(0 == strcmp(toInfo(150), IDEAL));
-	assertTrue(0 == strcmp(toInfo(140), IDEAL));
-	assertTrue(0 == strcmp(toInfo(130), IDEAL));
+	assertTrue(0 == strcmp(toInfo(150), MSG_IDEAL));
+	assertTrue(0 == strcmp(toInfo(140), MSG_IDEAL));
+	assertTrue(0 == strcmp(toInfo(130), MSG_IDEAL));
 
 	return true;
 }
@@ -149,7 +150,7 @@ bool testToInfoIdeal(void) {
 bool testToInfoRich(void) {
 	char* info = toInfo(129);
 
-	return ! strcmp(info, RICH);
+	return ! strcmp(info, MSG_RICH);
 }
 
 /* Test "class" */

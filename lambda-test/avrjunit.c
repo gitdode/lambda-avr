@@ -34,9 +34,10 @@ void runClass(TestClass class) {
 		char cbuf[24];
 		char nbuf[64];
 		char tcbuf[128];
-		// TODO use strncat_P (macro?)
-		strcpy_P(cbuf, (PGM_P)pgm_read_word(&(class.tests[i].class)));
-		strcpy_P(nbuf, (PGM_P)pgm_read_word(&(class.tests[i].name)));
+		strncpy_P(cbuf, (PGM_P)pgm_read_word(&(class.tests[i].class)),
+				sizeof(cbuf));
+		strncpy_P(nbuf, (PGM_P)pgm_read_word(&(class.tests[i].name)),
+				sizeof(nbuf));
 		snprintf(tcbuf, sizeof(tcbuf),
 				"<testcase classname=\"%s\" name=\"%s\">\n", cbuf, nbuf);
 		printString(tcbuf);

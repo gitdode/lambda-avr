@@ -22,6 +22,7 @@
 #include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -30,6 +31,8 @@
 #include "display.h"
 #include "alert.h"
 #include "command.h"
+#include "rules.h"
+#include "messages.h"
 
 /**
  * Does initialization, measures, displays and logs the measurements and
@@ -44,7 +47,7 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
-	alert(1, 2, 31, "     Hello!     ", "");
+	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""));
 
 	Measurement meas;
 
@@ -56,6 +59,7 @@ int main(void) {
 				logMeas(meas);
 			}
 			updateMeas(meas);
+			reason(meas);
 		}
 		if (isUSARTReceived()) {
 			char data[64];

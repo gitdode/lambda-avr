@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "usart.h"
@@ -21,11 +22,25 @@
 
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
+#define MENU_LAST_TEXT 2
 
 uint8_t position = MENU_OFF;
 bool updatePending = false;
 Measurement measLatest = {0, 0, 0};
 Measurement measMax = {0, 0, 2000};
+
+static char lastLine0[17];
+static char lastLine1[17];
+
+/**
+ * Sets the given two lines of text on the display.
+ */
+static void setText(const char* const line0, const char* const line1) {
+	lcd_setcursor(0, 1);
+	lcd_string(line0);
+	lcd_setcursor(0, 2);
+	lcd_string(line1);
+}
 
 /**
  * Formats the given measurement values and displays them on an 16x2 LCD along
@@ -40,10 +55,7 @@ static void displayMeas(Measurement const meas, char* const hint) {
 	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
 	snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
 			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
-	lcd_setcursor(0, 1);
-	lcd_string(line0);
-	lcd_setcursor(0, 2);
-	lcd_string(line1);
+	setText(line0, line1);
 }
 
 void cycleDisplay(void) {
@@ -54,8 +66,13 @@ void cycleDisplay(void) {
 		return;
 	}
 	position++;
-	if (position > MENU_MAX_VALUES) {
+	if (position > MENU_LAST_TEXT ||
+			(position == MENU_LAST_TEXT &&
+			 strlen(lastLine0) == 0 && strlen(lastLine1) == 0)) {
 		position = MENU_OFF;
+	}
+	if (position == MENU_LAST_TEXT) {
+		lcd_clear();
 	}
 	beep(1, 2, 31);
 }
@@ -70,7 +87,7 @@ void updateMeas(Measurement const meas) {
 	updatePending = true;
 }
 
-void resetMeas(void) {
+void resetDisplay(void) {
 	measMax.tempI = 0;
 	measMax.tempO = 0;
 	measMax.lambda = 2000;
@@ -84,6 +101,8 @@ void updateDisplayIfPending() {
 
 		if (position == MENU_MAX_VALUES) {
 			displayMeas(measMax, "|>");
+		} else if (position == MENU_LAST_TEXT) {
+			setText(lastLine0, lastLine1);
 		} else {
 			displayMeas(measLatest, "  ");
 		}
@@ -98,10 +117,11 @@ void logMeas(Measurement const meas) {
 	printString(log);
 }
 
-void displayText(char* const line0, char* const line1) {
+void displayText(const char* const line0, const char* const line1) {
+	lastLine0[0] = '\0';
+	lastLine1[0] = '\0';
+	strncat(lastLine0, line0, sizeof(lastLine0) - 1);
+	strncat(lastLine1, line1, sizeof(lastLine1) - 1);
 	lcd_clear();
-	lcd_setcursor(0, 1);
-	lcd_string(line0);
-	lcd_setcursor(0, 2);
-	lcd_string(line1);
+	setText(line0, line1);
 }

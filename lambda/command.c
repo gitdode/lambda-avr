@@ -19,6 +19,7 @@
 #include "alert.h"
 #include "command.h"
 #include "strings.h"
+#include "rules.h"
 
 static bool simulation = false;
 static bool logging = false;
@@ -37,13 +38,15 @@ void runCommand(char* const data) {
 	split(data, " ", fields, fieldCount);
 	if (strcmp_P(fields[0], PSTR("se")) == 0) {
 		// simulation enable
-		resetMeas();
+		resetDisplay();
+		resetRules();
 		simulation = true;
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
 		// simulation disable
-		resetMeas();
+		resetDisplay();
+		resetRules();
 		simulation = false;
 		beep(1, 2, 31);
 	}
@@ -82,6 +85,7 @@ void runCommand(char* const data) {
 	else if (simulation) {
 		Measurement meas = readMeas(fields, fieldCount);
 		updateMeas(meas);
+		reason(meas);
 	}
 }
 

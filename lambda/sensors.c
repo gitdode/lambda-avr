@@ -8,7 +8,6 @@
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <avr/io.h>
@@ -16,6 +15,7 @@
 #include "sensors.h"
 #include "integers.h"
 #include "pins.h"
+#include "messages.h"
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -146,12 +146,12 @@ int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
 
 char* toInfo(uint16_t const lambda) {
 	if (lambda > 190) {
-		return LEAN;
+		return MSG_LEAN;
 	} else if (lambda > 150 && lambda <= 190) {
-		return OKAY;
+		return MSG_OKAY;
 	} else if (lambda >= 130 && lambda <= 150) {
-		return IDEAL;
+		return MSG_IDEAL;
 	} else {
-		return RICH;
+		return MSG_RICH;
 	}
 }

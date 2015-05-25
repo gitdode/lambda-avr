@@ -21,7 +21,7 @@ usart-test.c
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = ../lambda/
 EXTRA_SOURCE_FILES = interrupts.c adc.c sensors.c integers.c \
-lcdroutines.c display.c alert.c command.c strings.c usart.c
+lcdroutines.c display.c alert.c command.c strings.c usart.c rules.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
@@ -31,7 +31,7 @@ lcdroutines.c display.c alert.c command.c strings.c usart.c
 
 PROGRAMMER_TYPE = avrisp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
+PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM0
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########

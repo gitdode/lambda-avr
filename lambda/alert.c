@@ -8,8 +8,6 @@
  *
  */
 
-#include <stdio.h>
-#include <stdbool.h>
 #include <avr/io.h>
 #include "integers.h"
 #include "alert.h"
@@ -51,7 +49,7 @@ void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 }
 
 void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
-		char* const line0, char* const line1) {
+		const char* const line0, const char* const line1) {
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;
 	alertActive = true;
@@ -59,6 +57,16 @@ void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
 	beepCount = beeps;
 	beepLength = length;
 	displayText(line0, line1);
+}
+
+void alert_P(uint8_t const beeps, uint8_t const length, uint16_t const tone,
+		PGM_P const line0_P, PGM_P const line1_P) {
+	char line0[17];
+	char line1[17];
+	strncpy_P(line0, line0_P, sizeof(line0));
+	strncpy_P(line1, line1_P, sizeof(line1));
+
+	alert(beeps, length, tone, line0, line1);
 }
 
 void cancelAlert(void) {

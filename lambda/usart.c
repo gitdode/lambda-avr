@@ -53,9 +53,9 @@ void getUSARTData(char* const data, size_t const size) {
 	if (size > 0) {
 	    data[0] = '\0';
 	    strncat(data, usartData, size - 1);
+	    memset(usartData, 0, sizeof(usartData));
+	    usartReceived = false;
 	}
-	memset(usartData, 0, sizeof(usartData));
-	usartReceived = false;
 }
 
 void printString(char* const data) {

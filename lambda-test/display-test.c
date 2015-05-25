@@ -101,7 +101,7 @@ bool testResetMeas(void) {
 
 	updatePending = false;
 
-	resetMeas();
+	resetDisplay();
 	// reset max measurements
 	assertTrue(measMax.tempI == 0);
 	assertTrue(measMax.tempO == 0);
