@@ -50,7 +50,7 @@ static void airgate25(bool* const fired, int8_t const dir,
 
 /**
  * Reminds to close the air gate when the fire is burning down and the
- * temperature went below 400°C.
+ * temperature went below 400°C (no more flames).
  */
 static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
@@ -78,7 +78,7 @@ static void tooRich(bool* const fired, int8_t const dir,
 }
 
 /**
- * Notifies that the might have gone out at the beginning of building up.
+ * Notifies that the fire might have gone out at the beginning of building up.
  */
 static void fireOut(bool* const fired, int8_t const dir,
 		Measurement const meas) {
@@ -95,7 +95,7 @@ static void fireOut(bool* const fired, int8_t const dir,
 /**
  * Array of rules.
  */
-Rule rules[] = {
+static Rule rules[] = {
 		{false, airgate50},
 		{false, airgate25},
 		{false, airgateClose},

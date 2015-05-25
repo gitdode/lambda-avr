@@ -66,9 +66,7 @@ void cycleDisplay(void) {
 		return;
 	}
 	position++;
-	if (position > MENU_LAST_TEXT ||
-			(position == MENU_LAST_TEXT &&
-			 strlen(lastLine0) == 0 && strlen(lastLine1) == 0)) {
+	if (position > MENU_LAST_TEXT) {
 		position = MENU_OFF;
 	}
 	if (position == MENU_LAST_TEXT) {
