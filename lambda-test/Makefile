@@ -31,7 +31,7 @@ lcdroutines.c display.c alert.c command.c strings.c usart.c rules.c
 
 PROGRAMMER_TYPE = avrisp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM0
+PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########
