@@ -43,7 +43,7 @@ static void airgate50(bool* const fired, int8_t const dir,
 static void airgate25(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 800) {
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""));
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""));
 		*fired = true;
 	}
 }
@@ -83,11 +83,11 @@ static void tooRich(bool* const fired, int8_t const dir,
 static void fireOut(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_UP && meas.tempI < 100 &&
-			meas.tempI < rulesMeasMax.tempI) {
+			rulesMeasMax.tempI - meas.tempI > 25) {
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""));
 		*fired = true;
 	}
-	if (meas.tempI >= 100) {
+	if (meas.tempI >= 125) {
 		*fired = false;
 	}
 }
