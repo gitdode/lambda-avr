@@ -19,10 +19,11 @@
 #define DIR_BURN_UP 1
 #define DIR_BURN_DOWN -1
 
-Measurement rulesMeasMax = {0, 0, 2000};
-Measurement rulesMeasPrev = {0, 0, 2000};
 uint16_t age = 0;
 int8_t dir = 0;
+
+static Measurement rulesMeasMax = {0, 0, 2000};
+static Measurement rulesMeasPrev = {0, 0, 2000};
 
 /**
  * Reminds to set the air gate to 50% when the fire is still building up
@@ -114,6 +115,8 @@ void reason(Measurement const meas) {
 		}
 	}
 
+	age++;
+
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
 	if (age >= 180) {
@@ -133,8 +136,6 @@ void reason(Measurement const meas) {
 	rulesMeasMax.tempI = MAX(rulesMeasMax.tempI, meas.tempI);
 	rulesMeasMax.tempO = MAX(rulesMeasMax.tempO, meas.tempO);
 	rulesMeasMax.lambda = MIN(rulesMeasMax.lambda, meas.lambda);
-
-	age++;
 }
 
 void resetRules(void) {

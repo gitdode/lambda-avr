@@ -148,7 +148,6 @@ bool testTooRich(void) {
 
 	meas.tempI = 99;
 	meas.lambda = 2000;
-
 	resetRules();
 	reason(meas);
 	assertFalse(rules[3].fired);
@@ -162,21 +161,18 @@ bool testTooRich(void) {
 
 	meas.tempI = 99;
 	meas.lambda = 1199;
-
 	resetRules();
 	reason(meas);
 	assertFalse(rules[3].fired);
 
 	meas.tempI = 100;
 	meas.lambda = 1199;
-
 	resetRules();
 	reason(meas);
 	assertTrue(rules[3].fired);
 
 	meas.lambda = 1300;
 	age = 0;
-
 	reason(meas);
 	assertFalse(rules[3].fired);
 
@@ -192,34 +188,135 @@ bool testFireOut(void) {
 	dir = 1;
 
 	meas.tempI = 50;
-
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
 
 	meas.tempI = 100;
-
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
 
 	meas.tempI = 125;
-
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
 
 	meas.tempI = 99;
-
 	age = 0;
 	reason(meas);
 	assertTrue(rules[4].fired);
 
 	meas.tempI = 125;
-
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
+
+	cancelAlert();
+
+	return true;
+}
+
+bool testReasonDirBurnUp(void) {
+
+	resetRules();
+	Measurement meas = {0, 0, 2000};
+
+	age = 0;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 9;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 100;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 1);
+
+	meas.tempI = 790;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 1);
+
+	meas.tempI = 790;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 800;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 1);
+
+	meas.tempI = 850;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 900;
+	meas.lambda = 1999;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	cancelAlert();
+
+	return true;
+}
+
+bool testReasonDirBurnDown(void) {
+
+	resetRules();
+	Measurement meas = {999, 0, 1999};
+
+	age = 0;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 900;
+	meas.lambda = 1999;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 800;
+	meas.lambda = 1999;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 750;
+	meas.lambda = 1999;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 700;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == -1);
+
+	meas.tempI = 700;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == 0);
+
+	meas.tempI = 100;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == -1);
 
 	cancelAlert();
 
@@ -235,6 +332,8 @@ static const char testAirgate25_P[] PROGMEM = "testAirgate25";
 static const char testAirgateClose_P[] PROGMEM = "testAirgateClose";
 static const char testTooRich_P[] PROGMEM = "testTooRich";
 static const char testFireOut_P[] PROGMEM = "testFireOut";
+static const char testReasonDirBurnUp_P[] PROGMEM = "testReasonDirBurnUp";
+static const char testReasonDirBurnDown_P[] PROGMEM = "testReasonDirBurnDown";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -242,7 +341,9 @@ static TestCase const tests[] = {
 		{class, testAirgate25_P, testAirgate25},
 		{class, testAirgateClose_P, testAirgateClose},
 		{class, testTooRich_P, testTooRich},
-		{class, testFireOut_P, testFireOut}
+		{class, testFireOut_P, testFireOut},
+		{class, testReasonDirBurnUp_P, testReasonDirBurnUp},
+		{class, testReasonDirBurnDown_P, testReasonDirBurnDown}
 };
 
 TestClass rulesClass = {tests, sizeof(tests) / sizeof(tests[0])};
