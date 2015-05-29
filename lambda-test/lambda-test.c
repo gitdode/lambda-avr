@@ -29,20 +29,22 @@ int main(void) {
 	extern TestClass displayClass;
 	extern TestClass integersClass;
 	extern TestClass interruptsClass;
+	extern TestClass rulesClass;
 	extern TestClass sensorsClass;
 	extern TestClass stringsClass;
 	extern TestClass usartClass;
 
 	beginSuite("lambda");
-	runClass(adcClass);
-	runClass(alertClass);
-	runClass(commandClass);
-	runClass(displayClass);
-	runClass(integersClass);
-	runClass(interruptsClass);
-	runClass(sensorsClass);
-	runClass(stringsClass);
-	runClass(usartClass);
+//	runClass(adcClass);
+//	runClass(alertClass);
+//	runClass(commandClass);
+//	runClass(displayClass);
+//	runClass(integersClass);
+//	runClass(interruptsClass);
+	runClass(rulesClass);
+//	runClass(sensorsClass);
+//	runClass(stringsClass);
+//	runClass(usartClass);
 	endSuite();
 
 	return 0;
