@@ -35,17 +35,20 @@ int main(void) {
 	extern TestClass usartClass;
 
 	beginSuite("lambda");
-//	runClass(adcClass);
-//	runClass(alertClass);
-//	runClass(commandClass);
-//	runClass(displayClass);
-//	runClass(integersClass);
-//	runClass(interruptsClass);
+	runClass(adcClass);
+	runClass(alertClass);
+	runClass(commandClass);
+	runClass(displayClass);
+	runClass(integersClass);
+	runClass(interruptsClass);
 	runClass(rulesClass);
-//	runClass(sensorsClass);
-//	runClass(stringsClass);
-//	runClass(usartClass);
+	runClass(sensorsClass);
+	runClass(stringsClass);
+	runClass(usartClass);
 	endSuite();
+
+	while (1) {
+	}
 
 	return 0;
 }

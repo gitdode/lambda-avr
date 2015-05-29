@@ -10,6 +10,7 @@
 
 #include "avrjunit.h"
 #include "rules.h"
+#include "alert.h"
 
 extern uint16_t age;
 extern int8_t dir;
@@ -53,6 +54,8 @@ bool testAirgate50(void) {
 	reason(meas);
 	assertTrue(rules[0].fired);
 
+	cancelAlert();
+
 	return true;
 }
 
@@ -92,6 +95,8 @@ bool testAirgate25(void) {
 	reason(meas);
 	assertTrue(rules[1].fired);
 
+	cancelAlert();
+
 	return true;
 }
 
@@ -130,6 +135,8 @@ bool testAirgateClose(void) {
 	dir = -1;
 	reason(meas);
 	assertTrue(rules[2].fired);
+
+	cancelAlert();
 
 	return true;
 }
@@ -173,6 +180,8 @@ bool testTooRich(void) {
 	reason(meas);
 	assertFalse(rules[3].fired);
 
+	cancelAlert();
+
 	return true;
 }
 
@@ -211,6 +220,8 @@ bool testFireOut(void) {
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
+
+	cancelAlert();
 
 	return true;
 }
