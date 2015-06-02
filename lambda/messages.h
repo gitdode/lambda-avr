@@ -47,7 +47,7 @@
 	#define MSG_AIRGATE_50_0 "Luftschieber 50%"
 	#define MSG_AIRGATE_25_0 "Luftschieber 25%"
 	#define MSG_AIRGATE_CLOSE_0 "Luftschieber zu"
-	#define MSG_AIRGATE_CLOSE_1 "Heiz. abschalten"
+	#define MSG_AIRGATE_CLOSE_1 "Heizung aus"
 	#define MSG_TOO_RICH_0 "Zu fett, Luft-"
 	#define MSG_TOO_RICH_1 "schieber oeffnen"
 	#define MSG_FIRE_OUT_0 "Feuer aus?"
