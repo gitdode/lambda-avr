@@ -119,18 +119,14 @@ bool testCancelAlert(void) {
 	assertTrue(OCR1A = 31);
 	assertTrue(isAlertActive());
 
-	cancelAlert();
+	cancelAlert(false);
 
 	assertTrue(beepCount == 0);
 	assertTrue(oscCount == 0);
 	assertTrue(bit_is_clear(TCCR1A, COM1A0));
 	assertTrue(isAlertActive());
 
-	alert(1, 2, 31, "a", "b", false);
-
-	assertTrue(isAlertActive());
-
-	cancelAlert();
+	cancelAlert(true);
 
 	assertFalse(isAlertActive());
 

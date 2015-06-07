@@ -54,7 +54,7 @@ bool testAirgate50(void) {
 	reason(meas);
 	assertTrue(rules[0].fired);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -95,7 +95,7 @@ bool testAirgate25(void) {
 	reason(meas);
 	assertTrue(rules[1].fired);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -136,7 +136,7 @@ bool testAirgateClose(void) {
 	reason(meas);
 	assertTrue(rules[2].fired);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -176,7 +176,7 @@ bool testTooRich(void) {
 	reason(meas);
 	assertFalse(rules[3].fired);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -212,7 +212,7 @@ bool testFireOut(void) {
 	reason(meas);
 	assertFalse(rules[4].fired);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -268,7 +268,7 @@ bool testReasonDirBurnUp(void) {
 	reason(meas);
 	assertTrue(dir == 0);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
@@ -318,7 +318,7 @@ bool testReasonDirBurnDown(void) {
 	reason(meas);
 	assertTrue(dir == -1);
 
-	cancelAlert();
+	cancelAlert(false);
 
 	return true;
 }
