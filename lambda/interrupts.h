@@ -11,11 +11,17 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
+#define SECOND 61
+
 /**
- * Returns true if the current timer interrupt count is equal or greater to
- * the given count and resets it if the given boolean is true.
+ * Returns the time in units of about 16.4 ms since last reset.
  */
-bool hasIntCount(uint8_t count, bool reset);
+uint32_t getTime(void);
+
+/**
+ * Resets the time to 0.
+ */
+void resetTime(void);
 
 /**
  * Sets up ports.

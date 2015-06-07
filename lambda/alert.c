@@ -19,6 +19,7 @@ uint16_t beepLength = 0;
 uint8_t oscCount = 0;
 
 static bool alertActive = false;
+static bool keepActive = false;
 
 void oscillateBeep(void) {
 	if (beepCount == 0) {
@@ -33,7 +34,7 @@ void oscillateBeep(void) {
 		// turn beep off
 		TCCR1A &= ~(1 << COM1A0);
 		beepCount--;
-		if (beepCount == 0) {
+		if (beepCount == 0 && ! keepActive) {
 			alertActive = false;
 		}
 	}
@@ -49,32 +50,36 @@ void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 }
 
 void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
-		const char* const line0, const char* const line1) {
+		const char* const line0, const char* const line1,
+		bool const keep) {
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;
 	alertActive = true;
 	oscCount = 0;
 	beepCount = beeps;
 	beepLength = length;
+	keepActive = keep;
 	displayText(line0, line1);
 }
 
 void alert_P(uint8_t const beeps, uint8_t const length, uint16_t const tone,
-		PGM_P const line0_P, PGM_P const line1_P) {
+		PGM_P const line0_P, PGM_P const line1_P, bool const keep) {
 	char line0[17];
 	char line1[17];
 	strncpy_P(line0, line0_P, sizeof(line0));
 	strncpy_P(line1, line1_P, sizeof(line1));
 
-	alert(beeps, length, tone, line0, line1);
+	alert(beeps, length, tone, line0, line1, keep);
 }
 
-void cancelAlert(void) {
+void cancelAlert(bool const all) {
 	beepCount = 0;
 	oscCount = 0;
 	// turn beep off
 	TCCR1A &= ~(1 << COM1A0);
-	alertActive = false;
+	if (! keepActive || all) {
+		alertActive = false;
+	}
 }
 
 bool isAlertActive(void) {

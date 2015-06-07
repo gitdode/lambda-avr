@@ -13,6 +13,16 @@
 
 #include <stdio.h>
 
+#define SHUNT_MILLIOHMS 100
+#define HEATING_READY_MA 1500
+#define HEATING_SHORT_MA 9000
+#define HEATING_DISCONN_MA 100
+
+#define HEATING_FAULT -1
+#define HEATING_OFF 0
+#define HEATING_UP 1
+#define HEATING_READY 2
+
 /**
  * Entry for the lookup tables.
  */
@@ -27,7 +37,8 @@ typedef struct {
 typedef struct {
 	int16_t tempI;
 	int16_t tempO;
-	int16_t lambda;
+	uint16_t lambda;
+	uint16_t current;
 } Measurement;
 
 /**
@@ -66,7 +77,12 @@ int16_t toTempO(uint16_t mV);
  * With the current circuit and the AD8551 the measuring range is from about
  * lambda 1.0 to 2.0 at 5000 mV OP supply and ADC reference voltage.
  */
-int16_t toLambda(uint16_t mV);
+uint16_t toLambda(uint16_t mV);
+
+/**
+ * Returns the current of the oxygen sensor heating in mA.
+ */
+uint16_t toCurrent(uint16_t mv);
 
 /**
  * Returns the value corresponding to the given voltage
@@ -82,5 +98,26 @@ int16_t lookupLinInter(uint16_t mV, TableEntry const table[], size_t length);
  * a good value, below is rich and above is lean.
  */
 char* toInfo(uint16_t lambda);
+
+/**
+ * Turns the heating of the oxygen sensor on or off.
+ */
+void setHeatingOn(bool on);
+
+/**
+ * Returns true if the heating of the oxygen sensor is turned on,
+ * false otherwise.
+ */
+bool isHeatingOn(void);
+
+/**
+ * Sets the state of the heating of the oxygen sensor to the given value.
+ */
+void setHeatingState(int8_t state);
+
+/**
+ * Returns the state of the heating of the oxygen sensor.
+ */
+int8_t getHeatingState(void);
 
 #endif /* SENSORS_H_ */

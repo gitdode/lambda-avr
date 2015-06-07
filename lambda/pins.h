@@ -11,11 +11,13 @@
 #define PINS_H_
 
 /** ADC pin for the type K thermocouple signal */
-#define ADC_TEMPI PC5
+#define ADC_TEMPI PC2
 /** ADC pin for the PT1000 resistance thermometer signal */
-#define ADC_TEMPO PC4	// prototype: PC0
+#define ADC_TEMPO PC0
 /** ADC pin for the LSM 11 oxygen sensor signal */
-#define ADC_LAMBDA PC3	// prototype: PC2
+#define ADC_LAMBDA PC1
+/** ADC pin for the LSM 11 oxygen sensor heating current */
+#define ADC_HEATING PC3
 
 /* Pins for the LCD */
 #define LCD_PORT PORTD

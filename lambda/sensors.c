@@ -8,14 +8,20 @@
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <avr/io.h>
+#include <util/delay.h>
 #include "adc.h"
+#include "alert.h"
 #include "sensors.h"
 #include "integers.h"
+#include "interrupts.h"
 #include "pins.h"
 #include "messages.h"
+
+static int8_t heatingState = HEATING_OFF;
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -85,24 +91,26 @@ Measurement measure(void) {
 	meas.tempI = toTempI(tempIVoltageAvg >> 3);
 	meas.tempO = toTempO(tempOVoltageAvg >> 3);
 	meas.lambda = toLambda(lambdaVoltageAvg >> 3);
+	meas.current = toCurrent(getVoltage(ADC_HEATING));
 
 	return meas;
 }
 
 Measurement readMeas(char* const fields[], size_t const size) {
 	Measurement meas;
-	if (size < 3) {
+	if (size < 4) {
 		return meas;
 	}
 	meas.tempI  = atoi(fields[0]);
 	meas.tempO  = atoi(fields[1]);
 	meas.lambda = atoi(fields[2]);
+	meas.current = atoi(fields[3]);
 
 	return meas;
 }
 
 int16_t toTempI(uint16_t const mV) {
-	int temp = divRoundNearest(mV, 5);
+	int16_t temp = divRoundNearest(mV, 5);
 
 	return temp;
 }
@@ -114,11 +122,17 @@ int16_t toTempO(uint16_t const mV) {
 	return temp;
 }
 
-int16_t toLambda(uint16_t const mV) {
+uint16_t toLambda(uint16_t const mV) {
 	size_t size = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
 	int16_t lambda = lookupLinInter(mV, lambdaTable, size);
 
 	return lambda;
+}
+
+uint16_t toCurrent(uint16_t const mV) {
+	uint16_t current = mV * (1000 / SHUNT_MILLIOHMS);
+
+	return current;
 }
 
 int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
@@ -154,4 +168,28 @@ char* toInfo(uint16_t const lambda) {
 	} else {
 		return MSG_RICH;
 	}
+}
+
+void setHeatingOn(bool on) {
+	if (on) {
+		PORTB |= (1 << PB2);
+		heatingState = HEATING_UP;
+		alert_P(1, 2, 31, PSTR(MSG_HEATING_UP_0), PSTR(MSG_HEATING_UP_1), true);
+	} else {
+		PORTB &= ~(1 << PB2);
+		heatingState = HEATING_OFF;
+		cancelAlert(true);
+	}
+}
+
+bool isHeatingOn(void) {
+	return bit_is_set(PORTB, PB2);
+}
+
+void setHeatingState(int8_t state) {
+	heatingState = state;
+}
+
+int8_t getHeatingState(void) {
+	return heatingState;
 }

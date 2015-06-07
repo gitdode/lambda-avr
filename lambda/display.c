@@ -26,8 +26,8 @@
 
 uint8_t position = MENU_OFF;
 bool updatePending = false;
-Measurement measLatest = {0, 0, 0};
-Measurement measMax = {0, 0, 2000};
+Measurement measLatest = {0, 0, 2000, 0};
+Measurement measMax = {0, 0, 2000, 0};
 
 static char lastLine0[17];
 static char lastLine1[17];
@@ -62,7 +62,7 @@ void cycleDisplay(void) {
 	updatePending = true;
 	if (isAlertActive()) {
 		// button pressed during alert
-		cancelAlert();
+		cancelAlert(false);
 		return;
 	}
 	position++;
@@ -110,8 +110,8 @@ void updateDisplayIfPending() {
 void logMeas(Measurement const meas) {
 	char log[64];
 	snprintf(log, sizeof(log),
-			"Ti %3d C - To %3d C - L %4u \r\n",
-			meas.tempI, meas.tempO, meas.lambda);
+			"Ti %3d C - To %3d C - L %u - C %4u\r\n",
+			meas.tempI, meas.tempO, meas.lambda, meas.current);
 	printString(log);
 }
 

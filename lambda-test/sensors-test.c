@@ -72,13 +72,13 @@ bool testReadMeasTooFewFields(void) {
 }
 
 bool testToLambdaValue(void) {
-	int16_t lambda = toLambda(132);
+	uint16_t lambda = toLambda(132);
 
 	return lambda == 1500;
 }
 
 bool testToLambdaInter(void) {
-	int16_t lambda = toLambda(550);
+	uint16_t lambda = toLambda(550);
 
 	return lambda == 1073;
 }

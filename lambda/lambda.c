@@ -23,6 +23,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -47,18 +48,24 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
-	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""));
+	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""), false);
+	// spend some time on being polite
+	_delay_ms(3000);
+	setHeatingOn(true);
 
 	Measurement meas;
 
 	// main loop
-	while (1) {
-		if (hasIntCount(62, true) && ! isSimulation()) {
+	while (true) {
+		if (getTime() % SECOND == 0 && ! isSimulation() &&
+				getHeatingState() != HEATING_FAULT) {
 			meas = measure();
 			if (isLogging()) {
 				logMeas(meas);
 			}
-			updateMeas(meas);
+			if (getHeatingState() == HEATING_READY) {
+				updateMeas(meas);
+			}
 			reason(meas);
 		}
 		if (isUSARTReceived()) {

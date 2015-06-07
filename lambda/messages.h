@@ -27,10 +27,15 @@
 	#define MSG_AIRGATE_50_0 "Air gate 50%"
 	#define MSG_AIRGATE_25_0 "Air gate 25%"
 	#define MSG_AIRGATE_CLOSE_0 "Close air gate"
-	#define MSG_AIRGATE_CLOSE_1 "Turn off heating"
 	#define MSG_TOO_RICH_0 "Too rich, open"
 	#define MSG_TOO_RICH_1 "air gate"
 	#define MSG_FIRE_OUT_0 "Fire out?"
+	#define MSG_HEATING_UP_0 "Oxygen sensor"
+	#define MSG_HEATING_UP_1 "heating up..."
+	#define MSG_HEATING_READY_0 "Oxygen sensor"
+	#define MSG_HEATING_READY_1 "ready"
+	#define MSG_HEATING_FAULT_0 "Oxygen sensor"
+	#define MSG_HEATING_FAULT_1 "heating fault!"
 
 #elif LANG == 1
 
@@ -47,10 +52,15 @@
 	#define MSG_AIRGATE_50_0 "Luftschieber 50%"
 	#define MSG_AIRGATE_25_0 "Luftschieber 25%"
 	#define MSG_AIRGATE_CLOSE_0 "Luftschieber zu"
-	#define MSG_AIRGATE_CLOSE_1 "Heizung aus"
 	#define MSG_TOO_RICH_0 "Zu fett, Luft-"
 	#define MSG_TOO_RICH_1 "schieber oeffnen"
 	#define MSG_FIRE_OUT_0 "Feuer aus?"
+	#define MSG_HEATING_UP_0 "Lambdasonde"
+	#define MSG_HEATING_UP_1 "waermt auf..."
+	#define MSG_HEATING_READY_0 "Lambdasonde"
+	#define MSG_HEATING_READY_1 "bereit"
+	#define MSG_HEATING_FAULT_0 "Lambdasonden-"
+	#define MSG_HEATING_FAULT_1 "heizung Fehler!"
 
 #endif
 

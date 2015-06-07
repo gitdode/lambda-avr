@@ -8,10 +8,11 @@
 #include <avr/pgmspace.h>
 #include "alert.h"
 #include "integers.h"
+#include "interrupts.h"
 #include "rules.h"
 #include "messages.h"
 
-#define BEEPS 60
+#define BEEPS 30
 #define LENGTH 20
 #define TONE 31
 
@@ -19,11 +20,11 @@
 #define DIR_BURN_UP 1
 #define DIR_BURN_DOWN -1
 
-uint16_t age = 0;
+uint8_t age = 0;
 int8_t dir = 0;
 
-static Measurement rulesMeasMax = {0, 0, 2000};
-static Measurement rulesMeasPrev = {0, 0, 2000};
+static Measurement rulesMeasMax = {0, 0, 2000, 0};
+static Measurement rulesMeasPrev = {0, 0, 2000, 0};
 
 /**
  * Reminds to set the air gate to 50% when the fire is still building up
@@ -32,7 +33,7 @@ static Measurement rulesMeasPrev = {0, 0, 2000};
 static void airgate50(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_UP && meas.tempI >= 500) {
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""));
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
 }
@@ -44,7 +45,7 @@ static void airgate50(bool* const fired, int8_t const dir,
 static void airgate25(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 800) {
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""));
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
 	}
 }
@@ -56,8 +57,9 @@ static void airgate25(bool* const fired, int8_t const dir,
 static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 400) {
+		setHeatingOn(false);
 		alert_P(BEEPS, LENGTH, TONE,
-				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(MSG_AIRGATE_CLOSE_1));
+				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
 		*fired = true;
 	}
 }
@@ -68,9 +70,10 @@ static void airgateClose(bool* const fired, int8_t const dir,
  */
 static void tooRich(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && meas.tempI >= 100 && meas.lambda < 1200) {
+	if (! *fired && meas.tempI >= 100 && meas.lambda < 1200 &&
+			getHeatingState() == HEATING_READY) {
 		alert_P(BEEPS, LENGTH, TONE,
-				PSTR(MSG_TOO_RICH_0), PSTR(MSG_TOO_RICH_1));
+				PSTR(MSG_TOO_RICH_0), PSTR(MSG_TOO_RICH_1), false);
 		*fired = true;
 	}
 	if (meas.lambda >= 1300) {
@@ -85,7 +88,7 @@ static void fireOut(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_UP && meas.tempI < 100 &&
 			rulesMeasMax.tempI - meas.tempI > 25) {
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""));
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 		*fired = true;
 	}
 	if (meas.tempI >= 125) {
@@ -93,10 +96,39 @@ static void fireOut(bool* const fired, int8_t const dir,
 	}
 }
 
+static void heatingReady(bool* const fired, int8_t const dir,
+		Measurement const meas) {
+	if (! isHeatingOn() || getHeatingState() == HEATING_READY) {
+		return;
+	}
+	if (meas.current <= HEATING_READY_MA && meas.current > HEATING_DISCONN_MA) {
+		setHeatingState(HEATING_READY);
+		alert_P(3, 10, TONE, PSTR(MSG_HEATING_READY_0),
+				PSTR(MSG_HEATING_READY_1), false);
+	}
+}
+
+static void heatingFault(bool* const fired, int8_t const dir,
+		Measurement const meas) {
+	if (! isHeatingOn() || getHeatingState() == HEATING_FAULT) {
+		return;
+	}
+	if (meas.current > HEATING_SHORT_MA || meas.current < HEATING_DISCONN_MA ||
+			(getTime() > SECOND * 120 && meas.current > HEATING_READY_MA)) {
+		// short circuit or disconnected or did not warm up within 2 minutes
+		setHeatingOn(false);
+		setHeatingState(HEATING_FAULT);
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_HEATING_FAULT_0),
+				PSTR(MSG_HEATING_FAULT_1), true);
+	}
+}
+
 /**
  * Array of rules.
  */
 Rule rules[] = {
+		{false, heatingReady},
+		{false, heatingFault},
 		{false, airgate50},
 		{false, airgate25},
 		{false, airgateClose},
@@ -107,13 +139,13 @@ Rule rules[] = {
 // called about every second
 void reason(Measurement const meas) {
 
-	// apply the rules about every 10 seconds
-	if (age % 10 == 0) {
+	// apply the rules about every 10 seconds to every 10th measurement
+	// if (age % 10 == 0) {
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 		for (size_t i = 0; i < rulesSize; i++) {
 			rules[i].cond(&(rules[i].fired), dir, meas);
 		}
-	}
+	// }
 
 	age++;
 
@@ -134,18 +166,15 @@ void reason(Measurement const meas) {
 	}
 
 	rulesMeasMax.tempI = MAX(rulesMeasMax.tempI, meas.tempI);
-	rulesMeasMax.tempO = MAX(rulesMeasMax.tempO, meas.tempO);
-	rulesMeasMax.lambda = MIN(rulesMeasMax.lambda, meas.lambda);
 }
 
 void resetRules(void) {
 	rulesMeasPrev.tempI = 0;
 	rulesMeasPrev.tempO = 0;
 	rulesMeasPrev.lambda = 2000;
+	rulesMeasPrev.current = 0;
 
 	rulesMeasMax.tempI = 0;
-	rulesMeasMax.tempO = 0;
-	rulesMeasMax.lambda = 2000;
 
 	age = 0;
 	dir = DIR_NONE;

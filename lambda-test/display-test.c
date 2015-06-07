@@ -49,7 +49,7 @@ bool testCycleCancelAlert(void) {
 	position = 0;
 	updatePending = false;
 
-	alert(1, 1, 31, "", "");
+	alert(1, 1, 31, "", "", false);
 	assertTrue(isAlertActive());
 
 	cycleDisplay();
@@ -130,7 +130,7 @@ bool testUpdateDisplayIfPendingAlertActive(void) {
 	extern bool updatePending;
 
 	updatePending = true;
-	alert(1, 1, 31, "", "");
+	alert(1, 1, 31, "", "", false);
 	assertTrue(isAlertActive());
 
 	// update should be skipped if alert is active

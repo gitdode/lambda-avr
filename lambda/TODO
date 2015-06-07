@@ -12,3 +12,5 @@
 - Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
   really so unstable?
 - Put button and beeper pins in pins.h (watch out with OCR1A)
+- AVcc should be connected to Vcc via an LC network
+- ADC 5 and 4 use digital power while ADC 3-0 use analog power!

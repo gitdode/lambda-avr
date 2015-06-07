@@ -13,7 +13,7 @@ BAUD = 9600
 MAIN = lambda.c
 
 ## en: 0 (default), de: 1
-LANG = 0
+LANG = 1
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 

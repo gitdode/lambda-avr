@@ -14,6 +14,7 @@
 #include <string.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include "interrupts.h"
 #include "sensors.h"
 #include "display.h"
 #include "alert.h"
@@ -38,13 +39,16 @@ void runCommand(char* const data) {
 	split(data, " ", fields, fieldCount);
 	if (strcmp_P(fields[0], PSTR("se")) == 0) {
 		// simulation enable
+		simulation = true;
+		resetTime();
 		resetDisplay();
 		resetRules();
-		simulation = true;
+		setHeatingOn(true);
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
 		// simulation disable
+		resetTime();
 		resetDisplay();
 		resetRules();
 		simulation = false;
@@ -60,6 +64,16 @@ void runCommand(char* const data) {
 		logging = false;
 		beep(1, 2, 31);
 	}
+	else if (strcmp_P(fields[0], PSTR("he")) == 0) {
+		// oxygen sensor heating enable
+		setHeatingOn(true);
+		beep(1, 2, 31);
+	}
+	else if (strcmp_P(fields[0], PSTR("hd")) == 0) {
+		// oxygen sensor heating disable
+		setHeatingOn(false);
+		beep(1, 2, 31);
+	}
 	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {
 		// cycle menu
 		cycleDisplay();
@@ -68,7 +82,7 @@ void runCommand(char* const data) {
 		// test alert
 		char buf[16];
 		strcpy_P(buf, PSTR("Beep Beep Beep!"));
-		alert(3, 10, 15, buf, fields[1]);
+		alert(3, 10, 15, buf, fields[1], false);
 	}
 	else if (strcmp_P(fields[0], PSTR("tb")) == 0) {
 		// test beep
@@ -84,7 +98,9 @@ void runCommand(char* const data) {
 	}
 	else if (simulation) {
 		Measurement meas = readMeas(fields, fieldCount);
-		updateMeas(meas);
+		if (getHeatingState() == HEATING_READY) {
+			updateMeas(meas);
+		}
 		reason(meas);
 	}
 }

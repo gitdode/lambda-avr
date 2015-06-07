@@ -12,19 +12,20 @@
 #include <string.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <util/atomic.h>
 #include "interrupts.h"
 #include "sensors.h"
 #include "display.h"
 #include "alert.h"
 
 static volatile bool buttonPressed = false;
-static volatile uint8_t intCount = 0;
+static volatile uint32_t time = 0;
 
 /**
- * Called every 16 ms.
+ * Called about every 16.4 ms.
  */
 ISR(TIMER0_OVF_vect) {
-	intCount++;
+	time++;
 	oscillateBeep();
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
 		buttonPressed = true;
@@ -34,14 +35,17 @@ ISR(TIMER0_OVF_vect) {
 	}
 }
 
-bool hasIntCount(uint8_t const count, bool const reset) {
-	if (intCount >= count) {
-		if (reset) {
-			intCount = 0;
-		}
-		return true;
-	} else {
-		return false;
+uint32_t getTime(void) {
+	uint32_t atomicTime;
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		atomicTime = time;
+	}
+	return atomicTime;
+}
+
+void resetTime(void) {
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		time = 0;
 	}
 }
 
@@ -51,6 +55,9 @@ void setupPorts(void) {
 
 	// enable beep output pin
 	DDRB |= (1 << PB1);
+
+	// enable oxygen sensor heating control output pin
+	DDRB |= (1 << PB2);
 }
 
 void setupSleepMode(void) {
@@ -76,7 +83,7 @@ void initInterrupts(void) {
 
 void initTimers(void) {
 	// timer in normal mode is default
-	// timer0 clock prescaler/64 = 15.625 kHz overflowing every 16 ms
+	// timer0 clock prescaler/64 = 15.625 kHz overflowing every 16.4 ms
 	TCCR0B |= (1 << CS01) | (1 << CS00);
 
 	// timer1 Clear Timer on Compare Match mode, TOP OCR1A
