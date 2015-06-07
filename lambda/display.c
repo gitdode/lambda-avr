@@ -59,10 +59,10 @@ static void displayMeas(Measurement const meas, char* const hint) {
 }
 
 void cycleDisplay(void) {
-	updatePending = true;
 	if (isAlertActive()) {
 		// button pressed during alert
 		cancelAlert(false);
+		updatePending = true;
 		return;
 	}
 	position++;
@@ -72,6 +72,7 @@ void cycleDisplay(void) {
 	if (position == MENU_LAST_TEXT) {
 		lcd_clear();
 	}
+	updatePending = true;
 	beep(1, 2, 31);
 }
 

@@ -139,7 +139,8 @@ Rule rules[] = {
 // called about every second
 void reason(Measurement const meas) {
 
-	// apply the rules about every 10 seconds to every 10th measurement
+	// TODO apply only heating* (not averaged) to every measurement
+	// and the other (averaged) rules only to every 10th measurement?
 	// if (age % 10 == 0) {
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 		for (size_t i = 0; i < rulesSize; i++) {
@@ -151,7 +152,7 @@ void reason(Measurement const meas) {
 
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
-	if (age >= 180) {
+	if (age >= 179) {
 		dir = DIR_NONE;
 		if ((meas.tempI - rulesMeasPrev.tempI) >= 10 &&
 				rulesMeasMax.tempI < 800 && meas.lambda >= 2000) {
