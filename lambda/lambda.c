@@ -52,12 +52,14 @@ int main(void) {
 	// spend some time on being polite
 	_delay_ms(3000);
 	setHeatingOn(true);
+	_delay_ms(1000);
 
 	Measurement meas;
 
 	// main loop
 	while (true) {
-		if (getTime() % SECOND == 0 && ! isSimulation() &&
+		// TODO use getTime() here as well and get rid of getInts()?
+		if (getInts() % INTS_PER_SEC == 0 && ! isSimulation() &&
 				getHeatingState() != HEATING_FAULT) {
 			meas = measure();
 			if (isLogging()) {

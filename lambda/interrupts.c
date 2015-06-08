@@ -19,13 +19,13 @@
 #include "alert.h"
 
 static volatile bool buttonPressed = false;
-static volatile uint32_t time = 0;
+static volatile uint32_t ints = 0;
 
 /**
  * Called about every 16.4 ms.
  */
 ISR(TIMER0_OVF_vect) {
-	time++;
+	ints++;
 	oscillateBeep();
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
 		buttonPressed = true;
@@ -35,17 +35,21 @@ ISR(TIMER0_OVF_vect) {
 	}
 }
 
-uint32_t getTime(void) {
-	uint32_t atomicTime;
+uint32_t getInts(void) {
+	uint32_t atomicInts;
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		atomicTime = time;
+		atomicInts = ints;
 	}
-	return atomicTime;
+	return atomicInts;
+}
+
+uint32_t getTime(void) {
+	return getInts() / INTS_PER_SEC;
 }
 
 void resetTime(void) {
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		time = 0;
+		ints = 0;
 	}
 }
 

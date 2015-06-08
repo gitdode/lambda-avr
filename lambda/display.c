@@ -17,12 +17,15 @@
 #include "usart.h"
 #include "lcdroutines.h"
 #include "integers.h"
+#include "interrupts.h"
 #include "display.h"
 #include "alert.h"
+#include "messages.h"
 
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
 #define MENU_LAST_TEXT 2
+#define MENU_TIME 3
 
 uint8_t position = MENU_OFF;
 bool updatePending = false;
@@ -43,8 +46,8 @@ static void setText(const char* const line0, const char* const line1) {
 }
 
 /**
- * Formats the given measurement values and displays them on an 16x2 LCD along
- * with the given hint.
+ * Formats the given measurement values and displays them along with the
+ * given hint.
  */
 static void displayMeas(Measurement const meas, char* const hint) {
 	uint16_t lambdax100 = divRoundNearest(meas.lambda, 10);
@@ -58,6 +61,20 @@ static void displayMeas(Measurement const meas, char* const hint) {
 	setText(line0, line1);
 }
 
+/**
+ * Formats and displays the time since last start/reset.
+ */
+static void displayTime(void) {
+	uint32_t time = getTime();
+	uint16_t hours = time / 3600;
+	uint8_t mins = time % 3600 / 60;
+	uint8_t secs = time % 60;
+
+	char line1[17];
+	snprintf(line1, sizeof(line1), "%u:%02u:%02u", hours, mins, secs);
+	setText(MSG_TIME_SINCE_START, line1);
+}
+
 void cycleDisplay(void) {
 	if (isAlertActive()) {
 		// button pressed during alert
@@ -66,12 +83,10 @@ void cycleDisplay(void) {
 		return;
 	}
 	position++;
-	if (position > MENU_LAST_TEXT) {
+	if (position > MENU_TIME) {
 		position = MENU_OFF;
 	}
-	if (position == MENU_LAST_TEXT) {
-		lcd_clear();
-	}
+	lcd_clear();
 	updatePending = true;
 	beep(1, 2, 31);
 }
@@ -102,6 +117,8 @@ void updateDisplayIfPending() {
 			displayMeas(measMax, "|>");
 		} else if (position == MENU_LAST_TEXT) {
 			setText(lastLine0, lastLine1);
+		} else if (position == MENU_TIME) {
+			displayTime();
 		} else {
 			displayMeas(measLatest, "  ");
 		}

@@ -11,10 +11,17 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
-#define SECOND 61
+// 61 +/-1 depending on internal oscillator?
+#define INTS_PER_SEC 61
 
 /**
- * Returns the time in units of about 16.4 ms since last reset.
+ * Returns the count of interrupts occurring about every 16.4 ms
+ * since last reset.
+ */
+uint32_t getInts(void);
+
+/**
+ * Returns the time in about seconds since last reset.
  */
 uint32_t getTime(void);
 

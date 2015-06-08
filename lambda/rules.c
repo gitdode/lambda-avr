@@ -121,7 +121,7 @@ static void heatingFault(bool* const fired, int8_t const dir,
 		return;
 	}
 	if (meas.current > HEATING_SHORT_MA || meas.current < HEATING_DISCONN_MA ||
-			(getTime() > SECOND * 120 && meas.current > HEATING_READY_MA)) {
+			(getTime() > 120 && meas.current > HEATING_READY_MA)) {
 		// short circuit or disconnected or did not warm up within 2 minutes
 		setHeatingOn(false);
 		setHeatingState(HEATING_FAULT);
@@ -136,7 +136,7 @@ static void heatingFault(bool* const fired, int8_t const dir,
  */
 static void heatingTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (isHeatingOn() && getTime() > SECOND * 10800UL && meas.tempI < 400) {
+	if (isHeatingOn() && getTime() > 10800 && meas.tempI < 400) {
 		setHeatingOn(false);
 	}
 }
