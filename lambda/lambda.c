@@ -58,7 +58,6 @@ int main(void) {
 
 	// main loop
 	while (true) {
-		// TODO use getTime() here as well and get rid of getInts()?
 		if (getInts() % INTS_PER_SEC == 0 && ! isSimulation() &&
 				getHeatingState() != HEATING_FAULT) {
 			meas = measure();
