@@ -63,7 +63,8 @@ int main(void) {
 			if (isLogging()) {
 				logMeas(meas);
 			}
-			if (getHeatingState() == HEATING_READY) {
+			if (getHeatingState() == HEATING_OFF ||
+					getHeatingState() == HEATING_READY) {
 				updateMeas(meas);
 			}
 			reason(meas);

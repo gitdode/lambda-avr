@@ -64,6 +64,14 @@ static TableEntry const tempOTable[] = {
 };
 
 /**
+ * Table used to look up ADC measurement deviation due to non-linearity.
+ */
+static TableEntry const linADCTable[] = {
+	{ 0, ADC_NONLIN_0 },
+	{ AREF_MV, ADC_NONLIN_AREF }
+};
+
+/**
  * Variables holding averaged voltages*8.
  */
 static uint32_t lambdaVoltageAvg = 44 << 3; // Lambda 2.00
@@ -75,23 +83,25 @@ static uint32_t tempOVoltageAvg = 644 << 3; // 20°C
  * calculates an exponential moving average and displays the translated values.
  */
 Measurement measure(void) {
-	uint32_t tempIVoltage = getVoltage(ADC_TEMPI);
+	uint32_t tempIVoltage = linADC(getVoltage(ADC_TEMPI));
 	tempIVoltageAvg = tempIVoltage + tempIVoltageAvg -
 			((tempIVoltageAvg - 4) >> 3);
 
-	uint32_t tempOVoltage = getVoltage(ADC_TEMPO);
+	uint32_t tempOVoltage = linADC(getVoltage(ADC_TEMPO));
 	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
 			((tempOVoltageAvg - 4) >> 3);
 
-	uint32_t lambdaVoltage = getVoltage(ADC_LAMBDA);
+	uint32_t lambdaVoltage = linADC(getVoltage(ADC_LAMBDA));
 	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 			((lambdaVoltageAvg - 4) >> 3);
+
+	uint16_t heatingVoltage = linADC(getVoltage(ADC_HEATING));
 
 	Measurement meas;
 	meas.tempI = toTempI(tempIVoltageAvg >> 3);
 	meas.tempO = toTempO(tempOVoltageAvg >> 3);
 	meas.lambda = toLambda(lambdaVoltageAvg >> 3);
-	meas.current = toCurrent(getVoltage(ADC_HEATING));
+	meas.current = toCurrent(heatingVoltage);
 
 	return meas;
 }
@@ -156,6 +166,13 @@ int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
 			(uint32_t)(mV - table[i].mV) * diffValue, diffVoltage);
 
 	return value;
+}
+
+int16_t linADC(uint16_t const mV) {
+	size_t size = sizeof(linADCTable) / sizeof(linADCTable[0]);
+	int16_t dev = lookupLinInter(mV, linADCTable, size);
+
+	return (int16_t)mV - dev;
 }
 
 char* toInfo(uint16_t const lambda) {

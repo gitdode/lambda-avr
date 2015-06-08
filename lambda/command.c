@@ -98,7 +98,8 @@ void runCommand(char* const data) {
 	}
 	else if (simulation) {
 		Measurement meas = readMeas(fields, fieldCount);
-		if (getHeatingState() == HEATING_READY) {
+		if (getHeatingState() == HEATING_OFF ||
+				getHeatingState() == HEATING_READY) {
 			updateMeas(meas);
 		}
 		reason(meas);

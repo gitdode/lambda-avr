@@ -96,6 +96,9 @@ static void fireOut(bool* const fired, int8_t const dir,
 	}
 }
 
+/**
+ * Notifies that the heating is ready and sets the corresponding state.
+ */
 static void heatingReady(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! isHeatingOn() || getHeatingState() == HEATING_READY) {
@@ -108,6 +111,10 @@ static void heatingReady(bool* const fired, int8_t const dir,
 	}
 }
 
+/**
+ * Notifies that the heating or its connection is faulty and sets the
+ * corresponding state.
+ */
 static void heatingFault(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! isHeatingOn() || getHeatingState() == HEATING_FAULT) {
@@ -124,11 +131,23 @@ static void heatingFault(bool* const fired, int8_t const dir,
 }
 
 /**
- * Array of rules.
+ * Switches the heating off if it is still on after 3 hours and there does
+ * not seem to be a fire.
+ */
+static void heatingTimeout(bool* const fired, int8_t const dir,
+		Measurement const meas) {
+	if (isHeatingOn() && getTime() > SECOND * 10800UL && meas.tempI < 400) {
+		setHeatingOn(false);
+	}
+}
+
+// TODO what if fired up again without reset?
+// TODO what if reset during burndown?
+
+/**
+ * Rules applied to every nth averaged measurement
  */
 Rule rules[] = {
-		{false, heatingReady},
-		{false, heatingFault},
 		{false, airgate50},
 		{false, airgate25},
 		{false, airgateClose},
@@ -136,17 +155,32 @@ Rule rules[] = {
 		{false, fireOut}
 };
 
+/**
+ * Heater rules applied to each not averaged measured heater current value
+ */
+Rule heaterRules[] = {
+		{false, heatingReady},
+		{false, heatingFault},
+		{false, heatingTimeout}
+};
+
+
 // called about every second
 void reason(Measurement const meas) {
 
-	// TODO apply only heating* (not averaged) to every measurement
-	// and the other (averaged) rules only to every 10th measurement?
-	// if (age % 10 == 0) {
+	// rules applied to every 10th measurement
+	if (age % 10 == 0) {
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 		for (size_t i = 0; i < rulesSize; i++) {
 			rules[i].cond(&(rules[i].fired), dir, meas);
 		}
-	// }
+	}
+
+	// rules applied to each measurement
+	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
+	for (size_t i = 0; i < heaterRulesSize; i++) {
+		heaterRules[i].cond(&(heaterRules[i].fired), dir, meas);
+	}
 
 	age++;
 
@@ -183,5 +217,10 @@ void resetRules(void) {
 	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 	for (size_t i = 0; i < rulesSize; i++) {
 		rules[i].fired = false;
+	}
+
+	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
+	for (size_t i = 0; i < heaterRulesSize; i++) {
+		heaterRules[i].fired = false;
 	}
 }

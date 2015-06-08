@@ -93,6 +93,11 @@ uint16_t toCurrent(uint16_t mv);
 int16_t lookupLinInter(uint16_t mV, TableEntry const table[], size_t length);
 
 /**
+ * Returns the given ADC measurement with compensated ADC non-linearity.
+ */
+int16_t linADC(uint16_t mV);
+
+/**
  * Returns a descriptive term such as "Lean" for the given lambda value x1000.
  * For a wood fire, residual oxygen between 5% and 7% (lambda 1.3 and 1.5) is
  * a good value, below is rich and above is lean.

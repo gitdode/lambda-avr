@@ -12,10 +12,9 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-// TODO put in Makefile
 #define AREF_MV 5000
-#define ADC_OFFSET_MV 7
-#define TEMPO_OP_OFFSET_MV 454
+#define ADC_NONLIN_0 -8
+#define ADC_NONLIN_AREF 12
 
 /**
  * Sets up reference voltage and clock prescaler of the ADC and enables it.
@@ -24,8 +23,7 @@ void setupADC(void);
 
 /**
  * Returns the voltage sampled at the given ADC input pin doing
- * 16x oversampling and taking in account the calibrated AREF and
- * ADC offset voltages.
+ * 16x oversampling and taking in account the calibrated AREF voltage.
  */
 uint16_t getVoltage(uint8_t pin);
 
