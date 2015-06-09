@@ -1,16 +1,14 @@
 * C
-- Check other use of const (return value?)
+- Check other uses of const (return value?)
 - Flexarray? http://en.wikipedia.org/wiki/Sizeof
 
 * AVR
-- What happens if USART data is sent to the AVR too fast (GtkTerm Send Raw File)
+- Take in account F_CPU everywhere CPU speed matters
 
 * Functionality
-- Implement i18n
   
 * Circuit
 - Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
   really so unstable?
 - Put button and beeper pins in pins.h (watch out with OCR1A)
-- AVcc should be connected to Vcc via an LC network
-- ADC 5 and 4 use digital power while ADC 3-0 use analog power!
+- AVCC should be connected to VCC via an LC network
