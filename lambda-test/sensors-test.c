@@ -31,7 +31,8 @@ bool testMeasure(void) {
 
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
-	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA));
+	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA) |
+			(1 << ADC_HEATING));
 
 	// do many measurements so the averaged voltages are near the measured
 	// voltages (close to AREF)
@@ -40,22 +41,24 @@ bool testMeasure(void) {
 		meas = measure();
 	}
 
-	// verify that temperatures and lambda are calculated correctly
+	// verify that temperatures, lambda and current are calculated correctly
 	// for voltages > 4900 and <= 5000 mV
 	assertTrue(meas.tempI >= 980 && meas.tempI <= 1000);
 	assertTrue(meas.tempO == 400);
 	assertTrue(meas.lambda >= 995 && meas.lambda <= 999);
+	assertTrue(meas.current >= 49000 && meas.current <= 50000);
 
 	return true;
 }
 
 bool testReadMeas(void) {
-	char* fields[] = {"1", "2", "3"};
+	char* fields[] = {"1", "2", "3", "4"};
 
-	Measurement meas = readMeas(fields, 3);
+	Measurement meas = readMeas(fields, 4);
 	assertTrue(meas.tempI == 1);
 	assertTrue(meas.tempO == 2);
 	assertTrue(meas.lambda == 3);
+	assertTrue(meas.current == 4);
 
 	return true;
 }
@@ -67,6 +70,7 @@ bool testReadMeasTooFewFields(void) {
 	assertTrue(meas.tempI == 0);
 	assertTrue(meas.tempO == 0);
 	assertTrue(meas.lambda == 0);
+	assertTrue(meas.current == 0);
 
 	return true;
 }

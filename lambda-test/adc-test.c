@@ -38,9 +38,9 @@ bool testGetVoltage(void) {
 
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
-	PORTC |= (1 << PC1);
+	PORTC |= (1 << PC0);
 
-	uint16_t mV = getVoltage(PC1);
+	uint16_t mV = getVoltage(PC0);
 
 	return mV > 4900;
 }

@@ -146,6 +146,8 @@ bool testTooRich(void) {
 	Measurement meas = {0, 0, 0};
 	dir = 0;
 
+	setHeatingState(HEATING_READY);
+
 	meas.tempI = 99;
 	meas.lambda = 2000;
 	resetRules();

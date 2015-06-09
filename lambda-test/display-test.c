@@ -22,6 +22,7 @@ bool testCycle(void) {
 	extern uint8_t beepCount;
 	extern uint16_t beepLength;
 
+	cancelAlert(true);
 	updatePending = false;
 
 	assertTrue(position == 0);
@@ -35,6 +36,9 @@ bool testCycle(void) {
 
 	cycleDisplay();
 	assertTrue(position == 2);
+
+	cycleDisplay();
+	assertTrue(position == 3);
 
 	cycleDisplay();
 	assertTrue(position == 0);
@@ -70,29 +74,31 @@ bool testUpdateMeas(void) {
 	// initial measurements
 	assertTrue(measLatest.tempI == 0);
 	assertTrue(measLatest.tempO == 0);
-	assertTrue(measLatest.lambda == 0);
+	assertTrue(measLatest.lambda == 2000);
+	assertTrue(measLatest.current == 0);
 	// initial max measurements
 	assertTrue(measMax.tempI == 0);
 	assertTrue(measMax.tempO == 0);
 	assertTrue(measMax.lambda == 2000);
 
-	Measurement meas1 = {1, 2, 3};
+	Measurement meas1 = {1, 2, 3, 4};
 	updateMeas(meas1);
 	// updated measurements
 	assertTrue(measLatest.tempI == 1);
 	assertTrue(measLatest.tempO == 2);
 	assertTrue(measLatest.lambda == 3);
+	assertTrue(measLatest.current == 4);
 	// updated max measurements
 	assertTrue(measMax.tempI == 1);
 	assertTrue(measMax.tempO == 2);
 	assertTrue(measMax.lambda == 3);
 	assertTrue(updatePending);
 
-	Measurement meas2 = {0, 0, 10};
+	Measurement meas2 = {10, 20, 30, 40};
 	updateMeas(meas2);
 	// updated max measurements
-	assertTrue(measMax.tempI == 1);
-	assertTrue(measMax.tempO == 2);
+	assertTrue(measMax.tempI == 10);
+	assertTrue(measMax.tempO == 20);
 	assertTrue(measMax.lambda == 3);
 
 	return true;
