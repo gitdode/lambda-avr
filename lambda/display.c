@@ -65,13 +65,8 @@ static void displayMeas(Measurement const meas, char* const hint) {
  * Formats and displays the time since last start/reset.
  */
 static void displayTime(void) {
-	uint32_t time = getTime();
-	uint16_t hours = time / 3600;
-	uint8_t mins = time % 3600 / 60;
-	uint8_t secs = time % 60;
-
-	char line1[17];
-	snprintf(line1, sizeof(line1), "%u:%02u:%02u", hours, mins, secs);
+	char line1[12];
+	formatTime(line1, sizeof(line1));
 	setText(MSG_TIME_SINCE_START, line1);
 }
 

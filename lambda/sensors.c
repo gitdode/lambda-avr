@@ -187,7 +187,7 @@ char* toInfo(uint16_t const lambda) {
 	}
 }
 
-void setHeatingOn(bool on) {
+void setHeatingOn(bool const on) {
 	if (on) {
 		PORTB |= (1 << PB2);
 		heatingState = HEATING_UP;
@@ -195,7 +195,7 @@ void setHeatingOn(bool on) {
 	} else {
 		PORTB &= ~(1 << PB2);
 		heatingState = HEATING_OFF;
-		cancelAlert(true);
+		// cancelAlert(true);
 	}
 }
 
@@ -203,7 +203,7 @@ bool isHeatingOn(void) {
 	return bit_is_set(PORTB, PB2);
 }
 
-void setHeatingState(int8_t state) {
+void setHeatingState(int8_t const state) {
 	heatingState = state;
 }
 

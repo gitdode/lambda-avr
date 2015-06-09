@@ -26,6 +26,11 @@ uint32_t getInts(void);
 uint32_t getTime(void);
 
 /**
+ * Writes the time since last reset in format HHHHH:MM:SS to the given string.
+ */
+void formatTime(char* str, size_t size);
+
+/**
  * Resets the time to 0.
  */
 void resetTime(void);

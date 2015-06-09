@@ -47,6 +47,15 @@ uint32_t getTime(void) {
 	return getInts() / INTS_PER_SEC;
 }
 
+void formatTime(char* const str, size_t const size) {
+	uint32_t time = getTime();
+	uint16_t hours = time / 3600;
+	uint8_t mins = time % 3600 / 60;
+	uint8_t secs = time % 60;
+
+	snprintf(str, size, "%5u:%02u:%02u", hours, mins, secs);
+}
+
 void resetTime(void) {
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
 		ints = 0;
