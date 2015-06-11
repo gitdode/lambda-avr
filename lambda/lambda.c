@@ -70,12 +70,14 @@ int main(void) {
 			}
 			reason(meas);
 		}
+		if (! isSimulation()) {
+			updateDisplayIfPending();
+		}
 		if (isUSARTReceived()) {
 			char data[64];
 			getUSARTData(data, sizeof(data));
 			runCommand(data);
 		}
-		updateDisplayIfPending();
 	}
 
 	// never reached

@@ -195,7 +195,6 @@ void setHeatingOn(bool const on) {
 	} else {
 		PORTB &= ~(1 << PB2);
 		heatingState = HEATING_OFF;
-		// cancelAlert(true);
 	}
 }
 

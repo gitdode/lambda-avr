@@ -21,6 +21,12 @@
 uint32_t getInts(void);
 
 /**
+ * Adds the given number of interrupts to the interrupt counter
+ * used as timebase. Useful only for simulation.
+ */
+void addInts(uint8_t add);
+
+/**
  * Returns the time in about seconds since last reset.
  */
 uint32_t getTime(void);

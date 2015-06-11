@@ -13,6 +13,7 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <util/atomic.h>
+#include "command.h"
 #include "interrupts.h"
 #include "sensors.h"
 #include "display.h"
@@ -25,7 +26,9 @@ static volatile uint32_t ints = 0;
  * Called about every 16.4 ms.
  */
 ISR(TIMER0_OVF_vect) {
-	ints++;
+	if (! isSimulation()) {
+		ints++;
+	}
 	oscillateBeep();
 	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
 		buttonPressed = true;
@@ -41,6 +44,12 @@ uint32_t getInts(void) {
 		atomicInts = ints;
 	}
 	return atomicInts;
+}
+
+void addInts(uint8_t const add) {
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		ints += add;
+	}
 }
 
 uint32_t getTime(void) {

@@ -96,13 +96,17 @@ void runCommand(char* const data) {
 		}
 		beep(1, length, tone);
 	}
-	else if (simulation) {
+	else if (strcmp_P(fields[4], PSTR("!")) == 0 && simulation) {
+		// add one second per measurement to the timebase,
+		// assuming one measurement was logged per second
+		addInts(INTS_PER_SEC);
 		Measurement meas = readMeas(fields, fieldCount);
 		if (getHeatingState() == HEATING_OFF ||
 				getHeatingState() == HEATING_READY) {
 			updateMeas(meas);
 		}
 		reason(meas);
+		updateDisplayIfPending();
 	}
 }
 
