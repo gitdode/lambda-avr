@@ -96,7 +96,7 @@ void runCommand(char* const data) {
 		}
 		beep(1, length, tone);
 	}
-	else if (strcmp_P(fields[4], PSTR("!")) == 0 && simulation) {
+	else if (simulation) {
 		// add one second per measurement to the timebase,
 		// assuming one measurement was logged per second
 		addInts(INTS_PER_SEC);
@@ -106,7 +106,8 @@ void runCommand(char* const data) {
 			updateMeas(meas);
 		}
 		reason(meas);
-		updateDisplayIfPending();
 	}
+
+	updateDisplayIfPending();
 }
 

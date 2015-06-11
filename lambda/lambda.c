@@ -54,12 +54,14 @@ int main(void) {
 	setHeatingOn(true);
 	_delay_ms(1000);
 
+	uint32_t ints = 0;
 	Measurement meas;
 
 	// main loop
 	while (true) {
-		if (getInts() % INTS_PER_SEC == 0 && ! isSimulation() &&
+		if (! isSimulation() && getInts() >= ints + INTS_PER_SEC &&
 				getHeatingState() != HEATING_FAULT) {
+			ints = getInts();
 			meas = measure();
 			if (isLogging()) {
 				logMeas(meas);
