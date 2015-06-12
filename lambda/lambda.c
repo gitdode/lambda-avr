@@ -23,7 +23,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <util/delay.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -50,9 +49,9 @@ int main(void) {
 
 	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
-	_delay_ms(3000);
+	while (getTime() < 3) {}
 	setHeatingOn(true);
-	_delay_ms(1000);
+	while (getTime() < 4) {}
 
 	uint32_t ints = 0;
 	Measurement meas;

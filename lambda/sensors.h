@@ -13,7 +13,8 @@
 
 #include <stdio.h>
 
-#define SHUNT_MILLIOHMS 100
+/* 0.1 Ohm 10% measured 0.111 Ohm */
+#define SHUNT_MILLIOHMS 111
 #define HEATING_READY_MA 1500
 #define HEATING_SHORT_MA 9000
 #define HEATING_DISCONN_MA 100

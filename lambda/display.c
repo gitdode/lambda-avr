@@ -24,8 +24,9 @@
 
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
-#define MENU_LAST_TEXT 2
-#define MENU_TIME 3
+#define MENU_CURRENT 2
+#define MENU_LAST_TEXT 3
+#define MENU_TIME 4
 
 uint8_t position = MENU_OFF;
 bool updatePending = false;
@@ -62,6 +63,18 @@ static void displayMeas(Measurement const meas, char* const hint) {
 }
 
 /**
+ * Formats the given heater current and displays it.
+ */
+static void displayCurrent(uint16_t const current) {
+	div_t ampsT = div(current, 1000);
+
+	char line1[17];
+	snprintf(line1, sizeof(line1), "%d.%02dA",
+			ampsT.quot, abs(ampsT.rem));
+	setText(MSG_HEATING_CURRENT, line1);
+}
+
+/**
  * Formats and displays the time since last start/reset.
  */
 static void displayTime(void) {
@@ -74,6 +87,7 @@ void cycleDisplay(void) {
 	if (isAlertActive()) {
 		// button pressed during alert
 		cancelAlert(false);
+		lcd_clear();
 		updatePending = true;
 		return;
 	}
@@ -112,6 +126,8 @@ void updateDisplayIfPending() {
 			displayMeas(measMax, "|>");
 		} else if (position == MENU_LAST_TEXT) {
 			setText(lastLine0, lastLine1);
+		} else if (position == MENU_CURRENT) {
+			displayCurrent(measLatest.current);
 		} else if (position == MENU_TIME) {
 			displayTime();
 		} else {

@@ -34,13 +34,10 @@ bool testCycle(void) {
 	assertTrue(beepCount == 1);
 	assertTrue(beepLength == 2);
 
-	cycleDisplay();
-	assertTrue(position == 2);
-
-	cycleDisplay();
-	assertTrue(position == 3);
-
-	cycleDisplay();
+	cycleDisplay(); // 2
+	cycleDisplay(); // 3
+	cycleDisplay(); // 4
+	cycleDisplay(); // roll over to 0
 	assertTrue(position == 0);
 
 	return true;
