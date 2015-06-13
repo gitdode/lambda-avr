@@ -91,9 +91,13 @@ Measurement measure(void) {
 	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
 			((tempOVoltageAvg - 4) >> 3);
 
-	uint32_t lambdaVoltage = linADC(getVoltage(ADC_LAMBDA));
-	lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
-			((lambdaVoltageAvg - 4) >> 3);
+	if (heatingState == HEATING_READY) {
+		uint32_t lambdaVoltage = linADC(getVoltage(ADC_LAMBDA));
+		lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
+				((lambdaVoltageAvg - 4) >> 3);
+	} else {
+		lambdaVoltageAvg = 44 << 3;
+	}
 
 	uint16_t heatingVoltage = linADC(getVoltage(ADC_HEATING));
 

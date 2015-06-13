@@ -38,9 +38,7 @@ static char lastLine1[17];
 
 /**
  * Sets the given two lines of text on the display. Right-pads with whitespace
- * so each line is always completely overwritten. This seems to be more
- * efficient than clearing the display only when necessary which even garbles it
- * sometimes.
+ * so each line is always completely overwritten.
  */
 static void setText(const char* const line0, const char* const line1) {
 	char line0padded[17];
@@ -64,8 +62,12 @@ static void displayMeas(Measurement const meas, char* const hint) {
 	char line0[17];
 	char line1[17];
 	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
-			lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
+	if (getHeatingState() == HEATING_READY || position == MENU_MAX_VALUES) {
+		snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
+				lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
+	} else {
+		snprintf(line1, sizeof(line1), "L   -%12s", hint);
+	}
 	setText(line0, line1);
 }
 

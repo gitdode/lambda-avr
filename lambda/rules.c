@@ -136,7 +136,7 @@ static void heatingFault(bool* const fired, int8_t const dir,
  */
 static void heatingTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (isHeatingOn() && getTime() > 10800 && meas.tempI < 400) {
+	if (isHeatingOn() && getTime() >= 10800 && meas.tempI < 400) {
 		setHeatingOn(false);
 	}
 }

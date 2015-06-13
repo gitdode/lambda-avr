@@ -58,17 +58,13 @@ int main(void) {
 
 	// main loop
 	while (true) {
-		if (! isSimulation() && getInts() >= ints + INTS_PER_SEC &&
-				getHeatingState() != HEATING_FAULT) {
+		if (! isSimulation() && getInts() >= ints + INTS_PER_SEC) {
 			ints = getInts();
 			meas = measure();
 			if (isLogging()) {
 				logMeas(meas);
 			}
-			if (getHeatingState() == HEATING_OFF ||
-					getHeatingState() == HEATING_READY) {
-				updateMeas(meas);
-			}
+			updateMeas(meas);
 			reason(meas);
 		}
 		if (! isSimulation()) {
