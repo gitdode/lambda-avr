@@ -37,13 +37,20 @@ static char lastLine0[17];
 static char lastLine1[17];
 
 /**
- * Sets the given two lines of text on the display.
+ * Sets the given two lines of text on the display. Right-pads with whitespace
+ * so each line is always completely overwritten. This seems to be more
+ * efficient than clearing the display only when necessary which even garbles it
+ * sometimes.
  */
 static void setText(const char* const line0, const char* const line1) {
+	char line0padded[17];
+	char line1padded[17];
+	snprintf(line0padded, sizeof(line0padded), "%-16s", line0);
+	snprintf(line1padded, sizeof(line1padded), "%-16s", line1),
 	lcd_setcursor(0, 1);
-	lcd_string(line0);
+	lcd_string(line0padded);
 	lcd_setcursor(0, 2);
-	lcd_string(line1);
+	lcd_string(line1padded);
 }
 
 /**
@@ -66,7 +73,8 @@ static void displayMeas(Measurement const meas, char* const hint) {
  * Formats the given heater current and displays it.
  */
 static void displayCurrent(uint16_t const current) {
-	div_t ampsT = div(current, 1000);
+	uint16_t ampsx100 = divRoundNearest(current, 10);
+	div_t ampsT = div(ampsx100, 100);
 
 	char line1[17];
 	snprintf(line1, sizeof(line1), "%d.%02dA",
@@ -87,7 +95,6 @@ void cycleDisplay(void) {
 	if (isAlertActive()) {
 		// button pressed during alert
 		cancelAlert(false);
-		lcd_clear();
 		updatePending = true;
 		return;
 	}
@@ -95,7 +102,6 @@ void cycleDisplay(void) {
 	if (position > MENU_TIME) {
 		position = MENU_OFF;
 	}
-	lcd_clear();
 	updatePending = true;
 	beep(1, 2, 31);
 }
@@ -149,6 +155,5 @@ void displayText(const char* const line0, const char* const line1) {
 	lastLine1[0] = '\0';
 	strncat(lastLine0, line0, sizeof(lastLine0) - 1);
 	strncat(lastLine1, line1, sizeof(lastLine1) - 1);
-	lcd_clear();
 	setText(line0, line1);
 }
