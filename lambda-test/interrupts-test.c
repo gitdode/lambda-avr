@@ -8,6 +8,8 @@
  *
  */
 
+#include <string.h>
+#include <util/delay.h>
 #include "avrjunit.h"
 #include "interrupts.h"
 
@@ -77,6 +79,27 @@ bool testInitTimers(void) {
 	return true;
 }
 
+bool testTime(void) {
+	resetTime();
+	assertTrue(getInts() == 0);
+	assertTrue(getTime() == 0);
+
+	_delay_ms(1000);
+
+	assertTrue(getInts() >= INTS_PER_SEC);
+	assertTrue(getTime() == 1);
+
+	// add 1:11:10
+	addInts(4270UL * INTS_PER_SEC);
+
+	// HHHHH:MM:SS
+	char str[12];
+	formatTime(str, sizeof(str));
+	assertTrue(strcmp("1:11:11", str));
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "interrupts";
 
@@ -85,6 +108,7 @@ static const char testSetupPorts_P[] PROGMEM = "testSetupPorts";
 static const char testSetupSleepMode_P[] PROGMEM = "testSetupSleepMode";
 static const char testInitInterrupts_P[] PROGMEM = "testInitInterrupts";
 static const char testInitTimers_P[] PROGMEM = "testInitTimers";
+static const char testTime_P[] PROGMEM = "testTime";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -92,6 +116,7 @@ static TestCase const tests[] = {
 		{class, testSetupSleepMode_P, testSetupSleepMode},
 		{class, testInitInterrupts_P, testInitInterrupts},
 		{class, testInitTimers_P, testInitTimers},
+		{class, testTime_P, testTime}
 };
 
 TestClass interruptsClass = {tests, sizeof(tests) / sizeof(tests[0])};

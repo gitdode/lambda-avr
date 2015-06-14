@@ -46,7 +46,7 @@ uint32_t getInts(void) {
 	return atomicInts;
 }
 
-void addInts(uint8_t const add) {
+void addInts(uint32_t const add) {
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
 		ints += add;
 	}

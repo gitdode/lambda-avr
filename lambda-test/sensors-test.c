@@ -17,6 +17,8 @@
 #include "pins.h"
 #include "messages.h"
 
+#include "usart.h"
+
 static TableEntry const testTable[] = {
 		{10, 10},
 		{20, 20}
@@ -34,6 +36,8 @@ bool testMeasure(void) {
 	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA) |
 			(1 << ADC_HEATING));
 
+	setHeatingState(HEATING_READY);
+
 	// do many measurements so the averaged voltages are near the measured
 	// voltages (close to AREF)
 	Measurement meas;
@@ -46,7 +50,8 @@ bool testMeasure(void) {
 	assertTrue(meas.tempI >= 980 && meas.tempI <= 1000);
 	assertTrue(meas.tempO == 400);
 	assertTrue(meas.lambda >= 995 && meas.lambda <= 999);
-	assertTrue(meas.current >= 49000 && meas.current <= 50000);
+	// 5000 * (1000 / SHUNT_MILLIOHMS) = 45045
+	assertTrue(meas.current >= 44500 && meas.current <= 45100);
 
 	return true;
 }

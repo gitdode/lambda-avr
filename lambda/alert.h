@@ -26,7 +26,8 @@ void beep(uint8_t beeps, uint8_t length, uint16_t tone);
 /**
  * Beeps the given number of beeps with the given length and tone and displays
  * the given two texts on the first and second line of the display,
- * respectively, and keeps the alert active or not regardless of the beeps.
+ * respectively, and if keep is true, keeps the alert active until the next
+ * alert, when the button is pressed, only the beep stops.
  */
 void alert(uint8_t beeps, uint8_t length, uint16_t tone,
 		const char* line0, const char* line1, bool keep);

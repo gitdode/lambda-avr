@@ -96,7 +96,7 @@ int16_t lookupLinInter(uint16_t mV, TableEntry const table[], size_t length);
 /**
  * Returns the given ADC measurement with compensated ADC non-linearity.
  */
-int16_t linADC(uint16_t mV);
+int32_t linADC(uint16_t mV);
 
 /**
  * Returns a descriptive term such as "Lean" for the given lambda value x1000.

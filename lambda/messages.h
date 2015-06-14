@@ -36,6 +36,8 @@
 	#define MSG_HEATING_READY_1 "ready"
 	#define MSG_HEATING_FAULT_0 "Oxygen sensor"
 	#define MSG_HEATING_FAULT_1 "heating fault!"
+	#define MSG_HEATING_OFF_0 "Oxygen sensor"
+	#define MSG_HEATING_OFF_1 "off"
 	#define MSG_HEATING_CURRENT "Heater current"
 	#define MSG_TIME_SINCE_START "Time since start"
 
@@ -63,6 +65,8 @@
 	#define MSG_HEATING_READY_1 "bereit"
 	#define MSG_HEATING_FAULT_0 "Lambdasonden-"
 	#define MSG_HEATING_FAULT_1 "heizung Fehler!"
+	#define MSG_HEATING_OFF_0 "Oxygen sensor"
+	#define MSG_HEATING_OFF_1 "off"
 	#define MSG_HEATING_CURRENT "Heizstrom"
 	#define MSG_TIME_SINCE_START "Zeit seit Start"
 

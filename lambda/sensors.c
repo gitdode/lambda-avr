@@ -172,11 +172,11 @@ int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
 	return value;
 }
 
-int16_t linADC(uint16_t const mV) {
+int32_t linADC(uint16_t const mV) {
 	size_t size = sizeof(linADCTable) / sizeof(linADCTable[0]);
 	int16_t dev = lookupLinInter(mV, linADCTable, size);
 
-	return (int16_t)mV - dev;
+	return (int32_t)mV - dev;
 }
 
 char* toInfo(uint16_t const lambda) {

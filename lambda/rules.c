@@ -138,6 +138,8 @@ static void heatingTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (isHeatingOn() && getTime() >= 10800 && meas.tempI < 400) {
 		setHeatingOn(false);
+		alert_P(3, 10, TONE, PSTR(MSG_HEATING_OFF_0),
+				PSTR(MSG_HEATING_OFF_1), false);
 	}
 }
 
