@@ -219,6 +219,45 @@ bool testFireOut(void) {
 	return true;
 }
 
+bool testHeatingReady(void) {
+
+	resetRules();
+	Measurement meas = {0, 0, 0};
+	dir = 1;
+
+
+
+	cancelAlert(false);
+
+	return true;
+}
+
+bool testHeatingFault(void) {
+
+	resetRules();
+	Measurement meas = {0, 0, 0};
+	dir = 1;
+
+
+
+	cancelAlert(false);
+
+	return true;
+}
+
+bool testHeatingTimeout(void) {
+
+	resetRules();
+	Measurement meas = {0, 0, 0};
+	dir = 1;
+
+
+
+	cancelAlert(false);
+
+	return true;
+}
+
 bool testReasonDirBurnUp(void) {
 
 	resetRules();
@@ -334,6 +373,9 @@ static const char testAirgate25_P[] PROGMEM = "testAirgate25";
 static const char testAirgateClose_P[] PROGMEM = "testAirgateClose";
 static const char testTooRich_P[] PROGMEM = "testTooRich";
 static const char testFireOut_P[] PROGMEM = "testFireOut";
+static const char testHeatingReady_P[] PROGMEM = "testHeatingReady";
+static const char testHeatingFault_P[] PROGMEM = "testHeatingFault";
+static const char testHeatingTimeout_P[] PROGMEM = "testHeatingTimeout";
 static const char testReasonDirBurnUp_P[] PROGMEM = "testReasonDirBurnUp";
 static const char testReasonDirBurnDown_P[] PROGMEM = "testReasonDirBurnDown";
 
@@ -344,6 +386,9 @@ static TestCase const tests[] = {
 		{class, testAirgateClose_P, testAirgateClose},
 		{class, testTooRich_P, testTooRich},
 		{class, testFireOut_P, testFireOut},
+		{class, testHeatingReady_P, testHeatingReady},
+		{class, testHeatingFault_P, testHeatingFault},
+		{class, testHeatingTimeout_P, testHeatingTimeout},
 		{class, testReasonDirBurnUp_P, testReasonDirBurnUp},
 		{class, testReasonDirBurnDown_P, testReasonDirBurnDown}
 };

@@ -34,7 +34,7 @@ bool isLogging(void) {
 }
 
 void runCommand(char* const data) {
-	size_t fieldCount = 8;
+	uint8_t fieldCount = 8;
 	char* fields[fieldCount];
 	split(data, " ", fields, fieldCount);
 	if (strcmp_P(fields[0], PSTR("se")) == 0) {

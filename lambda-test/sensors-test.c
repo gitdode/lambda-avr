@@ -50,8 +50,7 @@ bool testMeasure(void) {
 	assertTrue(meas.tempI >= 980 && meas.tempI <= 1000);
 	assertTrue(meas.tempO == 400);
 	assertTrue(meas.lambda >= 995 && meas.lambda <= 999);
-	// 5000 * (1000 / SHUNT_MILLIOHMS) = 45045
-	assertTrue(meas.current >= 44500 && meas.current <= 45100);
+	assertTrue(meas.current >= 49500 && meas.current <= 50000);
 
 	return true;
 }
@@ -110,6 +109,12 @@ bool testToTempOInter(void) {
 	return temp == 50;
 }
 
+bool testToCurrent(void) {
+	uint16_t current = toCurrent(150);
+
+	return current == 1500 / SHUNT_MILLIOHMS * 100;
+}
+
 bool testLookupLinInterBelow(void) {
 	int16_t value = lookupLinInter(0, testTable, 2);
 
@@ -132,6 +137,24 @@ bool testLookupLinInterInter(void) {
 	int16_t value = lookupLinInter(15, testTable, 2);
 
 	return value == 15;
+}
+
+bool testLinADCLow(void) {
+	int32_t lin = linADC(1000);
+
+	return lin == 1004;
+}
+
+bool testLinADCMid(void) {
+	int32_t lin = linADC(2000);
+
+	return lin == 2000;
+}
+
+bool testLinADCHigh(void) {
+	int32_t lin = linADC(4000);
+
+	return lin == 3992;
 }
 
 bool testToInfoLean(void) {
@@ -162,6 +185,29 @@ bool testToInfoRich(void) {
 	return ! strcmp(info, MSG_RICH);
 }
 
+bool testSetHeatingOn(void) {
+	setHeatingOn(true);
+	assertTrue(isHeatingOn());
+	assertTrue(HEATING_UP == getHeatingState());
+
+	setHeatingOn(false);
+	assertFalse(isHeatingOn());
+	assertTrue(HEATING_OFF == getHeatingState());
+
+	return true;
+}
+
+bool testSetHeatingState(void) {
+	setHeatingOn(false);
+	assertFalse(isHeatingOn());
+	assertTrue(HEATING_OFF == getHeatingState());
+
+	setHeatingState(HEATING_FAULT);
+	assertTrue(HEATING_FAULT == getHeatingState());
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "sensors";
 
@@ -174,14 +220,20 @@ static const char testToLambdaInter_P[] PROGMEM = "testToLambdaInter";
 static const char testToTempI_P[] PROGMEM = "testToTempI";
 static const char testToTempOValue_P[] PROGMEM = "testToTempOValue";
 static const char testToTempOInter_P[] PROGMEM = "testToTempOInter";
+static const char testToCurrent_P[] PROGMEM = "testToCurrent";
 static const char testLookupLinInterValue_P[] PROGMEM = "testLookupLinInterValue";
 static const char testLookupLinInterInter_P[] PROGMEM = "testLookupLinInterInter";
 static const char testLookupLinInterBelow_P[] PROGMEM = "testLookupLinInterBelow";
 static const char testLookupLinInterAbove_P[] PROGMEM = "testLookupLinInterAbove";
+static const char testLinADCLow_P[] PROGMEM = "testLinADCLow";
+static const char testLinADCMid_P[] PROGMEM = "testLinADCMid";
+static const char testLinADCHigh_P[] PROGMEM = "testLinADCHigh";
 static const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
 static const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
 static const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
 static const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
+static const char testSetHeatingOn_P[] PROGMEM = "testSetHeatingOn";
+static const char testSetHeatingState_P[] PROGMEM = "testSetHeatingState";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -193,14 +245,20 @@ static TestCase const tests[] = {
 		{class, testToTempI_P, testToTempI},
 		{class, testToTempOValue_P, testToTempOValue},
 		{class, testToTempOInter_P, testToTempOInter},
+		{class, testToCurrent_P, testToCurrent},
 		{class, testLookupLinInterValue_P, testLookupLinInterValue},
 		{class, testLookupLinInterInter_P, testLookupLinInterInter},
 		{class, testLookupLinInterBelow_P, testLookupLinInterBelow},
 		{class, testLookupLinInterAbove_P, testLookupLinInterAbove},
+		{class, testLinADCLow_P, testLinADCLow},
+		{class, testLinADCMid_P, testLinADCMid},
+		{class, testLinADCHigh_P, testLinADCHigh},
 		{class, testToInfoLean_P, testToInfoLean},
 		{class, testToInfoOkay_P, testToInfoOkay},
 		{class, testToInfoIdeal_P, testToInfoIdeal},
 		{class, testToInfoRich_P, testToInfoRich},
+		{class, testSetHeatingOn_P, testSetHeatingOn},
+		{class, testSetHeatingState_P, testSetHeatingState}
 };
 
 TestClass sensorsClass = {tests, sizeof(tests) / sizeof(tests[0])};

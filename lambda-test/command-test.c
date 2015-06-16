@@ -18,8 +18,6 @@
 /* Module command */
 
 bool testIsSimulation(void) {
-	extern bool updatePending;
-
 	setupPorts();
 	setHeatingOn(false);
 
@@ -33,28 +31,20 @@ bool testIsSimulation(void) {
 	assertTrue(getTime() == 0);
 	// assertFalse(isHeatingOn());
 
-	assertTrue(updatePending);
-
 	return true;
 }
 
 bool testIsLogging(void) {
-	extern bool updatePending;
-
 	assertFalse(isLogging());
 	runCommand("le");
 	assertTrue(isLogging());
 	runCommand("ld");
 	assertFalse(isLogging());
 
-	assertTrue(updatePending);
-
 	return true;
 }
 
 bool testHeating(void) {
-	extern bool updatePending;
-
 	setupPorts();
 	setHeatingOn(false);
 
@@ -64,22 +54,17 @@ bool testHeating(void) {
 	runCommand("hd");
 	assertFalse(isHeatingOn());
 
-	assertTrue(updatePending);
-
 	return true;
 }
 
 bool testCycleDisplay(void) {
 	extern uint8_t position;
-	extern bool updatePending;
 
 	cancelAlert(true);
 	assertTrue(position == 0);
 
-	cycleDisplay();
+	runCommand("cm");
 	assertTrue(position == 1);
-
-	assertTrue(updatePending);
 
 	return true;
 }

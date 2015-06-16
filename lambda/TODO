@@ -12,3 +12,10 @@
   really so unstable?
 - Put button and beeper pins in pins.h (watch out with OCR1A)
 - AVCC should be connected to VCC via an LC network
+
+* Release/put in Makefile?
+- Makefile: LANG = 0
+- pins.h LCD pins
+- interrupts.h: INTS_PER_SEC 61
+- sensors.h: SHUNT_MILLIOHMS 100
+- rules.c: heatingTimeout(): getTime() >= 10800

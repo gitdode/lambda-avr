@@ -61,11 +61,11 @@ int main(void) {
 		if (! isSimulation() && getInts() >= ints + INTS_PER_SEC) {
 			ints = getInts();
 			meas = measure();
+			updateMeas(meas);
+			reason(meas);
 			if (isLogging()) {
 				logMeas(meas);
 			}
-			updateMeas(meas);
-			reason(meas);
 		}
 		if (! isSimulation()) {
 			updateDisplayIfPending();

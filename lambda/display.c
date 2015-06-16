@@ -79,8 +79,7 @@ static void displayCurrent(uint16_t const current) {
 	div_t ampsT = div(ampsx100, 100);
 
 	char line1[17];
-	snprintf(line1, sizeof(line1), "%d.%02dA",
-			ampsT.quot, abs(ampsT.rem));
+	snprintf(line1, sizeof(line1), "%d.%02dA", ampsT.quot, abs(ampsT.rem));
 	setText(MSG_HEATING_CURRENT, line1);
 }
 

@@ -121,8 +121,8 @@ static void heatingFault(bool* const fired, int8_t const dir,
 		return;
 	}
 	if (meas.current > HEATING_SHORT_MA || meas.current < HEATING_DISCONN_MA ||
-			(getTime() > 120 && meas.current > HEATING_READY_MA)) {
-		// short circuit or disconnected or did not warm up within 2 minutes
+			(getTime() >= 180 && meas.current > HEATING_READY_MA)) {
+		// short circuit or disconnected or did not warm up within 3 minutes
 		setHeatingOn(false);
 		setHeatingState(HEATING_FAULT);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_HEATING_FAULT_0),
@@ -188,7 +188,7 @@ void reason(Measurement const meas) {
 
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
-	if (age >= 179) {
+	if (age >= 180) {
 		dir = DIR_NONE;
 		if ((meas.tempI - rulesMeasPrev.tempI) >= 10 &&
 				rulesMeasMax.tempI < 800 && meas.lambda >= 2000) {
