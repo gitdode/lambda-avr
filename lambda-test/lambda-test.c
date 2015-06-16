@@ -23,6 +23,7 @@
 int main(void) {
 	initUSART();
 
+	extern TestClass releaseClass;
 	extern TestClass adcClass;
 	extern TestClass alertClass;
 	extern TestClass commandClass;
@@ -35,6 +36,7 @@ int main(void) {
 	extern TestClass usartClass;
 
 	beginSuite("lambda");
+	runClass(releaseClass);
 	runClass(adcClass);
 	runClass(alertClass);
 	runClass(commandClass);
