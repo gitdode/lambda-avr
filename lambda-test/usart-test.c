@@ -14,7 +14,7 @@
 
 /* Module usart */
 
-bool testInitUSART(void) {
+static bool testInitUSART(void) {
 	assertTrue(BAUD);
 
 	initUSART();

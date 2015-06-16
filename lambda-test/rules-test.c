@@ -11,6 +11,7 @@
 #include "avrjunit.h"
 #include "rules.h"
 #include "alert.h"
+#include "interrupts.h"
 
 extern uint16_t age;
 extern int8_t dir;
@@ -18,7 +19,7 @@ extern Rule rules[];
 
 /* Module rules */
 
-bool testAirgate50(void) {
+static bool testAirgate50(void) {
 
 	Measurement meas = {0, 0, 0};
 
@@ -59,7 +60,7 @@ bool testAirgate50(void) {
 	return true;
 }
 
-bool testAirgate25(void) {
+static bool testAirgate25(void) {
 
 	Measurement meas = {999, 0, 0};
 
@@ -100,7 +101,7 @@ bool testAirgate25(void) {
 	return true;
 }
 
-bool testAirgateClose(void) {
+static bool testAirgateClose(void) {
 
 	Measurement meas = {999, 0, 0};
 
@@ -141,7 +142,7 @@ bool testAirgateClose(void) {
 	return true;
 }
 
-bool testTooRich(void) {
+static bool testTooRich(void) {
 
 	Measurement meas = {0, 0, 0};
 	dir = 0;
@@ -183,7 +184,7 @@ bool testTooRich(void) {
 	return true;
 }
 
-bool testFireOut(void) {
+static bool testFireOut(void) {
 
 	resetRules();
 	Measurement meas = {0, 0, 0};
@@ -219,46 +220,111 @@ bool testFireOut(void) {
 	return true;
 }
 
-bool testHeatingReady(void) {
+static bool testHeatingReady(void) {
 
 	resetRules();
+	resetTime();
 	Measurement meas = {0, 0, 0};
 	dir = 1;
 
+	setHeatingOn(false);
+	meas.current = 1300;
+	reason(meas);
+	assertTrue(HEATING_OFF == getHeatingState());
 
+	setHeatingOn(true);
+	meas.current = 5000;
+	reason(meas);
+	assertTrue(HEATING_UP == getHeatingState());
+
+	setHeatingOn(true);
+	meas.current = 1300;
+	reason(meas);
+	assertTrue(HEATING_READY == getHeatingState());
 
 	cancelAlert(false);
 
 	return true;
 }
 
-bool testHeatingFault(void) {
+static bool testHeatingFaultNoconn(void) {
 
 	resetRules();
+	resetTime();
 	Measurement meas = {0, 0, 0};
 	dir = 1;
 
-
+	setHeatingOn(true);
+	meas.current = 0;
+	reason(meas);
+	assertTrue(HEATING_FAULT == getHeatingState());
 
 	cancelAlert(false);
 
 	return true;
 }
 
-bool testHeatingTimeout(void) {
+static bool testHeatingFaultShort(void) {
 
 	resetRules();
+	resetTime();
 	Measurement meas = {0, 0, 0};
 	dir = 1;
 
-
+	setHeatingOn(true);
+	meas.current = 8000;
+	reason(meas);
+	assertTrue(HEATING_FAULT == getHeatingState());
 
 	cancelAlert(false);
 
 	return true;
 }
 
-bool testReasonDirBurnUp(void) {
+static bool testHeatingFaultNoheat(void) {
+
+	resetRules();
+	resetTime();
+	Measurement meas = {0, 0, 0};
+	dir = 1;
+
+	setHeatingOn(true);
+
+	// more than 3 mins
+	addInts(INTS_PER_SEC * 181);
+
+	meas.current = 5000;
+	reason(meas);
+	assertTrue(HEATING_FAULT == getHeatingState());
+
+	cancelAlert(false);
+
+	return true;
+}
+
+static bool testHeatingTimeout(void) {
+
+	resetRules();
+	resetTime();
+	Measurement meas = {0, 0, 0};
+	dir = 1;
+
+	setHeatingOn(true);
+
+	// more than 3 hours below 400°C
+	addInts(INTS_PER_SEC * 10800UL);
+
+	meas.tempI = 300;
+	meas.current = 1300;
+	reason(meas);
+	assertTrue(HEATING_OFF == getHeatingState());
+
+	cancelAlert(false);
+
+	return true;
+}
+
+static bool testReasonDirBurnUp(void) {
 
 	resetRules();
 	Measurement meas = {0, 0, 2000};
@@ -314,7 +380,7 @@ bool testReasonDirBurnUp(void) {
 	return true;
 }
 
-bool testReasonDirBurnDown(void) {
+static bool testReasonDirBurnDown(void) {
 
 	resetRules();
 	Measurement meas = {999, 0, 1999};
@@ -374,7 +440,9 @@ static const char testAirgateClose_P[] PROGMEM = "testAirgateClose";
 static const char testTooRich_P[] PROGMEM = "testTooRich";
 static const char testFireOut_P[] PROGMEM = "testFireOut";
 static const char testHeatingReady_P[] PROGMEM = "testHeatingReady";
-static const char testHeatingFault_P[] PROGMEM = "testHeatingFault";
+static const char testHeatingFaultNoconn_P[] PROGMEM = "testHeatingFaultNoconn";
+static const char testHeatingFaultShort_P[] PROGMEM = "testHeatingFaultShort";
+static const char testHeatingFaultNoheat_P[] PROGMEM = "testHeatingFaultNoheat";
 static const char testHeatingTimeout_P[] PROGMEM = "testHeatingTimeout";
 static const char testReasonDirBurnUp_P[] PROGMEM = "testReasonDirBurnUp";
 static const char testReasonDirBurnDown_P[] PROGMEM = "testReasonDirBurnDown";
@@ -387,7 +455,9 @@ static TestCase const tests[] = {
 		{class, testTooRich_P, testTooRich},
 		{class, testFireOut_P, testFireOut},
 		{class, testHeatingReady_P, testHeatingReady},
-		{class, testHeatingFault_P, testHeatingFault},
+		{class, testHeatingFaultNoconn_P, testHeatingFaultNoconn},
+		{class, testHeatingFaultShort_P, testHeatingFaultShort},
+		{class, testHeatingFaultNoheat_P, testHeatingFaultNoheat},
 		{class, testHeatingTimeout_P, testHeatingTimeout},
 		{class, testReasonDirBurnUp_P, testReasonDirBurnUp},
 		{class, testReasonDirBurnDown_P, testReasonDirBurnDown}

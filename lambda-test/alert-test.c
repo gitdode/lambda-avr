@@ -14,7 +14,7 @@
 
 /* Module alert */
 
-bool testOscillateBeep(void) {
+static bool testOscillateBeep(void) {
 	extern uint8_t beepCount;
 	extern uint8_t oscCount;
 
@@ -63,7 +63,7 @@ bool testOscillateBeep(void) {
 	return true;
 }
 
-bool testBeep(void) {
+static bool testBeep(void) {
 	extern uint8_t beepCount;
 	extern uint16_t beepLength;
 	extern uint8_t oscCount;
@@ -82,7 +82,7 @@ bool testBeep(void) {
 	return true;
 }
 
-bool testAlert(void) {
+static bool testAlert(void) {
 	extern uint8_t beepCount;
 	extern uint16_t beepLength;
 	extern uint8_t oscCount;
@@ -102,7 +102,7 @@ bool testAlert(void) {
 	return true;
 }
 
-bool testCancelAlert(void) {
+static bool testCancelAlert(void) {
 	extern uint8_t beepCount;
 	extern uint16_t beepLength;
 	extern uint8_t oscCount;

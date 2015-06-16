@@ -26,7 +26,7 @@ static TableEntry const testTable[] = {
 
 /* Module sensors */
 
-bool testMeasure(void) {
+static bool testMeasure(void) {
 	setupADC();
 	setupSleepMode();
 	initInterrupts();
@@ -55,7 +55,7 @@ bool testMeasure(void) {
 	return true;
 }
 
-bool testReadMeas(void) {
+static bool testReadMeas(void) {
 	char* fields[] = {"1", "2", "3", "4"};
 
 	Measurement meas = readMeas(fields, 4);
@@ -67,7 +67,7 @@ bool testReadMeas(void) {
 	return true;
 }
 
-bool testReadMeasTooFewFields(void) {
+static bool testReadMeasTooFewFields(void) {
 	char* fields[] = {"1"};
 
 	Measurement meas = readMeas(fields, 1);
@@ -79,91 +79,91 @@ bool testReadMeasTooFewFields(void) {
 	return true;
 }
 
-bool testToLambdaValue(void) {
+static bool testToLambdaValue(void) {
 	uint16_t lambda = toLambda(132);
 
 	return lambda == 1500;
 }
 
-bool testToLambdaInter(void) {
+static bool testToLambdaInter(void) {
 	uint16_t lambda = toLambda(550);
 
 	return lambda == 1073;
 }
 
-bool testToTempI(void) {
+static bool testToTempI(void) {
 	int16_t temp = toTempI(100);
 
 	return temp == 20;
 }
 
-bool testToTempOValue(void) {
+static bool testToTempOValue(void) {
 	int16_t temp = toTempO(454);
 
 	return temp == 0;
 }
 
-bool testToTempOInter(void) {
+static bool testToTempOInter(void) {
 	int16_t temp = toTempO(929);
 
 	return temp == 50;
 }
 
-bool testToCurrent(void) {
+static bool testToCurrent(void) {
 	uint16_t current = toCurrent(150);
 
 	return current == 1500 / SHUNT_MILLIOHMS * 100;
 }
 
-bool testLookupLinInterBelow(void) {
+static bool testLookupLinInterBelow(void) {
 	int16_t value = lookupLinInter(0, testTable, 2);
 
 	return value == 10;
 }
 
-bool testLookupLinInterAbove(void) {
+static bool testLookupLinInterAbove(void) {
 	int16_t value = lookupLinInter(30, testTable, 2);
 
 	return value == 20;
 }
 
-bool testLookupLinInterValue(void) {
+static bool testLookupLinInterValue(void) {
 	int16_t value = lookupLinInter(10, testTable, 2);
 
 	return value == 10;
 }
 
-bool testLookupLinInterInter(void) {
+static bool testLookupLinInterInter(void) {
 	int16_t value = lookupLinInter(15, testTable, 2);
 
 	return value == 15;
 }
 
-bool testLinADCLow(void) {
+static bool testLinADCLow(void) {
 	int32_t lin = linADC(1000);
 
 	return lin == 1004;
 }
 
-bool testLinADCMid(void) {
+static bool testLinADCMid(void) {
 	int32_t lin = linADC(2000);
 
 	return lin == 2000;
 }
 
-bool testLinADCHigh(void) {
+static bool testLinADCHigh(void) {
 	int32_t lin = linADC(4000);
 
 	return lin == 3992;
 }
 
-bool testToInfoLean(void) {
+static bool testToInfoLean(void) {
 	char* info = toInfo(191);
 
 	return ! strcmp(info, MSG_LEAN);
 }
 
-bool testToInfoOkay(void) {
+static bool testToInfoOkay(void) {
 	assertTrue(0 == strcmp(toInfo(190), MSG_OKAY));
 	assertTrue(0 == strcmp(toInfo(170), MSG_OKAY));
 	assertTrue(0 == strcmp(toInfo(151), MSG_OKAY));
@@ -171,7 +171,7 @@ bool testToInfoOkay(void) {
 	return true;
 }
 
-bool testToInfoIdeal(void) {
+static bool testToInfoIdeal(void) {
 	assertTrue(0 == strcmp(toInfo(150), MSG_IDEAL));
 	assertTrue(0 == strcmp(toInfo(140), MSG_IDEAL));
 	assertTrue(0 == strcmp(toInfo(130), MSG_IDEAL));
@@ -179,13 +179,13 @@ bool testToInfoIdeal(void) {
 	return true;
 }
 
-bool testToInfoRich(void) {
+static bool testToInfoRich(void) {
 	char* info = toInfo(129);
 
 	return ! strcmp(info, MSG_RICH);
 }
 
-bool testSetHeatingOn(void) {
+static bool testSetHeatingOn(void) {
 	setHeatingOn(true);
 	assertTrue(isHeatingOn());
 	assertTrue(HEATING_UP == getHeatingState());
@@ -197,7 +197,7 @@ bool testSetHeatingOn(void) {
 	return true;
 }
 
-bool testSetHeatingState(void) {
+static bool testSetHeatingState(void) {
 	setHeatingOn(false);
 	assertFalse(isHeatingOn());
 	assertTrue(HEATING_OFF == getHeatingState());

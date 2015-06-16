@@ -17,7 +17,7 @@
 
 /* Module command */
 
-bool testIsSimulation(void) {
+static bool testIsSimulation(void) {
 	setupPorts();
 	setHeatingOn(false);
 
@@ -34,7 +34,7 @@ bool testIsSimulation(void) {
 	return true;
 }
 
-bool testIsLogging(void) {
+static bool testIsLogging(void) {
 	assertFalse(isLogging());
 	runCommand("le");
 	assertTrue(isLogging());
@@ -44,7 +44,7 @@ bool testIsLogging(void) {
 	return true;
 }
 
-bool testHeating(void) {
+static bool testHeating(void) {
 	setupPorts();
 	setHeatingOn(false);
 
@@ -57,7 +57,7 @@ bool testHeating(void) {
 	return true;
 }
 
-bool testCycleDisplay(void) {
+static bool testCycleDisplay(void) {
 	extern uint8_t position;
 
 	cancelAlert(true);

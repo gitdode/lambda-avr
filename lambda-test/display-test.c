@@ -16,7 +16,7 @@
 
 /* Module display */
 
-bool testCycle(void) {
+static bool testCycle(void) {
 	extern uint8_t position;
 	extern bool updatePending;
 
@@ -48,7 +48,7 @@ bool testCycle(void) {
 	return true;
 }
 
-bool testCycleCancelAlert(void) {
+static bool testCycleCancelAlert(void) {
 	extern uint8_t position;
 	extern bool updatePending;
 
@@ -66,7 +66,7 @@ bool testCycleCancelAlert(void) {
 	return true;
 }
 
-bool testUpdateMeas(void) {
+static bool testUpdateMeas(void) {
 	extern bool updatePending;
 	extern Measurement measLatest;
 	extern Measurement measMax; // = {0, 0, 2000};
@@ -106,7 +106,7 @@ bool testUpdateMeas(void) {
 	return true;
 }
 
-bool testResetMeas(void) {
+static bool testResetMeas(void) {
 	extern bool updatePending;
 	extern Measurement measLatest;
 	extern Measurement measMax;
@@ -123,7 +123,7 @@ bool testResetMeas(void) {
 	return true;
 }
 
-bool testUpdateDisplayIfPending(void) {
+static bool testUpdateDisplayIfPending(void) {
 	extern bool updatePending;
 
 	updatePending = true;
@@ -134,7 +134,7 @@ bool testUpdateDisplayIfPending(void) {
 	return true;
 }
 
-bool testUpdateDisplayIfPendingAlertActive(void) {
+static bool testUpdateDisplayIfPendingAlertActive(void) {
 	extern bool updatePending;
 
 	updatePending = true;
@@ -148,7 +148,7 @@ bool testUpdateDisplayIfPendingAlertActive(void) {
 	return true;
 }
 
-bool testDisplayText(void) {
+static bool testDisplayText(void) {
 	displayText("testDisplayText", "testDisplayTextLineTooLong");
 
 	return true;

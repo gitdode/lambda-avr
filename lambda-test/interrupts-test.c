@@ -15,7 +15,7 @@
 
 /* Module interrupts */
 
-bool testSetupPorts(void) {
+static bool testSetupPorts(void) {
 	setupPorts();
 
 	// test that the pull-up resistor for the mouton is enabled
@@ -30,7 +30,7 @@ bool testSetupPorts(void) {
 	return true;
 }
 
-bool testSetupSleepMode(void) {
+static bool testSetupSleepMode(void) {
 	setupSleepMode();
 
 	// set_sleep_mode(SLEEP_MODE_IDLE);
@@ -41,7 +41,7 @@ bool testSetupSleepMode(void) {
 	return true;
 }
 
-bool testInitInterrupts(void) {
+static bool testInitInterrupts(void) {
 	initInterrupts();
 
 	// ADC interrupt enabled
@@ -60,7 +60,7 @@ bool testInitInterrupts(void) {
 	return true;
 }
 
-bool testInitTimers(void) {
+static bool testInitTimers(void) {
 	initTimers();
 
 	// timer0 clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
@@ -79,7 +79,7 @@ bool testInitTimers(void) {
 	return true;
 }
 
-bool testTime(void) {
+static bool testTime(void) {
 	resetTime();
 	assertTrue(getInts() == 0);
 	assertTrue(getTime() == 0);

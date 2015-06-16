@@ -14,7 +14,7 @@
 
 /* Module strings */
 
-bool testSplit(void) {
+static bool testSplit(void) {
 	char string[] = "f1 f2  f3 ";
 	char* fields[4];
 	split(string, " ", fields, 4);
@@ -27,7 +27,7 @@ bool testSplit(void) {
 	return true;
 }
 
-bool testSplitSizeTooSmall(void) {
+static bool testSplitSizeTooSmall(void) {
 	char string[] = "f1 f2";
 	char* fields[1];
 	split(string, " ", fields, 1);

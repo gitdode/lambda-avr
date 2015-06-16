@@ -15,7 +15,7 @@
 
 /* Module adc */
 
-bool testSetupADC(void) {
+static bool testSetupADC(void) {
 	setupADC();
 
 	// AVCC is set as AREF
@@ -31,7 +31,7 @@ bool testSetupADC(void) {
 	return true;
 }
 
-bool testGetVoltage(void) {
+static bool testGetVoltage(void) {
 	initInterrupts();
 	setupADC();
 	setupSleepMode();

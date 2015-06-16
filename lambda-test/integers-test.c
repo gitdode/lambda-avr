@@ -13,7 +13,7 @@
 
 /* Module integers */
 
-bool testDivRoundNearest(void) {
+static bool testDivRoundNearest(void) {
 	assertTrue(divRoundNearest(4, 2) == 2);
 	assertTrue(divRoundNearest(5, 2) == 3);
 	assertTrue(divRoundNearest(10, 3) == 3);
@@ -21,7 +21,7 @@ bool testDivRoundNearest(void) {
 	return true;
 }
 
-bool testDivRoundNearestNumNeg(void) {
+static bool testDivRoundNearestNumNeg(void) {
 	assertTrue(divRoundNearest(-4, 2) == -2);
 	assertTrue(divRoundNearest(-5, 2) == -3);
 	assertTrue(divRoundNearest(-10, 3) == -3);
@@ -29,7 +29,7 @@ bool testDivRoundNearestNumNeg(void) {
 	return true;
 }
 
-bool testDivRoundNearestDenNeg(void) {
+static bool testDivRoundNearestDenNeg(void) {
 	assertTrue(divRoundNearest(4, -2) == -2);
 	assertTrue(divRoundNearest(5, -2) == -3);
 	assertTrue(divRoundNearest(10, -3) == -3);
@@ -37,7 +37,7 @@ bool testDivRoundNearestDenNeg(void) {
 	return true;
 }
 
-bool testDivRoundNearestBothNeg(void) {
+static bool testDivRoundNearestBothNeg(void) {
 	assertTrue(divRoundNearest(-4, -2) == 2);
 	assertTrue(divRoundNearest(-5, -2) == 3);
 	assertTrue(divRoundNearest(-10, -3) == 3);
@@ -45,7 +45,7 @@ bool testDivRoundNearestBothNeg(void) {
 	return true;
 }
 
-bool testDivRoundUp(void) {
+static bool testDivRoundUp(void) {
 	assertTrue(divRoundUp(4, 2) == 2);
 	assertTrue(divRoundUp(5, 2) == 3);
 	assertTrue(divRoundUp(10, 3) == 4);
@@ -53,7 +53,7 @@ bool testDivRoundUp(void) {
 	return true;
 }
 
-bool testDivRoundUpNumNeg(void) {
+static bool testDivRoundUpNumNeg(void) {
 	assertTrue(divRoundUp(-4, 2) == -2);
 	assertTrue(divRoundUp(-5, 2) == -3);
 	assertTrue(divRoundUp(-10, 3) == -4);
@@ -61,7 +61,7 @@ bool testDivRoundUpNumNeg(void) {
 	return true;
 }
 
-bool testDivRoundUpDenNeg(void) {
+static bool testDivRoundUpDenNeg(void) {
 	assertTrue(divRoundUp(4, -2) == -2);
 	assertTrue(divRoundUp(5, -2) == -3);
 	assertTrue(divRoundUp(10, -3) == -4);
@@ -69,7 +69,7 @@ bool testDivRoundUpDenNeg(void) {
 	return true;
 }
 
-bool testDivRoundUpBothNeg(void) {
+static bool testDivRoundUpBothNeg(void) {
 	assertTrue(divRoundUp(-4, -2) == 2);
 	assertTrue(divRoundUp(-5, -2) == 3);
 	assertTrue(divRoundUp(-10, -3) == 4);
