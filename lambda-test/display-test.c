@@ -16,13 +16,16 @@
 
 /* Module display */
 
+extern uint8_t position;
+extern bool updatePending;
+
+extern uint8_t beepCount;
+extern uint16_t beepLength;
+
+extern Measurement measLatest;
+extern Measurement measMax; // = {0, 0, 2000};
+
 static bool testCycle(void) {
-	extern uint8_t position;
-	extern bool updatePending;
-
-	extern uint8_t beepCount;
-	extern uint16_t beepLength;
-
 	cancelAlert(true);
 	position = 0;
 	updatePending = false;
@@ -49,9 +52,6 @@ static bool testCycle(void) {
 }
 
 static bool testCycleCancelAlert(void) {
-	extern uint8_t position;
-	extern bool updatePending;
-
 	position = 0;
 	updatePending = false;
 
@@ -67,10 +67,6 @@ static bool testCycleCancelAlert(void) {
 }
 
 static bool testUpdateMeas(void) {
-	extern bool updatePending;
-	extern Measurement measLatest;
-	extern Measurement measMax; // = {0, 0, 2000};
-
 	updatePending = false;
 
 	// initial measurements
@@ -107,10 +103,6 @@ static bool testUpdateMeas(void) {
 }
 
 static bool testResetMeas(void) {
-	extern bool updatePending;
-	extern Measurement measLatest;
-	extern Measurement measMax;
-
 	updatePending = false;
 
 	resetDisplay();
@@ -124,8 +116,6 @@ static bool testResetMeas(void) {
 }
 
 static bool testUpdateDisplayIfPending(void) {
-	extern bool updatePending;
-
 	updatePending = true;
 
 	updateDisplayIfPending();
@@ -135,8 +125,6 @@ static bool testUpdateDisplayIfPending(void) {
 }
 
 static bool testUpdateDisplayIfPendingAlertActive(void) {
-	extern bool updatePending;
-
 	updatePending = true;
 	alert(1, 1, 31, "", "", false);
 	assertTrue(isAlertActive());

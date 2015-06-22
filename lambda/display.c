@@ -21,6 +21,7 @@
 #include "display.h"
 #include "alert.h"
 #include "messages.h"
+#include "rules.h"
 
 #define MENU_OFF 0
 #define MENU_MAX_VALUES 1
@@ -66,7 +67,7 @@ static void displayMeas(Measurement const meas, char* const hint) {
 		snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
 				lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
 	} else {
-		snprintf(line1, sizeof(line1), "L   -%12s", hint);
+		snprintf(line1, sizeof(line1), "L   -%11s", hint);
 	}
 	setText(line0, line1);
 }
@@ -79,7 +80,7 @@ static void displayCurrent(uint16_t const current) {
 	div_t ampsT = div(ampsx100, 100);
 
 	char line1[17];
-	snprintf(line1, sizeof(line1), "%d.%02dA", ampsT.quot, abs(ampsT.rem));
+	snprintf(line1, sizeof(line1), "%d.%02d Amp", ampsT.quot, abs(ampsT.rem));
 	setText(MSG_HEATING_CURRENT, line1);
 }
 
@@ -130,7 +131,7 @@ void updateDisplayIfPending() {
 		updatePending = false;
 
 		if (position == MENU_MAX_VALUES) {
-			displayMeas(measMax, "|>");
+			displayMeas(measMax, " ^");
 		} else if (position == MENU_LAST_TEXT) {
 			setText(lastLine0, lastLine1);
 		} else if (position == MENU_CURRENT) {
@@ -138,7 +139,13 @@ void updateDisplayIfPending() {
 		} else if (position == MENU_TIME) {
 			displayTime();
 		} else {
-			displayMeas(measLatest, "  ");
+			char* hint;
+			switch (getDir()) {
+				case DIR_BURN_UP: hint = " >"; break;
+				case DIR_BURN_DOWN: hint = " <"; break;
+				default: hint = " -"; break;
+			}
+			displayMeas(measLatest, hint);
 		}
 	}
 }

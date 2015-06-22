@@ -7,6 +7,8 @@
  *      Author: dode@luniks.net
  */
 
+#include <avr/io.h>
+
 #ifndef PINS_H_
 #define PINS_H_
 
@@ -18,6 +20,19 @@
 #define ADC_LAMBDA PC1
 /** ADC pin for the LSM 11 oxygen sensor heating current */
 #define ADC_HEATING PC3
+
+/** Port for menu button, beeper and oxygen sensor heater */
+#define PORT PORTB
+/** DDR for menu button, beeper and oxygen sensor heater */
+#define DDR DDRB
+/** Pin for the menu button */
+#define PIN_BUTTON PB0
+/** Pin for the beeper */
+#define PIN_BEEPER PB1
+/** Toggle beeper pin OC1A/PB1 */
+#define PIN_BEEPER_TOGGLE COM1A0
+/** Pin for the oxygen sensor heater */
+#define PIN_HEATER PB2
 
 /* Pins for the LCD */
 #define LCD_PORT PORTD

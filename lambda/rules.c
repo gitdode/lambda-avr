@@ -16,15 +16,16 @@
 #define LENGTH 20
 #define TONE 31
 
-#define DIR_NONE 0
-#define DIR_BURN_UP 1
-#define DIR_BURN_DOWN -1
-
 uint8_t age = 0;
 int8_t dir = 0;
+uint8_t airgate = 100;
 
 static Measurement rulesMeasMax = {0, 0, 2000, 0};
 static Measurement rulesMeasPrev = {0, 0, 2000, 0};
+
+int8_t getDir(void) {
+	return dir;
+}
 
 /**
  * Reminds to set the air gate to 50% when the fire is still building up
@@ -33,6 +34,7 @@ static Measurement rulesMeasPrev = {0, 0, 2000, 0};
 static void airgate50(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_UP && meas.tempI >= 500) {
+		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -45,6 +47,7 @@ static void airgate50(bool* const fired, int8_t const dir,
 static void airgate25(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 800) {
+		airgate = 25;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -56,8 +59,9 @@ static void airgate25(bool* const fired, int8_t const dir,
  */
 static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 400) {
+	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 450) {
 		setHeatingOn(false);
+		airgate = 0;
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
 		*fired = true;
@@ -65,18 +69,34 @@ static void airgateClose(bool* const fired, int8_t const dir,
 }
 
 /**
- * Notifies that the combustion is too rich and to open the air gate
- * if possible.
+ * Notifies that the combustion is too rich and to open the air gate.
  */
 static void tooRich(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && meas.tempI >= 100 && meas.lambda < 1200 &&
-			getHeatingState() == HEATING_READY) {
+	if (! *fired && meas.tempI > 100 && meas.lambda < 1200 &&
+			getHeatingState() == HEATING_READY && airgate < 100) {
+		airgate = 100;
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_TOO_RICH_0), PSTR(MSG_TOO_RICH_1), false);
 		*fired = true;
 	}
 	if (meas.lambda >= 1300) {
+		*fired = false;
+	}
+}
+
+/**
+ * Notifies that the combustion is lean (again) and to set the air gate to 50%.
+ */
+static void tooLean(bool* const fired, int8_t const dir,
+		Measurement const meas) {
+	if (! *fired && meas.tempI > 500 && meas.lambda > 1600 &&
+			getHeatingState() == HEATING_READY && airgate > 50) {
+		airgate = 50;
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
+		*fired = true;
+	}
+	if (meas.lambda <= 1500) {
 		*fired = false;
 	}
 }
@@ -144,7 +164,6 @@ static void heatingTimeout(bool* const fired, int8_t const dir,
 }
 
 // TODO what if fired up again without reset?
-// TODO what if reset during burndown?
 
 /**
  * Rules applied to every nth averaged measurement
@@ -154,6 +173,7 @@ Rule rules[] = {
 		{false, airgate25},
 		{false, airgateClose},
 		{false, tooRich},
+		{false, tooLean},
 		{false, fireOut}
 };
 
@@ -215,6 +235,7 @@ void resetRules(void) {
 
 	age = 0;
 	dir = DIR_NONE;
+	airgate = 100;
 
 	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 	for (size_t i = 0; i < rulesSize; i++) {

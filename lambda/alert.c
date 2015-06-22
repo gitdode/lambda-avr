@@ -13,6 +13,7 @@
 #include "alert.h"
 #include "sensors.h"
 #include "display.h"
+#include "pins.h"
 
 uint8_t beepCount = 0;
 uint16_t beepLength = 0;
@@ -28,11 +29,11 @@ void oscillateBeep(void) {
 	}
 	if (oscCount == 0) {
 		// turn beep on
-		TCCR1A |= (1 << COM1A0);
+		TCCR1A |= (1 << PIN_BEEPER_TOGGLE);
 	}
 	if (oscCount == beepLength) {
 		// turn beep off
-		TCCR1A &= ~(1 << COM1A0);
+		TCCR1A &= ~(1 << PIN_BEEPER_TOGGLE);
 		beepCount--;
 		if (beepCount == 0 && ! keepActive) {
 			alertActive = false;
@@ -76,7 +77,7 @@ void cancelAlert(bool const all) {
 	beepCount = 0;
 	oscCount = 0;
 	// turn beep off
-	TCCR1A &= ~(1 << COM1A0);
+	TCCR1A &= ~(1 << PIN_BEEPER_TOGGLE);
 	if (! keepActive || all) {
 		alertActive = false;
 	}

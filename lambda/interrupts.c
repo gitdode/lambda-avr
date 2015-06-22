@@ -18,6 +18,7 @@
 #include "sensors.h"
 #include "display.h"
 #include "alert.h"
+#include "pins.h"
 
 static volatile bool buttonPressed = false;
 static volatile uint32_t ints = 0;
@@ -72,14 +73,14 @@ void resetTime(void) {
 }
 
 void setupPorts(void) {
-	// pull-up resistor for the mouton
-	PORTB |= (1 << PB0);
+	// pull-up resistor for the menu button
+	PORT |= (1 << PIN_BUTTON);
 
 	// enable beep output pin
-	DDRB |= (1 << PB1);
+	DDR |= (1 << PIN_BEEPER);
 
-	// enable oxygen sensor heating control output pin
-	DDRB |= (1 << PB2);
+	// enable oxygen sensor heater control output pin
+	DDR |= (1 << PIN_HEATER);
 }
 
 void setupSleepMode(void) {
@@ -112,7 +113,7 @@ void initTimers(void) {
 	TCCR1B |= (1 << WGM12);
 	// timer1 clock prescaler/8
 	TCCR1B |= (1 << CS11);
-	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
+	// timer1 Compare Match at 7.8 kHz generating a 3.9 kHz beep
 	// OCR1A = 15;
 	// 2 kHz is less noisy on the small piezo beeper
 	OCR1A = 31;

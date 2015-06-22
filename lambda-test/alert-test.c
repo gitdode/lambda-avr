@@ -14,10 +14,11 @@
 
 /* Module alert */
 
-static bool testOscillateBeep(void) {
-	extern uint8_t beepCount;
-	extern uint8_t oscCount;
+extern uint8_t beepCount;
+extern uint16_t beepLength;
+extern uint8_t oscCount;
 
+static bool testOscillateBeep(void) {
 	beepCount = 0;
 	oscCount = 0;
 
@@ -64,10 +65,6 @@ static bool testOscillateBeep(void) {
 }
 
 static bool testBeep(void) {
-	extern uint8_t beepCount;
-	extern uint16_t beepLength;
-	extern uint8_t oscCount;
-
 	beepCount = 0;
 	beepLength = 0;
 	oscCount = 0;
@@ -83,10 +80,6 @@ static bool testBeep(void) {
 }
 
 static bool testAlert(void) {
-	extern uint8_t beepCount;
-	extern uint16_t beepLength;
-	extern uint8_t oscCount;
-
 	beepCount = 0;
 	beepLength = 0;
 	oscCount = 0;
@@ -103,10 +96,6 @@ static bool testAlert(void) {
 }
 
 static bool testCancelAlert(void) {
-	extern uint8_t beepCount;
-	extern uint16_t beepLength;
-	extern uint8_t oscCount;
-
 	beepCount = 0;
 	beepLength = 0;
 	oscCount = 0;

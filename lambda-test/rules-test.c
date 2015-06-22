@@ -13,11 +13,12 @@
 #include "alert.h"
 #include "interrupts.h"
 
+/* Module rules */
+
 extern uint16_t age;
 extern int8_t dir;
+extern uint8_t airgate;
 extern Rule rules[];
-
-/* Module rules */
 
 static bool testAirgate50(void) {
 
@@ -54,6 +55,7 @@ static bool testAirgate50(void) {
 	dir = 1;
 	reason(meas);
 	assertTrue(rules[0].fired);
+	assertTrue(50 == airgate);
 
 	cancelAlert(false);
 
@@ -95,6 +97,7 @@ static bool testAirgate25(void) {
 	dir = -1;
 	reason(meas);
 	assertTrue(rules[1].fired);
+	assertTrue(25 == airgate);
 
 	cancelAlert(false);
 
@@ -136,6 +139,7 @@ static bool testAirgateClose(void) {
 	dir = -1;
 	reason(meas);
 	assertTrue(rules[2].fired);
+	assertTrue(0 == airgate);
 
 	cancelAlert(false);
 
@@ -149,21 +153,14 @@ static bool testTooRich(void) {
 
 	setHeatingState(HEATING_READY);
 
-	meas.tempI = 99;
-	meas.lambda = 2000;
-	resetRules();
-	reason(meas);
-	assertFalse(rules[3].fired);
-
 	meas.tempI = 100;
 	meas.lambda = 2000;
-
 	resetRules();
 	reason(meas);
 	assertFalse(rules[3].fired);
 
-	meas.tempI = 99;
-	meas.lambda = 1199;
+	meas.tempI = 101;
+	meas.lambda = 2000;
 	resetRules();
 	reason(meas);
 	assertFalse(rules[3].fired);
@@ -171,13 +168,74 @@ static bool testTooRich(void) {
 	meas.tempI = 100;
 	meas.lambda = 1199;
 	resetRules();
+	reason(meas);
+	assertFalse(rules[3].fired);
+
+	meas.tempI = 101;
+	meas.lambda = 1199;
+	resetRules();
+	airgate = 100;
+	reason(meas);
+	assertFalse(rules[3].fired);
+	assertTrue(100 == airgate);
+
+	meas.tempI = 101;
+	meas.lambda = 1199;
+	resetRules();
+	airgate = 50;
 	reason(meas);
 	assertTrue(rules[3].fired);
+	assertTrue(100 == airgate);
 
 	meas.lambda = 1300;
 	age = 0;
 	reason(meas);
 	assertFalse(rules[3].fired);
+
+	cancelAlert(false);
+
+	return true;
+}
+
+static bool testTooLean(void) {
+
+	Measurement meas = {0, 0, 0};
+	dir = 0;
+
+	setHeatingState(HEATING_READY);
+
+	meas.tempI = 500;
+	meas.lambda = 1601;
+	resetRules();
+	reason(meas);
+	assertFalse(rules[4].fired);
+
+	meas.tempI = 501;
+	meas.lambda = 1300;
+	resetRules();
+	reason(meas);
+	assertFalse(rules[4].fired);
+
+	meas.tempI = 501;
+	meas.lambda = 1601;
+	resetRules();
+	airgate = 50;
+	reason(meas);
+	assertFalse(rules[4].fired);
+	assertTrue(50 == airgate);
+
+	meas.tempI = 501;
+	meas.lambda = 1601;
+	resetRules();
+	airgate = 100;
+	reason(meas);
+	assertTrue(rules[4].fired);
+	assertTrue(50 == airgate);
+
+	meas.lambda = 1500;
+	age = 0;
+	reason(meas);
+	assertFalse(rules[4].fired);
 
 	cancelAlert(false);
 
@@ -193,27 +251,27 @@ static bool testFireOut(void) {
 	meas.tempI = 50;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[5].fired);
 
 	meas.tempI = 100;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[5].fired);
 
 	meas.tempI = 125;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[5].fired);
 
 	meas.tempI = 99;
 	age = 0;
 	reason(meas);
-	assertTrue(rules[4].fired);
+	assertTrue(rules[5].fired);
 
 	meas.tempI = 125;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[5].fired);
 
 	cancelAlert(false);
 
@@ -438,6 +496,7 @@ static const char testAirgate50_P[] PROGMEM = "testAirgate50";
 static const char testAirgate25_P[] PROGMEM = "testAirgate25";
 static const char testAirgateClose_P[] PROGMEM = "testAirgateClose";
 static const char testTooRich_P[] PROGMEM = "testTooRich";
+static const char testTooLean_P[] PROGMEM = "testTooLean";
 static const char testFireOut_P[] PROGMEM = "testFireOut";
 static const char testHeatingReady_P[] PROGMEM = "testHeatingReady";
 static const char testHeatingFaultNoconn_P[] PROGMEM = "testHeatingFaultNoconn";
@@ -453,6 +512,7 @@ static TestCase const tests[] = {
 		{class, testAirgate25_P, testAirgate25},
 		{class, testAirgateClose_P, testAirgateClose},
 		{class, testTooRich_P, testTooRich},
+		{class, testTooLean_P, testTooLean},
 		{class, testFireOut_P, testFireOut},
 		{class, testHeatingReady_P, testHeatingReady},
 		{class, testHeatingFaultNoconn_P, testHeatingFaultNoconn},

@@ -51,7 +51,6 @@ int main(void) {
 	// spend some time on being polite
 	while (getTime() < 3) {}
 	setHeatingOn(true);
-	while (getTime() < 4) {}
 
 	uint32_t ints = 0;
 	Measurement meas;

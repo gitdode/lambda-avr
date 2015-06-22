@@ -17,6 +17,8 @@
 
 /* Module command */
 
+extern uint8_t position;
+
 static bool testIsSimulation(void) {
 	setupPorts();
 	setHeatingOn(false);
@@ -58,8 +60,6 @@ static bool testHeating(void) {
 }
 
 static bool testCycleDisplay(void) {
-	extern uint8_t position;
-
 	cancelAlert(true);
 	assertTrue(position == 0);
 

@@ -6,11 +6,9 @@
 - Take in account F_CPU everywhere CPU speed matters
 
 * Functionality
+- Show fire dir and (recommended) airgate position?
   
 * Circuit
-- Look at oxygen sensor voltage with voltmeter/oscilloscope - is the voltage
-  really so unstable?
-- Put button and beeper pins in pins.h (watch out with OCR1A)
 - AVCC should be connected to VCC via an LC network
 
 * Release/put in Makefile?
