@@ -27,32 +27,32 @@ extern Measurement measMax; // = {0, 0, 2000};
 
 static bool testCycle(void) {
 	cancelAlert(true);
-	position = 0;
+	position = displayPosCurrent;;
 	updatePending = false;
 
-	assertTrue(position == 0);
+	assertTrue(position == displayPosCurrent);
 	assertFalse(updatePending);
 
 	cycleDisplay();
-	assertTrue(position == 1);
+	assertTrue(position == displayPosMax);
 	assertTrue(updatePending);
 	assertTrue(beepCount == 1);
 	assertTrue(beepLength == 2);
 
 	cycleDisplay();
-	assertTrue(position == 2);
+	assertTrue(position == displayPosHeater);
 	cycleDisplay();
-	assertTrue(position == 3);
+	assertTrue(position == displayPosLastText);
 	cycleDisplay();
-	assertTrue(position == 4);
+	assertTrue(position == displayPosTime);
 	cycleDisplay(); // roll over to 0
-	assertTrue(position == 0);
+	assertTrue(position == displayPosCurrent);
 
 	return true;
 }
 
 static bool testCycleCancelAlert(void) {
-	position = 0;
+	position = displayPosCurrent;;
 	updatePending = false;
 
 	alert(1, 1, 31, "", "", false);
@@ -60,7 +60,7 @@ static bool testCycleCancelAlert(void) {
 
 	cycleDisplay();
 	assertFalse(isAlertActive());
-	assertTrue(position == 0);
+	assertTrue(position == displayPosCurrent);
 	assertTrue(updatePending);
 
 	return true;

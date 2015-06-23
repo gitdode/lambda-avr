@@ -21,17 +21,17 @@ extern uint8_t position;
 
 static bool testIsSimulation(void) {
 	setupPorts();
-	setHeatingOn(false);
+	setHeaterOn(false);
 
 	assertFalse(isSimulation());
 	runCommand("se");
 	assertTrue(isSimulation());
 	assertTrue(getTime() == 0);
-	assertTrue(isHeatingOn());
+	assertTrue(isHeaterOn());
 	runCommand("sd");
 	assertFalse(isSimulation());
 	assertTrue(getTime() == 0);
-	// assertFalse(isHeatingOn());
+	// assertFalse(isHeaterOn());
 
 	return true;
 }
@@ -46,15 +46,15 @@ static bool testIsLogging(void) {
 	return true;
 }
 
-static bool testHeating(void) {
+static bool testHeater(void) {
 	setupPorts();
-	setHeatingOn(false);
+	setHeaterOn(false);
 
-	assertFalse(isHeatingOn());
+	assertFalse(isHeaterOn());
 	runCommand("he");
-	assertTrue(isHeatingOn());
+	assertTrue(isHeaterOn());
 	runCommand("hd");
-	assertFalse(isHeatingOn());
+	assertFalse(isHeaterOn());
 
 	return true;
 }
@@ -75,14 +75,14 @@ static const char class[] PROGMEM = "command";
 /* Test names */
 static const char testIsSimulation_P[] PROGMEM = "testIsSimulation";
 static const char testIsLogging_P[] PROGMEM = "testIsLogging";
-static const char testHeating_P[] PROGMEM = "testHeating";
+static const char testHeater_P[] PROGMEM = "testHeater";
 static const char testCycleDisplay_P[] PROGMEM = "testCycleDisplay";
 
 /* Tests */
 static TestCase const tests[] = {
 		{class, testIsSimulation_P, testIsSimulation},
 		{class, testIsLogging_P, testIsLogging},
-		{class, testHeating_P, testHeating},
+		{class, testHeater_P, testHeater},
 		{class, testCycleDisplay_P, testCycleDisplay}
 };
 

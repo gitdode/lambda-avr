@@ -18,8 +18,8 @@
 #define ADC_TEMPO PC0
 /** ADC pin for the LSM 11 oxygen sensor signal */
 #define ADC_LAMBDA PC1
-/** ADC pin for the LSM 11 oxygen sensor heating current */
-#define ADC_HEATING PC3
+/** ADC pin for the LSM 11 oxygen sensor heater current */
+#define ADC_HEATER PC3
 
 /** Port for menu button, beeper and oxygen sensor heater */
 #define PORT PORTB

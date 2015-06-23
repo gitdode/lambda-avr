@@ -23,6 +23,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/power.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -39,6 +40,9 @@
  * runs commands sent via USART.
  */
 int main(void) {
+
+	// clock_prescale_set(clock_div_1);
+
 	initUSART();
 	lcd_init();
 	setupPorts();
@@ -50,7 +54,7 @@ int main(void) {
 	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}
-	setHeatingOn(true);
+	setHeaterOn(true);
 
 	uint32_t ints = 0;
 	Measurement meas;

@@ -34,9 +34,9 @@ static bool testMeasure(void) {
 	// enable pull-up resistor so the measured voltage
 	// should be close to AREF
 	PORTC |= ((1 << ADC_TEMPI) | (1 << ADC_TEMPO) | (1 << ADC_LAMBDA) |
-			(1 << ADC_HEATING));
+			(1 << ADC_HEATER));
 
-	setHeatingState(HEATING_READY);
+	setHeaterState(heaterStateReady);
 
 	// do many measurements so the averaged voltages are near the measured
 	// voltages (close to AREF)
@@ -185,25 +185,25 @@ static bool testToInfoRich(void) {
 	return ! strcmp(info, MSG_RICH);
 }
 
-static bool testSetHeatingOn(void) {
-	setHeatingOn(true);
-	assertTrue(isHeatingOn());
-	assertTrue(HEATING_UP == getHeatingState());
+static bool testSetHeaterOn(void) {
+	setHeaterOn(true);
+	assertTrue(isHeaterOn());
+	assertTrue(heaterStateUp == getHeaterState());
 
-	setHeatingOn(false);
-	assertFalse(isHeatingOn());
-	assertTrue(HEATING_OFF == getHeatingState());
+	setHeaterOn(false);
+	assertFalse(isHeaterOn());
+	assertTrue(heaterStateOff == getHeaterState());
 
 	return true;
 }
 
-static bool testSetHeatingState(void) {
-	setHeatingOn(false);
-	assertFalse(isHeatingOn());
-	assertTrue(HEATING_OFF == getHeatingState());
+static bool testSetHeaterState(void) {
+	setHeaterOn(false);
+	assertFalse(isHeaterOn());
+	assertTrue(heaterStateOff == getHeaterState());
 
-	setHeatingState(HEATING_FAULT);
-	assertTrue(HEATING_FAULT == getHeatingState());
+	setHeaterState(heaterStateFault);
+	assertTrue(heaterStateFault == getHeaterState());
 
 	return true;
 }
@@ -232,8 +232,8 @@ static const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
 static const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
 static const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
 static const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
-static const char testSetHeatingOn_P[] PROGMEM = "testSetHeatingOn";
-static const char testSetHeatingState_P[] PROGMEM = "testSetHeatingState";
+static const char testSetHeaterOn_P[] PROGMEM = "testSetHeaterOn";
+static const char testSetHeaterState_P[] PROGMEM = "testSetHeaterState";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -257,8 +257,8 @@ static TestCase const tests[] = {
 		{class, testToInfoOkay_P, testToInfoOkay},
 		{class, testToInfoIdeal_P, testToInfoIdeal},
 		{class, testToInfoRich_P, testToInfoRich},
-		{class, testSetHeatingOn_P, testSetHeatingOn},
-		{class, testSetHeatingState_P, testSetHeatingState}
+		{class, testSetHeaterOn_P, testSetHeaterOn},
+		{class, testSetHeaterState_P, testSetHeaterState}
 };
 
 TestClass sensorsClass = {tests, sizeof(tests) / sizeof(tests[0])};

@@ -43,7 +43,7 @@ void runCommand(char* const data) {
 		resetTime();
 		resetDisplay();
 		resetRules();
-		setHeatingOn(true);
+		setHeaterOn(true);
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
@@ -65,13 +65,13 @@ void runCommand(char* const data) {
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("he")) == 0) {
-		// oxygen sensor heating enable
-		setHeatingOn(true);
+		// oxygen sensor heater enable
+		setHeaterOn(true);
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("hd")) == 0) {
-		// oxygen sensor heating disable
-		setHeatingOn(false);
+		// oxygen sensor heater disable
+		setHeaterOn(false);
 		beep(1, 2, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {
@@ -101,8 +101,8 @@ void runCommand(char* const data) {
 		// assuming one measurement was logged per second
 		addInts(INTS_PER_SEC);
 		Measurement meas = readMeas(fields, fieldCount);
-		if (getHeatingState() == HEATING_OFF ||
-				getHeatingState() == HEATING_READY) {
+		if (getHeaterState() == heaterStateOff ||
+				getHeaterState() == heaterStateReady) {
 			updateMeas(meas);
 		}
 		reason(meas);

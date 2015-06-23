@@ -11,9 +11,11 @@
 #include <stdbool.h>
 #include "sensors.h"
 
-#define DIR_NONE 0
-#define DIR_BURN_UP 1
-#define DIR_BURN_DOWN -1
+typedef enum {
+	none = 0,
+	firing_up = 1,
+	burning_down = -1
+} FireDir;
 
 /**
  * An attempt to create some sort of rule "object".

@@ -17,7 +17,7 @@
 #define TONE 31
 
 uint8_t age = 0;
-int8_t dir = 0;
+FireDir dir = none;
 uint8_t airgate = 100;
 
 static Measurement rulesMeasMax = {0, 0, 2000, 0};
@@ -33,7 +33,7 @@ int8_t getDir(void) {
  */
 static void airgate50(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == DIR_BURN_UP && meas.tempI >= 500) {
+	if (! *fired && dir == firing_up && meas.tempI >= 500) {
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -46,7 +46,7 @@ static void airgate50(bool* const fired, int8_t const dir,
  */
 static void airgate25(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 800) {
+	if (! *fired && dir == burning_down && meas.tempI < 800) {
 		airgate = 25;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
@@ -59,8 +59,8 @@ static void airgate25(bool* const fired, int8_t const dir,
  */
 static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == DIR_BURN_DOWN && meas.tempI < 450) {
-		setHeatingOn(false);
+	if (! *fired && dir == burning_down && meas.tempI < 450) {
+		setHeaterOn(false);
 		airgate = 0;
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
@@ -74,7 +74,7 @@ static void airgateClose(bool* const fired, int8_t const dir,
 static void tooRich(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && meas.tempI > 100 && meas.lambda < 1200 &&
-			getHeatingState() == HEATING_READY && airgate < 100) {
+			getHeaterState() == heaterStateReady && airgate < 100) {
 		airgate = 100;
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_TOO_RICH_0), PSTR(MSG_TOO_RICH_1), false);
@@ -91,7 +91,7 @@ static void tooRich(bool* const fired, int8_t const dir,
 static void tooLean(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && meas.tempI > 500 && meas.lambda > 1600 &&
-			getHeatingState() == HEATING_READY && airgate > 50) {
+			getHeaterState() == heaterStateReady && airgate > 50) {
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -106,7 +106,7 @@ static void tooLean(bool* const fired, int8_t const dir,
  */
 static void fireOut(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == DIR_BURN_UP && meas.tempI < 100 &&
+	if (! *fired && dir == firing_up && meas.tempI < 100 &&
 			rulesMeasMax.tempI - meas.tempI > 25) {
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 		*fired = true;
@@ -117,49 +117,49 @@ static void fireOut(bool* const fired, int8_t const dir,
 }
 
 /**
- * Notifies that the heating is ready and sets the corresponding state.
+ * Notifies that the heater is ready and sets the corresponding state.
  */
-static void heatingReady(bool* const fired, int8_t const dir,
+static void heaterReady(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! isHeatingOn() || getHeatingState() == HEATING_READY) {
+	if (! isHeaterOn() || getHeaterState() == heaterStateReady) {
 		return;
 	}
-	if (meas.current <= HEATING_READY_MA && meas.current > HEATING_DISCONN_MA) {
-		setHeatingState(HEATING_READY);
-		alert_P(3, 10, TONE, PSTR(MSG_HEATING_READY_0),
-				PSTR(MSG_HEATING_READY_1), false);
+	if (meas.current <= milliAmpsReady && meas.current > milliAmpsDisconn) {
+		setHeaterState(heaterStateReady);
+		alert_P(3, 10, TONE, PSTR(MSG_HEATER_READY_0),
+				PSTR(MSG_HEATER_READY_1), false);
 	}
 }
 
 /**
- * Notifies that the heating or its connection is faulty and sets the
+ * Notifies that the heater or its connection is faulty and sets the
  * corresponding state.
  */
-static void heatingFault(bool* const fired, int8_t const dir,
+static void heaterFault(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! isHeatingOn() || getHeatingState() == HEATING_FAULT) {
+	if (! isHeaterOn() || getHeaterState() == heaterStateFault) {
 		return;
 	}
-	if (meas.current > HEATING_SHORT_MA || meas.current < HEATING_DISCONN_MA ||
-			(getTime() >= 180 && meas.current > HEATING_READY_MA)) {
+	if (meas.current > milliAmpsShort || meas.current < milliAmpsDisconn ||
+			(getTime() >= 180 && meas.current > milliAmpsReady)) {
 		// short circuit or disconnected or did not warm up within 3 minutes
-		setHeatingOn(false);
-		setHeatingState(HEATING_FAULT);
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_HEATING_FAULT_0),
-				PSTR(MSG_HEATING_FAULT_1), true);
+		setHeaterOn(false);
+		setHeaterState(heaterStateFault);
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_HEATER_FAULT_0),
+				PSTR(MSG_HEATER_FAULT_1), true);
 	}
 }
 
 /**
- * Switches the heating off if it is still on after 3 hours and there does
+ * Switches the heater off if it is still on after 3 hours and there does
  * not seem to be a fire.
  */
-static void heatingTimeout(bool* const fired, int8_t const dir,
+static void heaterTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (isHeatingOn() && getTime() >= 10800 && meas.tempI < 400) {
-		setHeatingOn(false);
-		alert_P(3, 10, TONE, PSTR(MSG_HEATING_OFF_0),
-				PSTR(MSG_HEATING_OFF_1), false);
+	if (isHeaterOn() && getTime() >= 10800 && meas.tempI < 400) {
+		setHeaterOn(false);
+		alert_P(3, 10, TONE, PSTR(MSG_HEATER_OFF_0),
+				PSTR(MSG_HEATER_OFF_1), false);
 	}
 }
 
@@ -181,9 +181,9 @@ Rule rules[] = {
  * Heater rules applied to each not averaged measured heater current value
  */
 Rule heaterRules[] = {
-		{false, heatingReady},
-		{false, heatingFault},
-		{false, heatingTimeout}
+		{false, heaterReady},
+		{false, heaterFault},
+		{false, heaterTimeout}
 };
 
 
@@ -209,13 +209,13 @@ void reason(Measurement const meas) {
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
 	if (age >= 180) {
-		dir = DIR_NONE;
+		dir = none;
 		if ((meas.tempI - rulesMeasPrev.tempI) >= 10 &&
 				rulesMeasMax.tempI < 800 && meas.lambda >= 2000) {
-			dir = DIR_BURN_UP;
+			dir = firing_up;
 		} else if ((rulesMeasPrev.tempI - meas.tempI) >= 1 &&
 				rulesMeasMax.tempI > 800 && meas.lambda >= 2000) {
-			dir = DIR_BURN_DOWN;
+			dir = burning_down;
 		}
 
 		rulesMeasPrev = meas;
@@ -234,7 +234,7 @@ void resetRules(void) {
 	rulesMeasMax.tempI = 0;
 
 	age = 0;
-	dir = DIR_NONE;
+	dir = none;
 	airgate = 100;
 
 	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);

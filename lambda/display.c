@@ -23,13 +23,7 @@
 #include "messages.h"
 #include "rules.h"
 
-#define MENU_OFF 0
-#define MENU_MAX_VALUES 1
-#define MENU_CURRENT 2
-#define MENU_LAST_TEXT 3
-#define MENU_TIME 4
-
-uint8_t position = MENU_OFF;
+DisplayPos position = displayPosCurrent;
 bool updatePending = false;
 Measurement measLatest = {0, 0, 2000, 0};
 Measurement measMax = {0, 0, 2000, 0};
@@ -63,7 +57,7 @@ static void displayMeas(Measurement const meas, char* const hint) {
 	char line0[17];
 	char line1[17];
 	snprintf(line0, sizeof(line0), "Ti %3dC To %3dC ", meas.tempI, meas.tempO);
-	if (getHeatingState() == HEATING_READY || position == MENU_MAX_VALUES) {
+	if (getHeaterState() == heaterStateReady || position == displayPosMax) {
 		snprintf(line1, sizeof(line1), "L  %d.%02d %s %s",
 				lambdaT.quot, abs(lambdaT.rem), toInfo(lambdax100), hint);
 	} else {
@@ -81,7 +75,7 @@ static void displayCurrent(uint16_t const current) {
 
 	char line1[17];
 	snprintf(line1, sizeof(line1), "%d.%02d Amp", ampsT.quot, abs(ampsT.rem));
-	setText(MSG_HEATING_CURRENT, line1);
+	setText(MSG_HEATER_CURRENT, line1);
 }
 
 /**
@@ -101,8 +95,8 @@ void cycleDisplay(void) {
 		return;
 	}
 	position++;
-	if (position > MENU_TIME) {
-		position = MENU_OFF;
+	if (position > displayPosTime) {
+		position = displayPosCurrent;
 	}
 	updatePending = true;
 	beep(1, 2, 31);
@@ -130,19 +124,19 @@ void updateDisplayIfPending() {
 	if (updatePending && ! isAlertActive()) {
 		updatePending = false;
 
-		if (position == MENU_MAX_VALUES) {
+		if (position == displayPosMax) {
 			displayMeas(measMax, " ^");
-		} else if (position == MENU_LAST_TEXT) {
+		} else if (position == displayPosLastText) {
 			setText(lastLine0, lastLine1);
-		} else if (position == MENU_CURRENT) {
+		} else if (position == displayPosHeater) {
 			displayCurrent(measLatest.current);
-		} else if (position == MENU_TIME) {
+		} else if (position == displayPosTime) {
 			displayTime();
 		} else {
 			char* hint;
 			switch (getDir()) {
-				case DIR_BURN_UP: hint = " >"; break;
-				case DIR_BURN_DOWN: hint = " <"; break;
+				case firing_up: hint = " >"; break;
+				case burning_down: hint = " <"; break;
 				default: hint = " -"; break;
 			}
 			displayMeas(measLatest, hint);

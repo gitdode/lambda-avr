@@ -24,7 +24,7 @@ static bool testSetupPorts(void) {
 	// test that the beep output pin is enabled
 	assertTrue(bit_is_set(DDRB, PB1));
 
-	// test that the oxygen sensor heating control output pin is enabled
+	// test that the oxygen sensor heater control output pin is enabled
 	assertTrue(bit_is_set(DDRB, PB1));
 
 	return true;

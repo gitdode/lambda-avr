@@ -14,14 +14,25 @@
 #include <stdio.h>
 
 #define SHUNT_MILLIOHMS 100
-#define HEATING_READY_MA 1400
-#define HEATING_SHORT_MA 7500
-#define HEATING_DISCONN_MA 100
 
-#define HEATING_FAULT -1
-#define HEATING_OFF 0
-#define HEATING_UP 1
-#define HEATING_READY 2
+/**
+ * Oxygen sensor heater current limits at certain states in milliamps.
+ */
+typedef enum {
+	milliAmpsReady = 1400,
+	milliAmpsShort = 7500,
+	milliAmpsDisconn = 100
+} HeaterMilliAmps;
+
+/**
+ * Oxygen sensor heater states.
+ */
+typedef enum {
+	heaterStateFault = -1,
+	heaterStateOff = 0,
+	heaterStateUp = 1,
+	heaterStateReady = 2
+} HeaterState;
 
 /**
  * Entry for the lookup tables.
@@ -80,7 +91,7 @@ int16_t toTempO(uint16_t mV);
 uint16_t toLambda(uint16_t mV);
 
 /**
- * Returns the current of the oxygen sensor heating in mA.
+ * Returns the current of the oxygen sensor heater in mA.
  */
 uint16_t toCurrent(uint16_t mv);
 
@@ -105,24 +116,24 @@ int32_t linADC(uint16_t mV);
 char* toInfo(uint16_t lambda);
 
 /**
- * Turns the heating of the oxygen sensor on or off.
+ * Turns the heater of the oxygen sensor on or off.
  */
-void setHeatingOn(bool on);
+void setHeaterOn(bool on);
 
 /**
- * Returns true if the heating of the oxygen sensor is turned on,
+ * Returns true if the heater of the oxygen sensor is turned on,
  * false otherwise.
  */
-bool isHeatingOn(void);
+bool isHeaterOn(void);
 
 /**
- * Sets the state of the heating of the oxygen sensor to the given value.
+ * Sets the state of the heater of the oxygen sensor to the given value.
  */
-void setHeatingState(int8_t state);
+void setHeaterState(int8_t state);
 
 /**
- * Returns the state of the heating of the oxygen sensor.
+ * Returns the state of the heater of the oxygen sensor.
  */
-int8_t getHeatingState(void);
+int8_t getHeaterState(void);
 
 #endif /* SENSORS_H_ */

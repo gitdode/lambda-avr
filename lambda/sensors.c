@@ -21,7 +21,7 @@
 #include "pins.h"
 #include "messages.h"
 
-static int8_t heatingState = HEATING_OFF;
+static HeaterState heaterState = heaterStateOff;
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -91,7 +91,7 @@ Measurement measure(void) {
 	tempOVoltageAvg = tempOVoltage + tempOVoltageAvg -
 			((tempOVoltageAvg - 4) >> 3);
 
-	if (heatingState == HEATING_READY) {
+	if (heaterState == heaterStateReady) {
 		uint32_t lambdaVoltage = linADC(getVoltage(ADC_LAMBDA));
 		lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 				((lambdaVoltageAvg - 4) >> 3);
@@ -99,13 +99,13 @@ Measurement measure(void) {
 		lambdaVoltageAvg = 44 << 3;
 	}
 
-	uint16_t heatingVoltage = linADC(getVoltage(ADC_HEATING));
+	uint16_t heaterVoltage = linADC(getVoltage(ADC_HEATER));
 
 	Measurement meas;
 	meas.tempI = toTempI(tempIVoltageAvg >> 3);
 	meas.tempO = toTempO(tempOVoltageAvg >> 3);
 	meas.lambda = toLambda(lambdaVoltageAvg >> 3);
-	meas.current = toCurrent(heatingVoltage);
+	meas.current = toCurrent(heaterVoltage);
 
 	return meas;
 }
@@ -191,25 +191,25 @@ char* toInfo(uint16_t const lambda) {
 	}
 }
 
-void setHeatingOn(bool const on) {
+void setHeaterOn(bool const on) {
 	if (on) {
 		PORTB |= (1 << PB2);
-		heatingState = HEATING_UP;
-		alert_P(1, 2, 31, PSTR(MSG_HEATING_UP_0), PSTR(MSG_HEATING_UP_1), true);
+		heaterState = heaterStateUp;
+		alert_P(1, 2, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
 	} else {
 		PORTB &= ~(1 << PB2);
-		heatingState = HEATING_OFF;
+		heaterState = heaterStateOff;
 	}
 }
 
-bool isHeatingOn(void) {
+bool isHeaterOn(void) {
 	return bit_is_set(PORTB, PB2);
 }
 
-void setHeatingState(int8_t const state) {
-	heatingState = state;
+void setHeaterState(int8_t const state) {
+	heaterState = state;
 }
 
-int8_t getHeatingState(void) {
-	return heatingState;
+int8_t getHeaterState(void) {
+	return heaterState;
 }
