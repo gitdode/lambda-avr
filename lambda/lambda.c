@@ -23,7 +23,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <avr/power.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -40,9 +39,6 @@
  * runs commands sent via USART.
  */
 int main(void) {
-
-	// clock_prescale_set(clock_div_1);
-
 	initUSART();
 	lcd_init();
 	setupPorts();
