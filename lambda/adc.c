@@ -24,8 +24,7 @@ void setupADC(void) {
 	// disable digital input on the ADC inputs
 	// http://www.openmusiclabs.com/learning/digital/atmega-adc/
 	DIDR0 = 0b00111111;
-	// ADC clock prescaler/8
-	ADCSRA |= (1 << ADPS1) | (1 << ADPS0);
+	ADCSRA |= ADC_PRESCALE;
 	// enable ADC
 	ADCSRA |= (1 << ADEN);
 }

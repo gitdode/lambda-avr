@@ -44,7 +44,7 @@ void runCommand(char* const data) {
 		resetDisplay();
 		resetRules();
 		setHeaterOn(true);
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
 		// simulation disable
@@ -52,27 +52,27 @@ void runCommand(char* const data) {
 		resetDisplay();
 		resetRules();
 		simulation = false;
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("le")) == 0) {
 		// logging enable
 		logging = true;
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("ld")) == 0) {
 		// logging disable
 		logging = false;
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("he")) == 0) {
 		// oxygen sensor heater enable
 		setHeaterOn(true);
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("hd")) == 0) {
 		// oxygen sensor heater disable
 		setHeaterOn(false);
-		beep(1, 2, 31);
+		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {
 		// cycle menu
@@ -82,7 +82,7 @@ void runCommand(char* const data) {
 		// test alert
 		char buf[16];
 		strcpy_P(buf, PSTR("Beep Beep Beep!"));
-		alert(3, 10, 15, buf, fields[1], false);
+		alert(3, 5, 15, buf, fields[1], false);
 	}
 	else if (strcmp_P(fields[0], PSTR("tb")) == 0) {
 		// test beep
@@ -97,15 +97,16 @@ void runCommand(char* const data) {
 		beep(1, length, tone);
 	}
 	else if (simulation) {
-		// add one second per measurement to the timebase,
+		// add one second per measurement to the time,
 		// assuming one measurement was logged per second
-		addInts(INTS_PER_SEC);
+		addTime(1);
 		Measurement meas = readMeas(fields, fieldCount);
 		if (getHeaterState() == heaterStateOff ||
 				getHeaterState() == heaterStateReady) {
 			updateMeas(meas);
 		}
 		reason(meas);
+		setUpdatePending();
 	}
 
 	updateDisplayIfPending();

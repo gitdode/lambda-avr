@@ -13,7 +13,7 @@
 #include "messages.h"
 
 #define BEEPS 30
-#define LENGTH 20
+#define LENGTH 10
 #define TONE 31
 
 uint8_t age = 0;
@@ -126,7 +126,7 @@ static void heaterReady(bool* const fired, int8_t const dir,
 	}
 	if (meas.current <= milliAmpsReady && meas.current > milliAmpsDisconn) {
 		setHeaterState(heaterStateReady);
-		alert_P(3, 10, TONE, PSTR(MSG_HEATER_READY_0),
+		alert_P(3, 5, TONE, PSTR(MSG_HEATER_READY_0),
 				PSTR(MSG_HEATER_READY_1), false);
 	}
 }
@@ -158,7 +158,7 @@ static void heaterTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (isHeaterOn() && getTime() >= 10800 && meas.tempI < 400) {
 		setHeaterOn(false);
-		alert_P(3, 10, TONE, PSTR(MSG_HEATER_OFF_0),
+		alert_P(3, 5, TONE, PSTR(MSG_HEATER_OFF_0),
 				PSTR(MSG_HEATER_OFF_1), false);
 	}
 }

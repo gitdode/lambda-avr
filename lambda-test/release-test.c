@@ -31,9 +31,6 @@ static bool testRelease(void) {
 	assertTrue(PD3 == LCD_DB6);
 	assertTrue(PD2 == LCD_DB7);
 
-	// average value
-	assertTrue(61 == INTS_PER_SEC);
-
 	// nominal value
 	assertTrue(100 == SHUNT_MILLIOHMS);
 

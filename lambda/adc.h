@@ -16,6 +16,14 @@
 #define ADC_NONLIN_0 -8
 #define ADC_NONLIN_AREF 12
 
+#if F_CPU == 1000000
+	// ADC clock prescaler/8 = 125kHz @ 1MHz
+	#define ADC_PRESCALE (1 << ADPS1) | (1 << ADPS0)
+#elif F_CPU == 8000000
+	// ADC clock prescaler/64 = 125kHz @ 8MHz
+	#define ADC_PRESCALE (1 << ADPS2) | (1 << ADPS1)
+#endif
+
 /**
  * Sets up reference voltage and clock prescaler of the ADC and enables it.
  */

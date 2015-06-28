@@ -27,7 +27,7 @@ extern Measurement measMax; // = {0, 0, 2000};
 
 static bool testCycle(void) {
 	cancelAlert(true);
-	position = displayPosCurrent;;
+	position = displayPosCurrent;
 	updatePending = false;
 
 	assertTrue(position == displayPosCurrent);
@@ -37,7 +37,7 @@ static bool testCycle(void) {
 	assertTrue(position == displayPosMax);
 	assertTrue(updatePending);
 	assertTrue(beepCount == 1);
-	assertTrue(beepLength == 2);
+	assertTrue(beepLength == 1);
 
 	cycleDisplay();
 	assertTrue(position == displayPosHeater);
@@ -67,8 +67,6 @@ static bool testCycleCancelAlert(void) {
 }
 
 static bool testUpdateMeas(void) {
-	updatePending = false;
-
 	// initial measurements
 	assertTrue(measLatest.tempI == 0);
 	assertTrue(measLatest.tempO == 0);
@@ -90,7 +88,6 @@ static bool testUpdateMeas(void) {
 	assertTrue(measMax.tempI == 1);
 	assertTrue(measMax.tempO == 2);
 	assertTrue(measMax.lambda == 3);
-	assertTrue(updatePending);
 
 	Measurement meas2 = {10, 20, 30, 40};
 	updateMeas(meas2);

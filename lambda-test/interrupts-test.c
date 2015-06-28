@@ -46,11 +46,10 @@ static bool testInitInterrupts(void) {
 
 	// ADC interrupt enabled
 	assertTrue(bit_is_set(ADCSRA, ADIE));
-	// PC interrupts enabled
-	// assertTrue(bit_is_set(PCICR, PCIE0));
-	// assertTrue(bit_is_set(PCMSK0, PB0));
-	// enable timer 0 overflow interrupt
-	assertTrue(bit_is_set(TIMSK0, TOIE0));
+
+	// timer0 compare match A interrupt enabled
+	assertTrue(bit_is_set(TIMSK0, OCIE0A));
+
 	// USART RX complete interrupt 0 enabled
 	assertTrue(bit_is_set(UCSR0B, RXCIE0));
 
@@ -63,17 +62,20 @@ static bool testInitInterrupts(void) {
 static bool testInitTimers(void) {
 	initTimers();
 
-	// timer0 clock prescaler /64 = 15.625 kHz overflowing every 16.2 ms
-	uint8_t prescalerBy64 = (1 << CS00) | (1 << CS01);
-	assertTrue((TCCR0B & prescalerBy64) == prescalerBy64);
+	// timer0 clear timer on compare match mode, TOP OCR0A
+	assertTrue(bit_is_set(TCCR0A, WGM01));
+	// timer0 clock prescaler/256
+	uint8_t timer0Prescaler = (1 << CS02);
+	assertTrue((TCCR0B & timer0Prescaler) == timer0Prescaler);
+	// timer0 compare match
+	assertTrue(OCR0A == 122);
 
-	// timer1 Clear Timer on Compare Match mode, TOP OCR1A
+	// timer1 clear timer on compare match mode, TOP OCR1A
 	assertTrue(bit_is_set(TCCR1B, WGM12));
 	// timer1 clock prescaler/8
-	assertTrue(bit_is_set(TCCR1B, CS11));
-	// toggles PB1 at 7.8 kHz generating a 3.9 kHz beep
-	// assertTrue(OCR1A == 15);
-	// 2 kHz is less noisy on the small piezo beeper
+	uint8_t timer1Prescaler = (1 << CS11);
+	assertTrue((TCCR1B & timer1Prescaler) == timer1Prescaler);
+	// timer1 compare match
 	assertTrue(OCR1A == 31);
 
 	return true;
@@ -81,16 +83,14 @@ static bool testInitTimers(void) {
 
 static bool testTime(void) {
 	resetTime();
-	assertTrue(getInts() == 0);
 	assertTrue(getTime() == 0);
 
 	_delay_ms(1000);
 
-	assertTrue(getInts() >= INTS_PER_SEC);
 	assertTrue(getTime() == 1);
 
 	// add 1:11:10
-	addInts(4270UL * INTS_PER_SEC);
+	addTime(4270UL);
 
 	// HHHHH:MM:SS
 	char str[12];

@@ -24,37 +24,35 @@ static volatile bool buttonPressed = false;
 static volatile uint32_t ints = 0;
 
 /**
- * Called about every 16.4 ms.
+ * Called about every 1/32 seconds.
  */
-ISR(TIMER0_OVF_vect) {
+ISR(TIMER0_COMPA_vect) {
 	if (! isSimulation()) {
 		ints++;
 	}
 	oscillateBeep();
-	if (bit_is_clear(PINB, PB0) && ! buttonPressed) {
+	if (bit_is_clear(PIN, PIN_BUTTON) && ! buttonPressed) {
 		buttonPressed = true;
 		cycleDisplay();
-	} else if (bit_is_set(PINB, PB0)) {
+	} else if (bit_is_set(PIN, PIN_BUTTON)) {
 		buttonPressed = false;
 	}
 }
 
-uint32_t getInts(void) {
-	uint32_t atomicInts;
-	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		atomicInts = ints;
-	}
-	return atomicInts;
-}
-
-void addInts(uint32_t const add) {
-	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		ints += add;
-	}
-}
-
 uint32_t getTime(void) {
-	return getInts() / INTS_PER_SEC;
+	uint32_t time;
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		// 32 ints per second
+		time = ints >> 5;
+	}
+
+	return time;
+}
+
+void addTime(uint32_t const time) {
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		ints += (time << 5);
+	}
 }
 
 void formatTime(char* const str, size_t const size) {
@@ -92,29 +90,24 @@ void initInterrupts(void) {
 	// enable ADC interrupt
 	ADCSRA |= (1 << ADIE);
 
-	// enable timer 0 overflow interrupt
-	TIMSK0 |= (1 << TOIE0);
+	// enable timer0 compare match A interrupt
+	TIMSK0 |= (1 << OCIE0A);
 
 	// enable USART RX complete interrupt 0
 	UCSR0B |= (1 << RXCIE0);
-	// enable data register empty interrupt 0
-	// UCSR0B |= (1 << UDRIE0);
 
 	// enable global interrupts
 	sei();
 }
 
 void initTimers(void) {
-	// timer in normal mode is default
-	// timer0 clock prescaler/64 = 15.625 kHz overflowing every 16.4 ms
-	TCCR0B |= (1 << CS01) | (1 << CS00);
+	// timer0 clear timer on compare match mode, TOP OCR0A
+	TCCR0A |= (1 << WGM01);
+	TCCR0B |= TIMER0_PRESCALE;
+	OCR0A = TIMER0_COMP_MATCH;
 
-	// timer1 Clear Timer on Compare Match mode, TOP OCR1A
+	// timer1 clear timer on compare match mode, TOP OCR1A
 	TCCR1B |= (1 << WGM12);
-	// timer1 clock prescaler/8
-	TCCR1B |= (1 << CS11);
-	// timer1 Compare Match at 7.8 kHz generating a 3.9 kHz beep
-	// OCR1A = 15;
-	// 2 kHz is less noisy on the small piezo beeper
-	OCR1A = 31;
+	TCCR1B |= TIMER1_PRESCALE;
+	OCR1A = TIMER1_COMP_MATCH;
 }

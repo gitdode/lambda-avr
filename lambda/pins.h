@@ -21,7 +21,9 @@
 /** ADC pin for the LSM 11 oxygen sensor heater current */
 #define ADC_HEATER PC3
 
-/** Port for menu button, beeper and oxygen sensor heater */
+/** Pin input register for menu button */
+#define PIN PINB
+/** Pin output register for menu button, beeper and oxygen sensor heater */
 #define PORT PORTB
 /** DDR for menu button, beeper and oxygen sensor heater */
 #define DDR DDRB

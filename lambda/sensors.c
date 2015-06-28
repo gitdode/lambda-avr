@@ -195,7 +195,7 @@ void setHeaterOn(bool const on) {
 	if (on) {
 		PORTB |= (1 << PB2);
 		heaterState = heaterStateUp;
-		alert_P(1, 2, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
+		alert_P(1, 1, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
 	} else {
 		PORTB &= ~(1 << PB2);
 		heaterState = heaterStateOff;

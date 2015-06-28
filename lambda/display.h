@@ -57,4 +57,10 @@ void logMeas(Measurement meas);
  */
 void displayText(const char* line0, const char* line1);
 
+/**
+ * Causes the display to be updated next time
+ * updateDisplayIfPending() is called.
+ */
+void setUpdatePending(void);
+
 #endif /* DISPLAY_H_ */

@@ -11,25 +11,39 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
-// 61 +/-1 depending on internal oscillator?
-#define INTS_PER_SEC 61
-
-/**
- * Returns the count of interrupts occurring about every 16.4 ms
- * since last reset.
- */
-uint32_t getInts(void);
-
-/**
- * Adds the given number of interrupts to the interrupt counter
- * used as timebase. Useful only for simulation.
- */
-void addInts(uint32_t add);
+#if F_CPU == 1000000
+	// timer0 clock prescaler/256 = 3.906 kHz @ 1 MHz
+	#define TIMER0_PRESCALE (1 << CS02)
+	// timer0 compare match about every 31.25 ms = 1000 ms >> 5
+	#define TIMER0_COMP_MATCH 122
+	// timer1 clock prescaler/8 = 125 kHz @ 1MHz
+	#define TIMER1_PRESCALE (1 << CS11)
+	// timer1 compare match at 7.8 kHz generating a 3.9 kHz beep
+	// #define TIMER1_CTC_TOP 15
+	// 2 kHz is less noisy on the small piezo beeper
+	#define TIMER1_COMP_MATCH 31
+#elif F_CPU == 8000000
+	// timer0 clock prescaler/1024 = 7.812 kHz @ 8 MHz
+	#define TIMER0_PRESCALE (1 << CS02) | (1 << CS00)
+	// timer0 compare match about every 31.25 ms = 1000 ms >> 5
+	#define TIMER0_COMP_MATCH 244
+	// timer1 clock prescaler/64 = 125 kHz @ 8MHz
+	#define TIMER1_PRESCALE (1 << CS11) | (1 << CS10)
+	// timer1 compare match at 7.8 kHz generating a 3.9 kHz beep
+	// #define TIMER1_CTC_TOP 15
+	// 2 kHz is less noisy on the small piezo beeper
+	#define TIMER1_COMP_MATCH 31
+#endif
 
 /**
  * Returns the time in about seconds since last reset.
  */
 uint32_t getTime(void);
+
+/**
+ * Adds the given number of seconds. Useful only for simulation.
+ */
+void addTime(uint32_t time);
 
 /**
  * Writes the time since last reset in format HHHHH:MM:SS to the given string.

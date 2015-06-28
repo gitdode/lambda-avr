@@ -349,7 +349,7 @@ static bool testHeaterFaultNoheat(void) {
 	setHeaterOn(true);
 
 	// more than 3 mins
-	addInts(INTS_PER_SEC * 181);
+	addTime(181);
 
 	meas.current = 5000;
 	reason(meas);
@@ -370,7 +370,7 @@ static bool testHeaterTimeout(void) {
 	setHeaterOn(true);
 
 	// more than 3 hours below 400°C
-	addInts(INTS_PER_SEC * 10800UL);
+	addTime(10800UL);
 
 	meas.tempI = 300;
 	meas.current = 1300;

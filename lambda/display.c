@@ -99,7 +99,7 @@ void cycleDisplay(void) {
 		position = displayPosCurrent;
 	}
 	updatePending = true;
-	beep(1, 2, 31);
+	beep(1, 1, 31);
 }
 
 void updateMeas(Measurement const meas) {
@@ -108,8 +108,6 @@ void updateMeas(Measurement const meas) {
 	measMax.tempI = MAX(measMax.tempI, meas.tempI);
 	measMax.tempO = MAX(measMax.tempO, meas.tempO);
 	measMax.lambda = MIN(measMax.lambda, meas.lambda);
-
-	updatePending = true;
 }
 
 void resetDisplay(void) {
@@ -158,4 +156,8 @@ void displayText(const char* const line0, const char* const line1) {
 	strncat(lastLine0, line0, sizeof(lastLine0) - 1);
 	strncat(lastLine1, line1, sizeof(lastLine1) - 1);
 	setText(line0, line1);
+}
+
+void setUpdatePending(void) {
+	updatePending = true;
 }

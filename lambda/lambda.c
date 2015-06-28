@@ -23,6 +23,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/power.h>
 #include "usart.h"
 #include "lcdroutines.h"
 #include "adc.h"
@@ -39,6 +40,12 @@
  * runs commands sent via USART.
  */
 int main(void) {
+
+	// assuming 1 MHz default
+	if (F_CPU == 8000000UL) {
+		clock_prescale_set(clock_div_1);
+	}
+
 	initUSART();
 	lcd_init();
 	setupPorts();
@@ -47,24 +54,25 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
-	alert_P(1, 2, 31, PSTR(MSG_WELCOME), PSTR(""), false);
+	alert_P(1, 1, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}
 	setHeaterOn(true);
 
-	uint32_t ints = 0;
+	uint32_t time = 0;
 	Measurement meas;
 
 	// main loop
 	while (true) {
-		if (! isSimulation() && getInts() >= ints + INTS_PER_SEC) {
-			ints = getInts();
+		if (! isSimulation() && getTime() > time) {
+			time = getTime();
 			meas = measure();
 			updateMeas(meas);
 			reason(meas);
 			if (isLogging()) {
 				logMeas(meas);
 			}
+			setUpdatePending();
 		}
 		if (! isSimulation()) {
 			updateDisplayIfPending();
