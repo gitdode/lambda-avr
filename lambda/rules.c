@@ -22,6 +22,7 @@ uint8_t airgate = 100;
 
 static Measurement rulesMeasMax = {0, 0, 2000, 0};
 static Measurement rulesMeasPrev = {0, 0, 2000, 0};
+static bool measPrevInit = false;
 
 int8_t getDir(void) {
 	return dir;
@@ -164,6 +165,8 @@ static void heaterTimeout(bool* const fired, int8_t const dir,
 }
 
 // TODO what if fired up again without reset?
+// - Rules are in state fired (no reset) and don't fire again
+// - Heating is not switched on again if already switched off
 
 /**
  * Rules applied to every nth averaged measurement
@@ -206,6 +209,12 @@ void reason(Measurement const meas) {
 
 	age++;
 
+	// init previous measurements with current measurements
+	if (! measPrevInit) {
+		rulesMeasPrev = meas;
+		measPrevInit = true;
+	}
+
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
 	if (age >= 180) {
@@ -226,11 +235,7 @@ void reason(Measurement const meas) {
 }
 
 void resetRules(void) {
-	rulesMeasPrev.tempI = 0;
-	rulesMeasPrev.tempO = 0;
-	rulesMeasPrev.lambda = 2000;
-	rulesMeasPrev.current = 0;
-
+	measPrevInit = false;
 	rulesMeasMax.tempI = 0;
 
 	age = 0;

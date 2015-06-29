@@ -1,16 +1,16 @@
+# Makefile adopted from the book Make: AVR Programming by Elliot Williams
+# https://github.com/hexagon5un/AVR-Programming
 
-##########------------------------------------------------------##########
-##########              Project-specific Details                ##########
-##########    Check these every time you start a new project    ##########
-##########------------------------------------------------------##########
-
-MCU   = atmega328p
+MCU = atmega328p
 F_CPU = 1000000
+# Also try BAUD = 19200 or 38400 if you're feeling lucky.
 BAUD = 9600
-## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
-## This is where your main() routine lives 
+# Main function
 MAIN = lambda-test.c
+
+# en: 0 (default), de: 1
+LANG = 0
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
