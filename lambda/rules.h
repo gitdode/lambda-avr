@@ -11,9 +11,28 @@
 #include <stdbool.h>
 #include "sensors.h"
 
+#define BEEPS 30
+#define LENGTH 10
+#define TONE 31
+
+#define TEMP_MAX 800
+#define TEMP_DELTA_UP 10
+#define TEMP_DELTA_DOWN 1
+#define TEMP_AIRGATE_50 500
+#define TEMP_AIRGATE_25 800
+#define TEMP_AIRGATE_0 450
+#define TEMP_FIRE_OUT 100
+#define TEMP_FIRE_OUT_RESET 125
+#define LAMBDA_MAX 2000
+#define LAMBDA_TOO_RICH 1200
+#define LAMBDA_TOO_RICH_RESET 1300
+#define LAMBDA_TOO_LEAN 1600
+#define LAMBDA_TOO_LEAN_RESET 1500
+
 typedef enum {
 	none = 0,
 	firing_up = 1,
+	burning = 2,
 	burning_down = -1
 } FireDir;
 

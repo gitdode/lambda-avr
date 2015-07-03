@@ -96,7 +96,7 @@ Measurement measure(void) {
 		lambdaVoltageAvg = lambdaVoltage + lambdaVoltageAvg -
 				((lambdaVoltageAvg - 4) >> 3);
 	} else {
-		lambdaVoltageAvg = 44 << 3;
+		lambdaVoltageAvg = 44 << 3; // Lambda 2.00
 	}
 
 	uint16_t heaterVoltage = linADC(getVoltage(ADC_HEATER));

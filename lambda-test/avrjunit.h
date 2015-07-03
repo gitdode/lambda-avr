@@ -25,6 +25,16 @@
 #define assertFalse(exp) if (exp) return false
 
 /**
+ * Returns false if the given expression is not NULL.
+ */
+#define assertNull(exp) if ((exp) != NULL) return false
+
+/**
+ * Returns false if the given expression is NULL.
+ */
+#define assertNotNull(exp) if ((exp) == NULL) return false
+
+/**
  * Function pointer for test functions taking no parameters and returning
  * true on success and false on failure.
  */

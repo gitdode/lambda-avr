@@ -8,6 +8,7 @@
  *
  */
 
+#include "string.h"
 #include "avrjunit.h"
 #include "rules.h"
 #include "alert.h"
@@ -389,49 +390,49 @@ static bool testReasonDirBurnUp(void) {
 
 	age = 0;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 9;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 100;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 1);
+	assertTrue(dir == firing_up);
 
 	meas.tempI = 790;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 1);
+	assertTrue(dir == firing_up);
 
 	meas.tempI = 790;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 800;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 1);
+	assertTrue(dir == firing_up);
 
 	meas.tempI = 850;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 900;
 	meas.lambda = 1999;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == burning);
 
 	cancelAlert(false);
 
@@ -445,48 +446,50 @@ static bool testReasonDirBurnDown(void) {
 
 	age = 0;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 900;
 	meas.lambda = 1999;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == burning);
 
 	meas.tempI = 800;
 	meas.lambda = 1999;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == burning);
 
 	meas.tempI = 750;
 	meas.lambda = 1999;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == burning);
 
 	meas.tempI = 700;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == -1);
+	assertTrue(dir == burning_down);
 
 	meas.tempI = 700;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == 0);
+	assertTrue(dir == none);
 
 	meas.tempI = 100;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == -1);
+	assertTrue(dir == burning_down);
 
 	cancelAlert(false);
 
 	return true;
 }
+
+// TODO add tests for "burning" and "warm start"
 
 /* Test "class" */
 static const char class[] PROGMEM = "rules";

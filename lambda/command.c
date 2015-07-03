@@ -101,6 +101,9 @@ void runCommand(char* const data) {
 		// assuming one measurement was logged per second
 		addTime(1);
 		Measurement meas = readMeas(fields, fieldCount);
+		if (getHeaterState() == heaterStateOff) {
+			meas.lambda = 2000; // Lambda 2.00
+		}
 		if (getHeaterState() == heaterStateOff ||
 				getHeaterState() == heaterStateReady) {
 			updateMeas(meas);
