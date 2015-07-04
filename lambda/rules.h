@@ -15,18 +15,36 @@
 #define LENGTH 10
 #define TONE 31
 
+/** Age of previous measurements to compare against */
+#define AGE_MEAS_PREV 180
+/** Oven reaches at least this temperature when the fire is burning */
 #define TEMP_MAX 800
+/** Min. increase in temperature during AGE_MEAS_PREV when firing up */
 #define TEMP_DELTA_UP 10
+/** Min. decrease in temperature during AGE_MEAS_PREV when burning down */
 #define TEMP_DELTA_DOWN 1
+/** Min. temperature at which to set the air gate to 50% when firing up  */
 #define TEMP_AIRGATE_50 500
+/** Max. temperature at which to set the air gate to 25% when burning down */
 #define TEMP_AIRGATE_25 800
+/**
+ * Max. temperature at which to set the air gate to 0% and to switch off the
+ * oxygen sensor heater when burning down
+ */
 #define TEMP_AIRGATE_0 450
+/** Max. temperature at which to consider the fire to have gone out */
 #define TEMP_FIRE_OUT 100
+/** Min. temperature at which to consider the fire to fire up again */
 #define TEMP_FIRE_OUT_RESET 125
+/** Fire is considered burning if lambda is below this value */
 #define LAMBDA_MAX 2000
+/** Combustion is considered too rich if lambda is below this value */
 #define LAMBDA_TOO_RICH 1200
+/** Combustion is considered lean enough again if lambda is above this value */
 #define LAMBDA_TOO_RICH_RESET 1300
+/** Combustion is considered too lean if lambda is above this value */
 #define LAMBDA_TOO_LEAN 1600
+/** Combustion is considered rich enough again if lambda is below this value */
 #define LAMBDA_TOO_LEAN_RESET 1500
 
 typedef enum {

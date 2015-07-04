@@ -214,7 +214,7 @@ void reason(Measurement const meas) {
 
 	// try to figure out if the fire is building up or burning down by
 	// comparing current measurements with ones that are 3 minutes old.
-	if (age >= 180) {
+	if (age >= AGE_MEAS_PREV) {
 		dir = none;
 		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&
 				rulesMeasMax.tempI < TEMP_MAX && meas.lambda >= LAMBDA_MAX) {
