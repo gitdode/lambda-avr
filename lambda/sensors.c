@@ -176,7 +176,7 @@ int32_t linADC(uint16_t const mV) {
 	size_t size = sizeof(linADCTable) / sizeof(linADCTable[0]);
 	int16_t dev = lookupLinInter(mV, linADCTable, size);
 
-	return (int32_t)mV - dev;
+	return (int32_t)mV == 0 ? 0 : mV - dev;
 }
 
 char* toInfo(uint16_t const lambda) {

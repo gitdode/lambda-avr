@@ -19,7 +19,7 @@
  * Oxygen sensor heater current limits at certain states in milliamps.
  */
 typedef enum {
-	milliAmpsReady = 1400,
+	milliAmpsReady = 1350,
 	milliAmpsShort = 7500,
 	milliAmpsDisconn = 100
 } HeaterMilliAmps;

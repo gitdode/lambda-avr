@@ -18,7 +18,7 @@
 /** Age of previous measurements to compare against */
 #define AGE_MEAS_PREV 180
 /** Oven reaches at least this temperature when the fire is burning */
-#define TEMP_MAX 800
+#define TEMP_MIN 700
 /** Min. increase in temperature during AGE_MEAS_PREV when firing up */
 #define TEMP_DELTA_UP 10
 /** Min. decrease in temperature during AGE_MEAS_PREV when burning down */
@@ -26,7 +26,7 @@
 /** Min. temperature at which to set the air gate to 50% when firing up  */
 #define TEMP_AIRGATE_50 500
 /** Max. temperature at which to set the air gate to 25% when burning down */
-#define TEMP_AIRGATE_25 800
+#define TEMP_AIRGATE_25 700
 /**
  * Max. temperature at which to set the air gate to 0% and to switch off the
  * oxygen sensor heater when burning down
