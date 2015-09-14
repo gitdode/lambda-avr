@@ -140,7 +140,7 @@ static void heaterFault(bool* const fired, int8_t const dir,
 		return;
 	}
 	if (meas.current > milliAmpsShort || meas.current < milliAmpsDisconn ||
-			(getTime() >= 300 && meas.current > milliAmpsReady)) {
+			(getHeaterUptime() >= 300 && meas.current > milliAmpsReady)) {
 		// short circuit or disconnected or did not warm up within 5 minutes
 		setHeaterOn(false);
 		setHeaterState(heaterStateFault);
@@ -150,31 +150,21 @@ static void heaterFault(bool* const fired, int8_t const dir,
 }
 
 /**
- * Switches the heater off if it is still on after 15 mins and there does
- * not seem to be a fire.
+ * Switches the heater off if it is on for 15 mins or more and there does
+ * not seem to be a fire, and notifies that the fire is out.
  */
 static void heaterTimeout(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (isHeaterOn() && getTime() >= 900 && meas.tempI < TEMP_FIRE_OUT) {
-		setHeaterOn(false);
-		alert_P(3, 5, TONE, PSTR(MSG_HEATER_OFF_0),
-				PSTR(MSG_HEATER_OFF_1), false);
-	}
-}
-
-/**
- * Switches the heater on if it is off and not in state fault and it seems
- * obvious that there is a fire building up.
- */
-static void heaterOn(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (isHeaterOn() || getHeaterState() == heaterStateFault) {
+	if (! isHeaterOn() || getHeaterState() == heaterStateFault) {
 		return;
 	}
-	if (dir != burning_down && meas.tempI > TEMP_AIRGATE_0) {
-		setHeaterOn(true);
-		alert_P(3, 5, TONE, PSTR(MSG_HEATER_UP_0),
-				PSTR(MSG_HEATER_UP_1), false);
+	uint32_t heaterUptime = getHeaterUptime();
+	if (heaterUptime >= 900 && meas.tempI < TEMP_FIRE_OUT) {
+		setHeaterOn(false);
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
+	}
+	if (heaterUptime >= 1800 && meas.tempI < TEMP_AIRGATE_0) {
+		setHeaterOn(false);
 	}
 }
 
@@ -196,8 +186,7 @@ Rule rules[] = {
 Rule heaterRules[] = {
 		{false, heaterReady},
 		{false, heaterFault},
-		{false, heaterTimeout},
-		{false, heaterOn}
+		{false, heaterTimeout}
 };
 
 int8_t getDir(void) {
@@ -229,8 +218,8 @@ void reason(Measurement const meas) {
 		prevInit = true;
 	}
 
-	// try to figure out if the fire is building up or burning down by
-	// comparing current measurements with ones that are 3 minutes old.
+	// try to figure out if the fire is building up, burning or burning down
+	// by comparing current measurements with ones that are 3 minutes old.
 	if (age >= AGE_MEAS_PREV) {
 		dir = none;
 		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&

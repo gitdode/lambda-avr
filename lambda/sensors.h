@@ -136,4 +136,10 @@ void setHeaterState(int8_t state);
  */
 int8_t getHeaterState(void);
 
+/**
+ * Returns the time in seconds that the heater takes to warm up since it was
+ * switched on.
+ */
+uint32_t getHeaterUptime(void);
+
 #endif /* SENSORS_H_ */

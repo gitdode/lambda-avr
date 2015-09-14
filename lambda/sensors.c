@@ -22,6 +22,7 @@
 #include "messages.h"
 
 static HeaterState heaterState = heaterStateOff;
+static uint32_t heaterOnTime = 0;
 
 /**
  * Table used to look up the lambda value at 12 V heater voltage
@@ -195,6 +196,7 @@ void setHeaterOn(bool const on) {
 	if (on) {
 		PORTB |= (1 << PB2);
 		heaterState = heaterStateUp;
+		heaterOnTime = getTime();
 		alert_P(1, 1, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
 	} else {
 		PORTB &= ~(1 << PB2);
@@ -212,4 +214,8 @@ void setHeaterState(int8_t const state) {
 
 int8_t getHeaterState(void) {
 	return heaterState;
+}
+
+uint32_t getHeaterUptime(void) {
+	return getTime() - heaterOnTime;
 }
