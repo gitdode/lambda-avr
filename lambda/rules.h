@@ -51,6 +51,7 @@ typedef enum {
 	none = 0,
 	firing_up = 1,
 	burning = 2,
+	warm_start = 3,
 	burning_down = -1
 } FireDir;
 

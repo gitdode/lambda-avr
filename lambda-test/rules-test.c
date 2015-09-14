@@ -82,7 +82,7 @@ static bool testAirgate25(void) {
 	reason(meas);
 	assertFalse(rules[1].fired);
 
-	meas.tempI = 799;
+	meas.tempI = 699;
 
 	resetRules();
 	dir = firing_up;
@@ -349,8 +349,8 @@ static bool testHeaterFaultNoheat(void) {
 
 	setHeaterOn(true);
 
-	// more than 3 mins
-	addTime(181);
+	// more than 5 mins
+	addTime(301);
 
 	meas.current = 5000;
 	reason(meas);
@@ -404,31 +404,31 @@ static bool testReasonDirBurnUp(void) {
 	reason(meas);
 	assertTrue(dir == firing_up);
 
-	meas.tempI = 790;
+	meas.tempI = 690;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == firing_up);
 
-	meas.tempI = 790;
+	meas.tempI = 690;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == none);
+
+	meas.tempI = 690;
+	meas.lambda = 1900;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == burning);
+
+	meas.tempI = 700;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == burning);
 
 	meas.tempI = 800;
-	meas.lambda = 2000;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == firing_up);
-
-	meas.tempI = 850;
-	meas.lambda = 2000;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = 900;
 	meas.lambda = 1999;
 	age = 180;
 	reason(meas);
@@ -466,13 +466,13 @@ static bool testReasonDirBurnDown(void) {
 	reason(meas);
 	assertTrue(dir == burning);
 
-	meas.tempI = 700;
+	meas.tempI = 699;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == burning_down);
 
-	meas.tempI = 700;
+	meas.tempI = 699;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);

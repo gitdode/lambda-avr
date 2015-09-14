@@ -140,7 +140,7 @@ static void heaterFault(bool* const fired, int8_t const dir,
 		return;
 	}
 	if (meas.current > milliAmpsShort || meas.current < milliAmpsDisconn ||
-			(getHeaterUptime() >= 300 && meas.current > milliAmpsReady)) {
+			(getHeaterUptime() >= 300 && getHeaterState() != heaterStateReady)) {
 		// short circuit or disconnected or did not warm up within 5 minutes
 		setHeaterOn(false);
 		setHeaterState(heaterStateFault);
@@ -150,7 +150,7 @@ static void heaterFault(bool* const fired, int8_t const dir,
 }
 
 /**
- * Switches the heater off if it is on for 15 mins or more and there does
+ * Switches the heater off if it is on for 30 mins or more and there does
  * not seem to be a fire, and notifies that the fire is out.
  */
 static void heaterTimeout(bool* const fired, int8_t const dir,
@@ -159,11 +159,11 @@ static void heaterTimeout(bool* const fired, int8_t const dir,
 		return;
 	}
 	uint32_t heaterUptime = getHeaterUptime();
-	if (heaterUptime >= 900 && meas.tempI < TEMP_FIRE_OUT) {
+	if (heaterUptime >= 1800 && meas.tempI < TEMP_FIRE_OUT) {
 		setHeaterOn(false);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 	}
-	if (heaterUptime >= 1800 && meas.tempI < TEMP_AIRGATE_0) {
+	if (heaterUptime >= 3600 && meas.tempI < TEMP_AIRGATE_0) {
 		setHeaterOn(false);
 	}
 }
@@ -225,14 +225,18 @@ void reason(Measurement const meas) {
 		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&
 				rulesMeasMax.tempI < TEMP_MIN && meas.lambda >= LAMBDA_MAX) {
 			dir = firing_up;
-		} else if (meas.tempI > TEMP_MIN || meas.lambda < LAMBDA_MAX) {
+		}
+		if (meas.tempI >= TEMP_MIN || meas.lambda < LAMBDA_MAX) {
 			dir = burning;
-		} else if ((rulesMeasPrev.tempI - meas.tempI) >= TEMP_DELTA_DOWN &&
-				rulesMeasMax.tempI > TEMP_MIN && meas.lambda >= LAMBDA_MAX) {
+		}
+		if ((rulesMeasPrev.tempI - meas.tempI) >= TEMP_DELTA_DOWN &&
+				rulesMeasMax.tempI >= TEMP_MIN && meas.lambda >= LAMBDA_MAX) {
 			dir = burning_down;
-		} else if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP) {
+		}
+		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&
+				meas.tempI < TEMP_MIN && rulesMeasMax.tempI >= TEMP_MIN) {
 			// it seems wood has been added - reset some measurements and rules
-			// dir = warm_start;
+			dir = warm_start;
 			rulesMeasMax.tempI = meas.tempI;
 			size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 			for (size_t i = 0; i < rulesSize; i++) {

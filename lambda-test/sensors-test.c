@@ -208,6 +208,18 @@ static bool testSetHeaterState(void) {
 	return true;
 }
 
+static bool testGetHeaterUptime(void) {
+	addTime(10);
+
+	setHeaterOn(true);
+	assertTrue(0 == getHeaterUptime());
+
+	addTime(10);
+	assertTrue(10 == getHeaterUptime());
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "sensors";
 
@@ -234,6 +246,7 @@ static const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
 static const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
 static const char testSetHeaterOn_P[] PROGMEM = "testSetHeaterOn";
 static const char testSetHeaterState_P[] PROGMEM = "testSetHeaterState";
+static const char testGetHeaterUptime_P[] PROGMEM = "testGetHeaterUptime";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -258,7 +271,8 @@ static TestCase const tests[] = {
 		{class, testToInfoIdeal_P, testToInfoIdeal},
 		{class, testToInfoRich_P, testToInfoRich},
 		{class, testSetHeaterOn_P, testSetHeaterOn},
-		{class, testSetHeaterState_P, testSetHeaterState}
+		{class, testSetHeaterState_P, testSetHeaterState},
+		{class, testGetHeaterUptime_P, testGetHeaterUptime}
 };
 
 TestClass sensorsClass = {tests, sizeof(tests) / sizeof(tests[0])};
