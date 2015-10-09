@@ -11,7 +11,7 @@
 - AVCC should be connected to VCC via an LC network
 
 * Release/put in Makefile?
-- Makefile: LANG = 0
-- pins.h LCD pins
+- Makefile: LANG = 0 (1)
+- pins.h LCD pins (prototype)
 - interrupts.h TIMER0_COMP_MATCH 122/244 (124/248)
 - sensors.h: SHUNT_MILLIOHMS 100 (111)

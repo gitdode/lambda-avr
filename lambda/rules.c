@@ -27,8 +27,9 @@ static bool prevInit = false;
  */
 static void airgate50(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == firing_up &&
-			meas.tempI >= TEMP_AIRGATE_50) {
+	if (! *fired && (dir == firing_up || dir == burning || dir == warm_start) &&
+			meas.tempI >= TEMP_AIRGATE_50 && meas.lambda >= LAMBDA_TOO_LEAN &&
+			airgate > 50) {
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -41,8 +42,8 @@ static void airgate50(bool* const fired, int8_t const dir,
  */
 static void airgate25(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == burning_down &&
-			meas.tempI < TEMP_AIRGATE_25) {
+	if (! *fired && dir == burning_down && meas.tempI < TEMP_AIRGATE_25 &&
+			meas.lambda >= LAMBDA_TOO_LEAN && airgate > 25) {
 		airgate = 25;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
@@ -55,8 +56,8 @@ static void airgate25(bool* const fired, int8_t const dir,
  */
 static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (! *fired && dir == burning_down &&
-			meas.tempI < TEMP_AIRGATE_0) {
+	if (! *fired && dir == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
+			meas.lambda >= LAMBDA_TOO_LEAN && airgate > 0) {
 		setHeaterOn(false);
 		airgate = 0;
 		alert_P(BEEPS, LENGTH, TONE,
@@ -163,8 +164,10 @@ static void heaterTimeout(bool* const fired, int8_t const dir,
 		setHeaterOn(false);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 	}
-	if (heaterUptime >= 3600 && meas.tempI < TEMP_AIRGATE_0) {
+	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0) {
 		setHeaterOn(false);
+		alert_P(3, 5, TONE, PSTR(MSG_HEATER_OFF_0),
+						PSTR(MSG_HEATER_OFF_1), false);
 	}
 }
 
@@ -230,12 +233,16 @@ void reason(Measurement const meas) {
 			dir = burning;
 		}
 		if ((rulesMeasPrev.tempI - meas.tempI) >= TEMP_DELTA_DOWN &&
-				rulesMeasMax.tempI >= TEMP_MIN && meas.lambda >= LAMBDA_MAX) {
+				meas.tempI < TEMP_MIN && rulesMeasMax.tempI >= TEMP_MIN &&
+				meas.lambda >= LAMBDA_MAX) {
 			dir = burning_down;
 		}
 		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&
 				meas.tempI < TEMP_MIN && rulesMeasMax.tempI >= TEMP_MIN) {
-			// it seems wood has been added - reset some measurements and rules
+			// it seems wood has been added or - probably more likely - oven
+			// was fired up without resetting. Should probably work that way
+			// anyway, making manual reset unnecessary?
+			// TODO make a complete reset including time?
 			dir = warm_start;
 			rulesMeasMax.tempI = meas.tempI;
 			size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
@@ -245,6 +252,7 @@ void reason(Measurement const meas) {
 			if (! isHeaterOn() && getHeaterState() != heaterStateFault) {
 				setHeaterOn(true);
 			}
+			airgate = 100;
 		}
 
 		rulesMeasPrev = meas;

@@ -40,7 +40,18 @@ static bool testAirgate50(void) {
 	reason(meas);
 	assertFalse(rules[0].fired);
 
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertFalse(rules[0].fired);
+
+	resetRules();
+	dir = warm_start;
+	reason(meas);
+	assertFalse(rules[0].fired);
+
 	meas.tempI = 500;
+	meas.lambda = 1500;
 
 	resetRules();
 	dir = burning_down;
@@ -54,6 +65,18 @@ static bool testAirgate50(void) {
 
 	resetRules();
 	dir = firing_up;
+	reason(meas);
+	assertTrue(rules[0].fired);
+	assertTrue(50 == airgate);
+
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertTrue(rules[0].fired);
+	assertTrue(50 == airgate);
+
+	resetRules();
+	dir = warm_start;
 	reason(meas);
 	assertTrue(rules[0].fired);
 	assertTrue(50 == airgate);
@@ -82,7 +105,18 @@ static bool testAirgate25(void) {
 	reason(meas);
 	assertFalse(rules[1].fired);
 
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertFalse(rules[1].fired);
+
+	resetRules();
+	dir = warm_start;
+	reason(meas);
+	assertFalse(rules[1].fired);
+
 	meas.tempI = 699;
+	meas.lambda = 1500;
 
 	resetRules();
 	dir = firing_up;
@@ -91,6 +125,16 @@ static bool testAirgate25(void) {
 
 	resetRules();
 	dir = none;
+	reason(meas);
+	assertFalse(rules[1].fired);
+
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertFalse(rules[1].fired);
+
+	resetRules();
+	dir = warm_start;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
@@ -124,7 +168,18 @@ static bool testAirgateClose(void) {
 	reason(meas);
 	assertFalse(rules[2].fired);
 
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertFalse(rules[2].fired);
+
+	resetRules();
+	dir = warm_start;
+	reason(meas);
+	assertFalse(rules[2].fired);
+
 	meas.tempI = 399;
+	meas.lambda = 1500;
 
 	resetRules();
 	dir = firing_up;
@@ -133,6 +188,16 @@ static bool testAirgateClose(void) {
 
 	resetRules();
 	dir = none;
+	reason(meas);
+	assertFalse(rules[2].fired);
+
+	resetRules();
+	dir = burning;
+	reason(meas);
+	assertFalse(rules[2].fired);
+
+	resetRules();
+	dir = warm_start;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
@@ -188,7 +253,7 @@ static bool testTooRich(void) {
 	assertTrue(rules[3].fired);
 	assertTrue(100 == airgate);
 
-	meas.lambda = 1300;
+	meas.lambda = 1400;
 	age = 0;
 	reason(meas);
 	assertFalse(rules[3].fired);
@@ -206,7 +271,7 @@ static bool testTooLean(void) {
 	setHeaterState(heaterStateReady);
 
 	meas.tempI = 500;
-	meas.lambda = 1601;
+	meas.lambda = 1501;
 	resetRules();
 	reason(meas);
 	assertFalse(rules[4].fired);
@@ -218,7 +283,7 @@ static bool testTooLean(void) {
 	assertFalse(rules[4].fired);
 
 	meas.tempI = 501;
-	meas.lambda = 1601;
+	meas.lambda = 1501;
 	resetRules();
 	airgate = 50;
 	reason(meas);
@@ -226,14 +291,14 @@ static bool testTooLean(void) {
 	assertTrue(50 == airgate);
 
 	meas.tempI = 501;
-	meas.lambda = 1601;
+	meas.lambda = 1501;
 	resetRules();
 	airgate = 100;
 	reason(meas);
 	assertTrue(rules[4].fired);
 	assertTrue(50 == airgate);
 
-	meas.lambda = 1500;
+	meas.lambda = 1400;
 	age = 0;
 	reason(meas);
 	assertFalse(rules[4].fired);
@@ -404,32 +469,26 @@ static bool testReasonDirBurnUp(void) {
 	reason(meas);
 	assertTrue(dir == firing_up);
 
-	meas.tempI = 690;
+	meas.tempI = 699;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == firing_up);
 
-	meas.tempI = 690;
+	meas.tempI = 699;
 	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == none);
 
-	meas.tempI = 690;
-	meas.lambda = 1900;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
 	meas.tempI = 700;
-	meas.lambda = 2000;
+	meas.lambda = 1899;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == burning);
 
-	meas.tempI = 800;
-	meas.lambda = 1999;
+	meas.tempI = 701;
+	meas.lambda = 1900;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == burning);
@@ -448,29 +507,23 @@ static bool testReasonDirBurnDown(void) {
 	reason(meas);
 	assertTrue(dir == none);
 
-	meas.tempI = 900;
-	meas.lambda = 1999;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
 	meas.tempI = 800;
-	meas.lambda = 1999;
+	meas.lambda = 1899;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == burning);
 
-	meas.tempI = 750;
-	meas.lambda = 1999;
+	meas.tempI = 700;
+	meas.lambda = 2000;
 	age = 180;
 	reason(meas);
 	assertTrue(dir == burning);
 
 	meas.tempI = 699;
-	meas.lambda = 2000;
+	meas.lambda = 1899;
 	age = 180;
 	reason(meas);
-	assertTrue(dir == burning_down);
+	assertTrue(dir == burning);
 
 	meas.tempI = 699;
 	meas.lambda = 2000;
@@ -489,7 +542,39 @@ static bool testReasonDirBurnDown(void) {
 	return true;
 }
 
-// TODO add tests for "burning" and "warm start"
+static bool testReasonDirWarmStart(void) {
+
+	resetRules();
+	Measurement meas = {999, 0, 1999};
+
+	age = 0;
+	reason(meas);
+	assertTrue(dir == none);
+
+	meas.tempI = 699;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == burning_down);
+
+	meas.tempI = 100;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == burning_down);
+
+	meas.tempI = 120;
+	meas.lambda = 2000;
+	age = 180;
+	reason(meas);
+	assertTrue(dir == warm_start);
+	assertTrue(heaterStateUp == getHeaterState());
+	assertTrue(airgate == 100);
+
+	cancelAlert(false);
+
+	return true;
+}
 
 /* Test "class" */
 static const char class[] PROGMEM = "rules";
@@ -508,6 +593,7 @@ static const char testHeaterFaultNoheat_P[] PROGMEM = "testHeaterFaultNoheat";
 static const char testHeaterTimeout_P[] PROGMEM = "testHeaterTimeout";
 static const char testReasonDirBurnUp_P[] PROGMEM = "testReasonDirBurnUp";
 static const char testReasonDirBurnDown_P[] PROGMEM = "testReasonDirBurnDown";
+static const char testReasonDirWarmStart_P[] PROGMEM = "testReasonDirWarmStart";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -523,7 +609,8 @@ static TestCase const tests[] = {
 		{class, testHeaterFaultNoheat_P, testHeaterFaultNoheat},
 		{class, testHeaterTimeout_P, testHeaterTimeout},
 		{class, testReasonDirBurnUp_P, testReasonDirBurnUp},
-		{class, testReasonDirBurnDown_P, testReasonDirBurnDown}
+		{class, testReasonDirBurnDown_P, testReasonDirBurnDown},
+		{class, testReasonDirWarmStart_P, testReasonDirWarmStart}
 };
 
 TestClass rulesClass = {tests, sizeof(tests) / sizeof(tests[0])};
