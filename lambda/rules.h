@@ -36,22 +36,22 @@
 #define TEMP_FIRE_OUT 100
 /** Min. temperature at which to consider the fire to fire up again */
 #define TEMP_FIRE_OUT_RESET 125
+/** Max. lambda value that can be measured */
+#define LAMBDA_MAX 2000
 /** Fire is considered fully burning if lambda is below this value */
-#define LAMBDA_MAX 1900
+#define LAMBDA_BURNING 1900
 /** Combustion is considered too rich if lambda is below this value */
 #define LAMBDA_TOO_RICH 1200
-/** Combustion is considered lean enough again if lambda is above this value */
-#define LAMBDA_TOO_RICH_RESET 1400
-/** Combustion is considered too lean if lambda is above this value */
-#define LAMBDA_TOO_LEAN 1500
-/** Combustion is considered rich enough again if lambda is below this value */
-#define LAMBDA_TOO_LEAN_RESET 1400
+/**
+ * Combustion is considered too lean if lambda is above this value
+ * Too lean here rather means lean enough so the air gate can be set to 50%
+ */
+#define LAMBDA_TOO_LEAN 1400
 
 typedef enum {
 	none = 0,
 	firing_up = 1,
 	burning = 2,
-	warm_start = 3,
 	burning_down = -1
 } FireDir;
 
@@ -77,6 +77,6 @@ void reason(Measurement meas);
 /**
  * Resets all rules and internal state.
  */
-void resetRules(void);
+void resetRules(bool state);
 
 #endif /* RULES_H_ */

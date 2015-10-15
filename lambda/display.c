@@ -136,7 +136,6 @@ void updateDisplayIfPending() {
 				case firing_up: hint = " >"; break;
 				case burning: hint = " ^"; break;
 				case burning_down: hint = " <"; break;
-				case warm_start: hint = " +"; break;
 				default: hint = " -"; break;
 			}
 			displayMeas(measLatest, hint);

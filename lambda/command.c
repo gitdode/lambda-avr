@@ -42,7 +42,7 @@ void runCommand(char* const data) {
 		simulation = true;
 		resetTime();
 		resetDisplay();
-		resetRules();
+		resetRules(true);
 		setHeaterOn(true);
 		beep(1, 1, 31);
 	}
@@ -50,7 +50,7 @@ void runCommand(char* const data) {
 		// simulation disable
 		resetTime();
 		resetDisplay();
-		resetRules();
+		resetRules(true);
 		simulation = false;
 		beep(1, 1, 31);
 	}
