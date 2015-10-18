@@ -41,7 +41,7 @@
 /** Fire is considered fully burning if lambda is below this value */
 #define LAMBDA_BURNING 1900
 /** Combustion is considered too rich if lambda is below this value */
-#define LAMBDA_TOO_RICH 1200
+#define LAMBDA_TOO_RICH 1100
 /**
  * Combustion is considered too lean if lambda is above this value
  * Too lean here rather means lean enough so the air gate can be set to 50%
