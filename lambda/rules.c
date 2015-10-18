@@ -69,8 +69,12 @@ static void airgateClose(bool* const fired, int8_t const dir,
 }
 
 /**
- * Notifies that the combustion is too rich and to open the air gate.
+ * Notifies that the combustion is too rich and suggests to open the air gate.
+ * Disabled because it does not seem to be a good idea to give more air when
+ * the combustion is rich as this doesn't really make it leaner and more heat
+ * appears to be thrown out through the chimney.
  */
+/*
 static void tooRich(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (meas.tempI > TEMP_FIRE_OUT &&
@@ -82,6 +86,7 @@ static void tooRich(bool* const fired, int8_t const dir,
 		*fired = true;
 	}
 }
+*/
 
 /**
  * Notifies that the combustion is lean (again) and to set the air gate to 50%.
@@ -210,7 +215,7 @@ Rule rules[] = {
 		{false, airgate50},
 		{false, airgate25},
 		{false, airgateClose},
-		{false, tooRich},
+		// {false, tooRich},
 		{false, tooLean},
 		{false, fireOut},
 		{false, warmStart}

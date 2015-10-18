@@ -1,11 +1,8 @@
 * C
-- Check other uses of const (return value?)
-- Flexarray? http://en.wikipedia.org/wiki/Sizeof
 
 * AVR
 
 * Functionality
-- Handle firing up again without reset
   
 * Circuit
 - AVCC should be connected to VCC via an LC network
@@ -13,5 +10,5 @@
 * Release/put in Makefile?
 - Makefile: LANG = 0 (1)
 - pins.h LCD pins (prototype)
-- interrupts.h TIMER0_COMP_MATCH 122/244 (124/248)
+- interrupts.h TIMER0_COMP_MATCH 122/244 (123/246)
 - sensors.h: SHUNT_MILLIOHMS 100 (111)

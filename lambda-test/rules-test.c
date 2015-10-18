@@ -188,6 +188,7 @@ static bool testAirgateClose(void) {
 	return true;
 }
 
+/*
 static bool testTooRich(void) {
 
 	Measurement meas = {0, 0, 0, 0};
@@ -233,6 +234,7 @@ static bool testTooRich(void) {
 
 	return true;
 }
+*/
 
 static bool testTooLean(void) {
 
@@ -251,14 +253,14 @@ static bool testTooLean(void) {
 	meas.lambda = 1300;
 	resetRules(true);
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[3].fired);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = LAMBDA_TOO_LEAN + 1;
 	resetRules(true);
 	airgate = 50;
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(rules[3].fired);
 	assertTrue(50 == airgate);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
@@ -266,7 +268,7 @@ static bool testTooLean(void) {
 	resetRules(true);
 	airgate = 100;
 	reason(meas);
-	assertTrue(rules[4].fired);
+	assertTrue(rules[3].fired);
 	assertTrue(50 == airgate);
 
 	cancelAlert(false);
@@ -283,27 +285,27 @@ static bool testFireOut(void) {
 	meas.tempI = 50;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(rules[4].fired);
 
 	meas.tempI = TEMP_FIRE_OUT;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(rules[4].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(rules[4].fired);
 
 	meas.tempI = TEMP_FIRE_OUT - 1;
 	age = 0;
 	reason(meas);
-	assertTrue(rules[5].fired);
+	assertTrue(rules[4].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
 	age = 0;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(rules[4].fired);
 
 	cancelAlert(false);
 
@@ -322,7 +324,7 @@ static bool testWarmStart(void) {
 	reason(meas);
 	assertTrue(50 == airgate);
 	assertTrue(heaterStateOff == getHeaterState());
-	assertFalse(rules[6].fired);
+	assertFalse(rules[5].fired);
 
 	age = 0;
 	dir = firing_up;
@@ -331,7 +333,7 @@ static bool testWarmStart(void) {
 	reason(meas);
 	assertTrue(100 == airgate);
 	assertTrue(heaterStateUp == getHeaterState());
-	assertTrue(rules[6].fired);
+	assertTrue(rules[5].fired);
 
 	cancelAlert(false);
 
@@ -564,7 +566,7 @@ static const char class[] PROGMEM = "rules";
 static const char testAirgate50_P[] PROGMEM = "testAirgate50";
 static const char testAirgate25_P[] PROGMEM = "testAirgate25";
 static const char testAirgateClose_P[] PROGMEM = "testAirgateClose";
-static const char testTooRich_P[] PROGMEM = "testTooRich";
+// static const char testTooRich_P[] PROGMEM = "testTooRich";
 static const char testTooLean_P[] PROGMEM = "testTooLean";
 static const char testFireOut_P[] PROGMEM = "testFireOut";
 static const char testWarmStart_P[] PROGMEM = "testWarmStart";
@@ -582,7 +584,7 @@ static TestCase const tests[] = {
 		{class, testAirgate50_P, testAirgate50},
 		{class, testAirgate25_P, testAirgate25},
 		{class, testAirgateClose_P, testAirgateClose},
-		{class, testTooRich_P, testTooRich},
+		// {class, testTooRich_P, testTooRich},
 		{class, testTooLean_P, testTooLean},
 		{class, testFireOut_P, testFireOut},
 		{class, testWarmStart_P, testWarmStart},
