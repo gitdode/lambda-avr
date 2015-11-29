@@ -11,7 +11,7 @@ BAUD = 9600
 MAIN = lambda.c
 
 # en: 0 (default), de: 1
-LANG = 0
+LANG = 1
 
 LOCAL_SOURCE = usart.c interrupts.c adc.c sensors.c integers.c lcdroutines.c \
 display.c alert.c command.c strings.c rules.c

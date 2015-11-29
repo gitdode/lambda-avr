@@ -123,7 +123,7 @@ static void fireOut(bool* const fired, int8_t const dir,
  */
 static void warmStart(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if (dir == firing_up && ! isHeaterOn() &&
+	if ((dir == firing_up || dir == burning) && ! isHeaterOn() &&
 			getHeaterState() != heaterStateFault) {
 		// it seems wood has been added or - probably more likely - oven
 		// was fired up without resetting. Should probably work that way

@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#define SHUNT_MILLIOHMS 100
+#define SHUNT_MILLIOHMS 111
 
 /**
  * Oxygen sensor heater current limits at certain states in milliamps.
@@ -137,8 +137,7 @@ void setHeaterState(int8_t state);
 int8_t getHeaterState(void);
 
 /**
- * Returns the time in seconds that the heater takes to warm up since it was
- * switched on.
+ * Returns the time in seconds passed since that the heater was switched on.
  */
 uint32_t getHeaterUptime(void);
 
