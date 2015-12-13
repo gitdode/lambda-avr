@@ -26,7 +26,7 @@ extern Measurement measLatest;
 extern Measurement measMax; // = {0, 0, 2000};
 
 static bool testCycle(void) {
-	cancelAlert(true);
+	cancelAlert();
 	position = displayPosCurrent;
 	updatePending = false;
 

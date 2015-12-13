@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#define SHUNT_MILLIOHMS 111
+#define SHUNT_MILLIOHMS 100
 
 /**
  * Oxygen sensor heater current limits at certain states in milliamps.

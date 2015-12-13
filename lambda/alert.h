@@ -40,10 +40,9 @@ void alert_P(uint8_t beeps, uint8_t length, uint16_t tone,
 		PGM_P line0_P, PGM_P line1_P, bool keep);
 
 /**
- * Stops beeping and blocking display updates. If all is true, also alerts with
- * where keep was true are cancelled.
+ * Stops beeping and blocking display updates.
  */
-void cancelAlert(bool all);
+void cancelAlert(void);
 
 /**
  * Returns true if an alert is active, false otherwise.

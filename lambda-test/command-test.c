@@ -60,7 +60,7 @@ static bool testHeater(void) {
 }
 
 static bool testCycleDisplay(void) {
-	cancelAlert(true);
+	cancelAlert();
 	assertTrue(position == 0);
 
 	runCommand("cm");

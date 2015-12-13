@@ -73,14 +73,12 @@ void alert_P(uint8_t const beeps, uint8_t const length, uint16_t const tone,
 	alert(beeps, length, tone, line0, line1, keep);
 }
 
-void cancelAlert(bool const all) {
+void cancelAlert() {
 	beepCount = 0;
 	oscCount = 0;
 	// turn beep off
 	TCCR1A &= ~(1 << PIN_BEEPER_TOGGLE);
-	if (! keepActive || all) {
-		alertActive = false;
-	}
+	alertActive = false;
 }
 
 bool isAlertActive(void) {

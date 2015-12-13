@@ -90,13 +90,12 @@ static void displayTime(void) {
 void cycleDisplay(void) {
 	if (isAlertActive()) {
 		// button pressed during alert
-		cancelAlert(false);
-		updatePending = true;
-		return;
-	}
-	position++;
-	if (position > displayPosTime) {
-		position = displayPosCurrent;
+		cancelAlert();
+	} else {
+		position++;
+		if (position > displayPosTime) {
+			position = displayPosCurrent;
+		}
 	}
 	updatePending = true;
 	beep(1, 1, 31);

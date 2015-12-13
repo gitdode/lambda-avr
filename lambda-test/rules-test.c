@@ -77,7 +77,7 @@ static bool testAirgate50(void) {
 	assertTrue(rules[0].fired);
 	assertTrue(50 == airgate);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -130,7 +130,7 @@ static bool testAirgate25(void) {
 	assertTrue(rules[1].fired);
 	assertTrue(25 == airgate);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -183,7 +183,7 @@ static bool testAirgateClose(void) {
 	assertTrue(rules[2].fired);
 	assertTrue(0 == airgate);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -229,7 +229,7 @@ static bool testTooRich(void) {
 	assertTrue(rules[3].fired);
 	assertTrue(50 == airgate);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -269,7 +269,7 @@ static bool testTooLean(void) {
 	assertTrue(rules[4].fired);
 	assertTrue(50 == airgate);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -305,7 +305,7 @@ static bool testFireOut(void) {
 	reason(meas);
 	assertFalse(rules[5].fired);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -333,7 +333,7 @@ static bool testWarmStart(void) {
 	assertTrue(heaterStateUp == getHeaterState());
 	assertTrue(rules[6].fired);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -359,7 +359,7 @@ static bool testHeaterReady(void) {
 	reason(meas);
 	assertTrue(heaterStateReady == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -376,7 +376,7 @@ static bool testHeaterFaultNoconn(void) {
 	reason(meas);
 	assertTrue(heaterStateFault == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -393,7 +393,7 @@ static bool testHeaterFaultShort(void) {
 	reason(meas);
 	assertTrue(heaterStateFault == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -414,7 +414,7 @@ static bool testHeaterFaultNoheat(void) {
 	reason(meas);
 	assertTrue(heaterStateFault == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -436,7 +436,7 @@ static bool testHeaterTimeout0(void) {
 	reason(meas);
 	assertTrue(heaterStateOff == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -458,7 +458,7 @@ static bool testHeaterTimeout1(void) {
 	reason(meas);
 	assertTrue(heaterStateOff == getHeaterState());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -508,7 +508,7 @@ static bool testReasonDirBurnUp(void) {
 	reason(meas);
 	assertTrue(dir == burning);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }
@@ -552,7 +552,7 @@ static bool testReasonDirBurnDown(void) {
 	reason(meas);
 	assertTrue(dir == burning_down);
 
-	cancelAlert(false);
+	cancelAlert();
 
 	return true;
 }

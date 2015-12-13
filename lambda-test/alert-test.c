@@ -108,15 +108,11 @@ static bool testCancelAlert(void) {
 	assertTrue(OCR1A = 31);
 	assertTrue(isAlertActive());
 
-	cancelAlert(false);
+	cancelAlert();
 
 	assertTrue(beepCount == 0);
 	assertTrue(oscCount == 0);
 	assertTrue(bit_is_clear(TCCR1A, COM1A0));
-	assertTrue(isAlertActive());
-
-	cancelAlert(true);
-
 	assertFalse(isAlertActive());
 
 	return true;
