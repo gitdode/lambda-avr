@@ -57,7 +57,7 @@ int main(void) {
 	alert_P(1, 1, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 
 	uint32_t time = 0;
 	Measurement meas;

@@ -84,3 +84,7 @@ void cancelAlert() {
 bool isAlertActive(void) {
 	return alertActive;
 }
+
+bool isBeeping(void) {
+	return beepCount > 0;
+}

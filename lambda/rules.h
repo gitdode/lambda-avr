@@ -15,13 +15,11 @@
 #define LENGTH 10
 #define TONE 31
 
-/** Age of previous measurements to compare against */
-#define AGE_MEAS_PREV 180
 /** Exhaust reaches at least this temperature when the fire is burning */
 #define TEMP_MIN 700
-/** Min. increase in temperature during AGE_MEAS_PREV when firing up */
+/** Min. increase in temperature during AGE_TEMPI_OLD when firing up */
 #define TEMP_DELTA_UP 10
-/** Min. decrease in temperature during AGE_MEAS_PREV when burning down */
+/** Min. decrease in temperature during AGE_TEMPI_OLD when burning down */
 #define TEMP_DELTA_DOWN 1
 /** Min. temperature at which to set the air gate to 50% when firing up  */
 #define TEMP_AIRGATE_50 500
@@ -47,6 +45,9 @@
  * Too lean here rather means lean enough so the air gate can be set to 50%
  */
 #define LAMBDA_TOO_LEAN 1400
+
+/** Last 18 firebox temperature values updated every 10 seconds = 3 minutes */
+#define QUEUE_SIZE 18
 
 typedef enum {
 	none = 0,

@@ -49,4 +49,9 @@ void cancelAlert(void);
  */
 bool isAlertActive(void);
 
+/**
+ * Returns true if (an alert) is currently beeping, false otherwise.
+ */
+bool isBeeping(void);
+
 #endif /* ALERT_H_ */

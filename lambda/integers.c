@@ -22,4 +22,3 @@ int32_t divRoundUp(int32_t const num, int32_t const den) {
 			((num - ((den < 0) ? den + 1 : den - 1)) / den) :
 			((num + ((den < 0) ? den + 1 : den - 1)) / den);
 }
-

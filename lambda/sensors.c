@@ -192,23 +192,19 @@ char* toInfo(uint16_t const lambda) {
 	}
 }
 
-void setHeaterOn(bool const on) {
-	if (on) {
-		PORTB |= (1 << PB2);
-		heaterState = heaterStateUp;
-		heaterOnTime = getTime();
-		alert_P(1, 1, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
-	} else {
-		PORTB &= ~(1 << PB2);
-		heaterState = heaterStateOff;
-	}
-}
-
+// TODO merge with getHeaterState()
 bool isHeaterOn(void) {
 	return bit_is_set(PORTB, PB2);
 }
 
 void setHeaterState(int8_t const state) {
+	if (state == heaterStateOn) {
+		PORTB |= (1 << PB2);
+		heaterOnTime = getTime();
+		alert_P(1, 1, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
+	} else if (state == heaterStateOff || state == heaterStateFault) {
+		PORTB &= ~(1 << PB2);
+	}
 	heaterState = state;
 }
 

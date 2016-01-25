@@ -43,7 +43,7 @@ void runCommand(char* const data) {
 		resetTime();
 		resetDisplay();
 		resetRules(true);
-		setHeaterOn(true);
+		setHeaterState(heaterStateOn);
 		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
@@ -66,12 +66,12 @@ void runCommand(char* const data) {
 	}
 	else if (strcmp_P(fields[0], PSTR("he")) == 0) {
 		// oxygen sensor heater enable
-		setHeaterOn(true);
+		setHeaterState(heaterStateOn);
 		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("hd")) == 0) {
 		// oxygen sensor heater disable
-		setHeaterOn(false);
+		setHeaterState(heaterStateOff);
 		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("cm")) == 0) {

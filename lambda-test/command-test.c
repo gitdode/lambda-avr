@@ -21,7 +21,7 @@ extern uint8_t position;
 
 static bool testIsSimulation(void) {
 	setupPorts();
-	setHeaterOn(false);
+	setHeaterState(heaterStateOff);
 
 	assertFalse(isSimulation());
 	runCommand("se");
@@ -48,7 +48,7 @@ static bool testIsLogging(void) {
 
 static bool testHeater(void) {
 	setupPorts();
-	setHeaterOn(false);
+	setHeaterState(heaterStateOff);
 
 	assertFalse(isHeaterOn());
 	runCommand("he");

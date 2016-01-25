@@ -15,13 +15,27 @@
 
 #include "usart.h"
 
-uint8_t age = 0;
 FireDir dir = none;
 uint8_t airgate = 100;
+uint8_t measCount = 10;
 
-static Measurement rulesMeasMax = {0, 0, 2000, 0};
-static Measurement rulesMeasPrev = {0, 0, 2000, 0};
-static bool prevInit = false;
+static int32_t tempIAvg = 0;
+static int16_t tempIMax = 0;
+static int16_t tempIOldQueue[QUEUE_SIZE];
+
+/**
+ * Pushes the given new value in the given fixed-size queue of old temperature
+ * measurements and returns the oldest value being pushed off the queue.
+ */
+static int16_t push(int16_t queue[], const size_t size, const int16_t value) {
+	int16_t last = queue[size - 1];
+	for (size_t i = size - 1; i > 0; i--) {
+		queue[i] = queue[i - 1];
+	}
+	queue[0] = value;
+
+	return last;
+}
 
 /**
  * Reminds to set the air gate to 50% when the fire is still firing up
@@ -32,6 +46,7 @@ static void airgate50(bool* const fired, int8_t const dir,
 	if ((dir == firing_up || dir == burning) &&
 			meas.tempI >= TEMP_AIRGATE_50 && meas.lambda >= LAMBDA_TOO_LEAN &&
 			airgate != 50) {
+
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -60,7 +75,7 @@ static void airgateClose(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (dir == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX && airgate > 0) {
-		setHeaterOn(false);
+		setHeaterState(heaterStateOff);
 		airgate = 0;
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
@@ -108,7 +123,7 @@ static void tooLean(bool* const fired, int8_t const dir,
 static void fireOut(bool* const fired, int8_t const dir,
 		Measurement const meas) {
 	if (! *fired && dir == firing_up && meas.tempI < TEMP_FIRE_OUT &&
-			rulesMeasMax.tempI - meas.tempI > (TEMP_FIRE_OUT_RESET - TEMP_FIRE_OUT)) {
+			tempIMax - meas.tempI > (TEMP_FIRE_OUT_RESET - TEMP_FIRE_OUT)) {
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -120,19 +135,17 @@ static void fireOut(bool* const fired, int8_t const dir,
 /**
  * Resets rules and some state and switches on the heating if it seems that
  * wood was added or the oven was fired up without resetting.
+ * TODO make a complete reset including time?
+ * TODO come up with something better than using the state of the heater
  */
 static void warmStart(bool* const fired, int8_t const dir,
 		Measurement const meas) {
-	if ((dir == firing_up || dir == burning) && ! isHeaterOn() &&
-			getHeaterState() != heaterStateFault) {
-		// it seems wood has been added or - probably more likely - oven
-		// was fired up without resetting. Should probably work that way
-		// anyway, making manual reset unnecessary?
-		// TODO make a complete reset including time?
+	if (meas.tempI > TEMP_FIRE_OUT && (dir == firing_up || dir == burning) &&
+			! isHeaterOn() && (getHeaterState() != heaterStateFault)) {
 		resetRules(false);
 		airgate = 100;
-		rulesMeasMax.tempI = meas.tempI;
-		setHeaterOn(true);
+		tempIMax = meas.tempI;
+		setHeaterState(heaterStateOn);
 		*fired = true;
 	}
 }
@@ -164,7 +177,6 @@ static void heaterFault(bool* const fired, int8_t const dir,
 	if (meas.current > milliAmpsShort || meas.current < milliAmpsDisconn ||
 			(getHeaterUptime() >= 300 && getHeaterState() != heaterStateReady)) {
 		// short circuit or disconnected or did not warm up within 5 minutes
-		setHeaterOn(false);
 		setHeaterState(heaterStateFault);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_HEATER_FAULT_0),
 				PSTR(MSG_HEATER_FAULT_1), true);
@@ -183,12 +195,12 @@ static void heaterTimeout(bool* const fired, int8_t const dir,
 	uint32_t heaterUptime = getHeaterUptime();
 	if (heaterUptime >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
 			meas.lambda >= LAMBDA_MAX) {
-		setHeaterOn(false);
+		setHeaterState(heaterStateOff);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 	}
 	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX) {
-		setHeaterOn(false);
+		setHeaterState(heaterStateOff);
 		if (airgate > 0) {
 			alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""),
 					false);
@@ -235,51 +247,51 @@ void reason(Measurement const meas) {
 	}
 
 	// rules applied to every 10th measurement
-	if (age % 10 == 0) {
+	if (measCount == 10) {
+		measCount = 0;
+
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 		for (size_t i = 0; i < rulesSize; i++) {
 			rules[i].cond(&(rules[i].fired), dir, meas);
 		}
+
+		tempIAvg = meas.tempI + tempIAvg - ((tempIAvg - 4) >> 3);
+		int16_t tempICur = tempIAvg >> 3;
+		int16_t tempIOld = push(tempIOldQueue, QUEUE_SIZE, tempICur);
+
+		// simply skip if old temperature was 0°C - in practice it never goes
+		// below 3°C anyway.
+		if (tempIOld > 0) {
+			// try to figure out if the fire is building up, burning or burning
+			// down by comparing the current temperature value with one that is
+			// 3 minutes old
+			dir = none;
+			if ((tempICur - tempIOld) >= TEMP_DELTA_UP &&
+					tempICur < TEMP_MIN && meas.lambda >= LAMBDA_BURNING) {
+				dir = firing_up;
+			}
+			if (tempICur >= TEMP_MIN || meas.lambda < LAMBDA_BURNING) {
+				dir = burning;
+			}
+			if ((tempIOld - tempICur) >= TEMP_DELTA_DOWN &&
+					tempICur < TEMP_MIN && meas.lambda >= LAMBDA_BURNING &&
+					tempIMax >= TEMP_AIRGATE_50) {
+				dir = burning_down;
+			}
+		}
 	}
 
-	age++;
-
-	// init previous measurements with current measurements
-	if (! prevInit) {
-		rulesMeasPrev = meas;
-		prevInit = true;
-	}
-
-	// try to figure out if the fire is building up, burning or burning down
-	// by comparing current measurements with ones that are 3 minutes old.
-	if (age >= AGE_MEAS_PREV) {
-		dir = none;
-		if ((meas.tempI - rulesMeasPrev.tempI) >= TEMP_DELTA_UP &&
-				meas.tempI < TEMP_MIN && meas.lambda >= LAMBDA_BURNING) {
-			dir = firing_up;
-		}
-		if (meas.tempI >= TEMP_MIN || meas.lambda < LAMBDA_BURNING) {
-			dir = burning;
-		}
-		if ((rulesMeasPrev.tempI - meas.tempI) >= TEMP_DELTA_DOWN &&
-				meas.tempI < TEMP_MIN && meas.lambda >= LAMBDA_BURNING &&
-				rulesMeasMax.tempI >= TEMP_AIRGATE_50) {
-			dir = burning_down;
-		}
-
-		rulesMeasPrev = meas;
-		age = 0;
-	}
-
-	rulesMeasMax.tempI = MAX(rulesMeasMax.tempI, meas.tempI);
+	measCount++;
+	tempIMax = MAX(tempIMax, meas.tempI);
 }
 
 void resetRules(bool const state) {
 	if (state) {
-		prevInit = false;
-		rulesMeasMax.tempI = 0;
-
-		age = 0;
+		tempIMax = 0;
+		measCount = 10;
+		for (size_t i = 0; i < QUEUE_SIZE; i++) {
+			tempIOldQueue[i] = 0;
+		}
 		dir = none;
 		airgate = 100;
 	}

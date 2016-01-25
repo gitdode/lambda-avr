@@ -30,7 +30,7 @@ typedef enum {
 typedef enum {
 	heaterStateFault = -1,
 	heaterStateOff = 0,
-	heaterStateUp = 1,
+	heaterStateOn = 1,
 	heaterStateReady = 2
 } HeaterState;
 
@@ -114,11 +114,6 @@ int32_t linADC(uint16_t mV);
  * a good value, below is rich and above is lean.
  */
 char* toInfo(uint16_t lambda);
-
-/**
- * Turns the heater of the oxygen sensor on or off.
- */
-void setHeaterOn(bool on);
 
 /**
  * Returns true if the heater of the oxygen sensor is turned on,

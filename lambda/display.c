@@ -88,6 +88,7 @@ static void displayTime(void) {
 }
 
 void cycleDisplay(void) {
+	bool beeping = isBeeping();
 	if (isAlertActive()) {
 		// button pressed during alert
 		cancelAlert();
@@ -97,8 +98,10 @@ void cycleDisplay(void) {
 			position = displayPosCurrent;
 		}
 	}
+	if (! beeping) {
+		beep(1, 1, 31);
+	}
 	updatePending = true;
-	beep(1, 1, 31);
 }
 
 void updateMeas(Measurement const meas) {

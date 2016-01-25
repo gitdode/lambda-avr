@@ -16,7 +16,7 @@
 
 /* Module rules */
 
-extern uint16_t age;
+extern uint8_t measCount;
 extern int8_t dir;
 extern uint8_t airgate;
 extern Rule rules[];
@@ -24,6 +24,9 @@ extern Rule rules[];
 static bool testAirgate50(void) {
 
 	Measurement meas = {0, 0, 0, 0};
+
+	// prevent rule warmStart from kicking in
+	setHeaterState(heaterStateOn);
 
 	resetRules(true);
 	dir = burning_down;
@@ -276,32 +279,33 @@ static bool testTooLean(void) {
 
 static bool testFireOut(void) {
 
-	resetRules(true);
 	Measurement meas = {0, 0, 0, 0};
+
+	resetRules(true);
 	dir = firing_up;
 
 	meas.tempI = 50;
-	age = 0;
+	measCount = 10;
 	reason(meas);
 	assertFalse(rules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT;
-	age = 0;
+	measCount = 10;
 	reason(meas);
 	assertFalse(rules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
-	age = 0;
+	measCount = 10;
 	reason(meas);
 	assertFalse(rules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT - 1;
-	age = 0;
+	measCount = 10;
 	reason(meas);
 	assertTrue(rules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
-	age = 0;
+	measCount = 10;
 	reason(meas);
 	assertFalse(rules[5].fired);
 
@@ -312,25 +316,22 @@ static bool testFireOut(void) {
 
 static bool testWarmStart(void) {
 
+	Measurement meas = {101, 0, 0, 0};
+
 	resetRules(true);
-	Measurement meas = {0, 0, 0, 0};
-
-	age = 0;
+	setHeaterState(heaterStateOff);
 	airgate = 50;
-
-	setHeaterOn(false);
 	reason(meas);
 	assertTrue(50 == airgate);
 	assertTrue(heaterStateOff == getHeaterState());
 	assertFalse(rules[6].fired);
 
-	age = 0;
+	resetRules(true);
+	setHeaterState(heaterStateOff);
 	dir = firing_up;
-
-	setHeaterOn(false);
 	reason(meas);
 	assertTrue(100 == airgate);
-	assertTrue(heaterStateUp == getHeaterState());
+	assertTrue(heaterStateOn == getHeaterState());
 	assertTrue(rules[6].fired);
 
 	cancelAlert();
@@ -344,17 +345,17 @@ static bool testHeaterReady(void) {
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
 
-	setHeaterOn(false);
+	setHeaterState(heaterStateOff);
 	meas.current = milliAmpsReady;
 	reason(meas);
 	assertTrue(heaterStateOff == getHeaterState());
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	meas.current = 5000;
 	reason(meas);
-	assertTrue(heaterStateUp == getHeaterState());
+	assertTrue(heaterStateOn == getHeaterState());
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	meas.current = milliAmpsReady;
 	reason(meas);
 	assertTrue(heaterStateReady == getHeaterState());
@@ -371,7 +372,7 @@ static bool testHeaterFaultNoconn(void) {
 	Measurement meas = {0, 0, 0, 0};
 	dir = firing_up;
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	meas.current = 0;
 	reason(meas);
 	assertTrue(heaterStateFault == getHeaterState());
@@ -388,7 +389,7 @@ static bool testHeaterFaultShort(void) {
 	Measurement meas = {0, 0, 0, 0};
 	dir = firing_up;
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	meas.current = 8000;
 	reason(meas);
 	assertTrue(heaterStateFault == getHeaterState());
@@ -405,7 +406,7 @@ static bool testHeaterFaultNoheat(void) {
 	Measurement meas = {0, 0, 0, 0};
 	dir = firing_up;
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 
 	// more than 5 mins
 	addTime(301);
@@ -425,7 +426,7 @@ static bool testHeaterTimeout0(void) {
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 
 	// equal or more than 30 mins below TEMP_FIRE_OUT
 	addTime(1800);
@@ -447,7 +448,7 @@ static bool testHeaterTimeout1(void) {
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 
 	// equal or more than 3 hours below TEMP_AIRGATE_0
 	addTime(10800UL);
@@ -457,100 +458,6 @@ static bool testHeaterTimeout1(void) {
 	meas.current = milliAmpsReady;
 	reason(meas);
 	assertTrue(heaterStateOff == getHeaterState());
-
-	cancelAlert();
-
-	return true;
-}
-
-static bool testReasonDirBurnUp(void) {
-
-	resetRules(true);
-	Measurement meas = {0, 0, 2000, 0};
-
-	age = 0;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = 9;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = TEMP_FIRE_OUT;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == firing_up);
-
-	meas.tempI = TEMP_AIRGATE_25 - 1;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == firing_up);
-
-	meas.tempI = TEMP_AIRGATE_25 - 1;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = TEMP_AIRGATE_25;
-	meas.lambda = LAMBDA_BURNING - 1;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
-	meas.tempI = TEMP_AIRGATE_25 + 1;
-	meas.lambda = LAMBDA_BURNING;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
-	cancelAlert();
-
-	return true;
-}
-
-static bool testReasonDirBurnDown(void) {
-
-	resetRules(true);
-	Measurement meas = {999, 0, 1999, 0};
-
-	age = 0;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = 800;
-	meas.lambda = LAMBDA_BURNING - 1;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
-	meas.tempI = TEMP_AIRGATE_25;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
-	meas.tempI = TEMP_AIRGATE_25 - 1;
-	meas.lambda = LAMBDA_BURNING - 1;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning);
-
-	meas.tempI = TEMP_AIRGATE_25 - 1;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == none);
-
-	meas.tempI = TEMP_FIRE_OUT;
-	meas.lambda = LAMBDA_MAX;
-	age = 180;
-	reason(meas);
-	assertTrue(dir == burning_down);
 
 	cancelAlert();
 
@@ -574,26 +481,22 @@ static const char testHeaterFaultShort_P[] PROGMEM = "testHeaterFaultShort";
 static const char testHeaterFaultNoheat_P[] PROGMEM = "testHeaterFaultNoheat";
 static const char testHeaterTimeout0_P[] PROGMEM = "testHeaterTimeout0";
 static const char testHeaterTimeout1_P[] PROGMEM = "testHeaterTimeout1";
-static const char testReasonDirBurnUp_P[] PROGMEM = "testReasonDirBurnUp";
-static const char testReasonDirBurnDown_P[] PROGMEM = "testReasonDirBurnDown";
 
 /* Tests */
 static TestCase const tests[] = {
-		{class, testAirgate50_P, testAirgate50},
+ 		{class, testAirgate50_P, testAirgate50},
 		{class, testAirgate25_P, testAirgate25},
 		{class, testAirgateClose_P, testAirgateClose},
 		{class, testTooRich_P, testTooRich},
 		{class, testTooLean_P, testTooLean},
-		{class, testFireOut_P, testFireOut},
+ 		{class, testFireOut_P, testFireOut},
 		{class, testWarmStart_P, testWarmStart},
 		{class, testHeaterReady_P, testHeaterReady},
 		{class, testHeaterFaultNoconn_P, testHeaterFaultNoconn},
 		{class, testHeaterFaultShort_P, testHeaterFaultShort},
 		{class, testHeaterFaultNoheat_P, testHeaterFaultNoheat},
 		{class, testHeaterTimeout0_P, testHeaterTimeout0},
-		{class, testHeaterTimeout1_P, testHeaterTimeout1},
-		{class, testReasonDirBurnUp_P, testReasonDirBurnUp},
-		{class, testReasonDirBurnDown_P, testReasonDirBurnDown}
+		{class, testHeaterTimeout1_P, testHeaterTimeout1}
 };
 
 TestClass rulesClass = {tests, sizeof(tests) / sizeof(tests[0])};

@@ -186,11 +186,11 @@ static bool testToInfoRich(void) {
 }
 
 static bool testSetHeaterOn(void) {
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	assertTrue(isHeaterOn());
-	assertTrue(heaterStateUp == getHeaterState());
+	assertTrue(heaterStateOn == getHeaterState());
 
-	setHeaterOn(false);
+	setHeaterState(heaterStateOff);
 	assertFalse(isHeaterOn());
 	assertTrue(heaterStateOff == getHeaterState());
 
@@ -198,7 +198,7 @@ static bool testSetHeaterOn(void) {
 }
 
 static bool testSetHeaterState(void) {
-	setHeaterOn(false);
+	setHeaterState(heaterStateOff);
 	assertFalse(isHeaterOn());
 	assertTrue(heaterStateOff == getHeaterState());
 
@@ -211,7 +211,7 @@ static bool testSetHeaterState(void) {
 static bool testGetHeaterUptime(void) {
 	addTime(10);
 
-	setHeaterOn(true);
+	setHeaterState(heaterStateOn);
 	assertTrue(0 == getHeaterUptime());
 
 	addTime(10);
