@@ -21,29 +21,29 @@ uint8_t airgate = 100;
 
 static int32_t deltaAvg = 0;
 static int16_t tempIMax = TEMP_INIT;
-static int16_t tempIOldQueue[QUEUE_SIZE];
+static int16_t tempIDiffQueue[QUEUE_SIZE];
 
 /**
- * Pushes the given new value in the queue of old temperature measurements
+ * Pushes the given new value in the queue of temperature differences
  * and returns the oldest value being pushed off the array.
  */
 static int16_t pushQueue(const int16_t value) {
-	int16_t last = tempIOldQueue[QUEUE_SIZE - 1];
+	int16_t last = tempIDiffQueue[QUEUE_SIZE - 1];
 	for (size_t i = QUEUE_SIZE - 1; i > 0; i--) {
-		tempIOldQueue[i] = tempIOldQueue[i - 1];
+		tempIDiffQueue[i] = tempIDiffQueue[i - 1];
 	}
-	tempIOldQueue[0] = value;
+	tempIDiffQueue[0] = value;
 
 	return last;
 }
 
 /**
- * Initializes all elements in the queue of old temperature measurements
+ * Initializes all elements in the queue of temperature differences
  * to the given value.
  */
 static void initQueue(const int16_t value) {
 	for (size_t i = 0; i < QUEUE_SIZE; i++) {
-		tempIOldQueue[i] = value;
+		tempIDiffQueue[i] = value;
 	}
 }
 
@@ -299,6 +299,7 @@ void resetRules(bool const intState) {
 	for (size_t i = 0; i < rulesSize; i++) {
 		rules[i].fired = false;
 	}
+	// default for warmStart should be true
 	rules[6].fired = true;
 
 	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
