@@ -27,7 +27,7 @@ static bool testIsSimulation(void) {
 	runCommand("se");
 	assertTrue(isSimulation());
 	assertTrue(getTime() == 0);
-	assertTrue(isHeaterOn());
+	assertTrue(bit_is_set(PORTB, PB2));
 	runCommand("sd");
 	assertFalse(isSimulation());
 	assertTrue(getTime() == 0);
@@ -50,11 +50,11 @@ static bool testHeater(void) {
 	setupPorts();
 	setHeaterState(heaterStateOff);
 
-	assertFalse(isHeaterOn());
+	assertFalse(bit_is_set(PORTB, PB2));
 	runCommand("he");
-	assertTrue(isHeaterOn());
+	assertTrue(bit_is_set(PORTB, PB2));
 	runCommand("hd");
-	assertFalse(isHeaterOn());
+	assertFalse(bit_is_set(PORTB, PB2));
 
 	return true;
 }

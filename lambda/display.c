@@ -134,9 +134,9 @@ void updateDisplayIfPending() {
 			displayTime();
 		} else {
 			char* hint;
-			switch (getDir()) {
+			switch (getState()) {
 				case firing_up: hint = " >"; break;
-				case burning: hint = " ^"; break;
+				// case burning: hint = " ^"; break;
 				case burning_down: hint = " <"; break;
 				default: hint = " -"; break;
 			}

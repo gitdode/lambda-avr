@@ -185,24 +185,18 @@ static bool testToInfoRich(void) {
 	return ! strcmp(info, MSG_RICH);
 }
 
-static bool testSetHeaterOn(void) {
+static bool testSetHeaterState(void) {
 	setHeaterState(heaterStateOn);
-	assertTrue(isHeaterOn());
+	assertTrue(bit_is_set(PORTB, PB2));
 	assertTrue(heaterStateOn == getHeaterState());
 
 	setHeaterState(heaterStateOff);
-	assertFalse(isHeaterOn());
+	assertFalse(bit_is_set(PORTB, PB2));
 	assertTrue(heaterStateOff == getHeaterState());
 
-	return true;
-}
-
-static bool testSetHeaterState(void) {
-	setHeaterState(heaterStateOff);
-	assertFalse(isHeaterOn());
-	assertTrue(heaterStateOff == getHeaterState());
-
+	setHeaterState(heaterStateOn);
 	setHeaterState(heaterStateFault);
+	assertFalse(bit_is_set(PORTB, PB2));
 	assertTrue(heaterStateFault == getHeaterState());
 
 	return true;
@@ -244,7 +238,6 @@ static const char testToInfoLean_P[] PROGMEM = "testToInfoLean";
 static const char testToInfoOkay_P[] PROGMEM = "testToInfoOkay";
 static const char testToInfoIdeal_P[] PROGMEM = "testToInfoIdeal";
 static const char testToInfoRich_P[] PROGMEM = "testToInfoRich";
-static const char testSetHeaterOn_P[] PROGMEM = "testSetHeaterOn";
 static const char testSetHeaterState_P[] PROGMEM = "testSetHeaterState";
 static const char testGetHeaterUptime_P[] PROGMEM = "testGetHeaterUptime";
 
@@ -270,7 +263,6 @@ static TestCase const tests[] = {
 		{class, testToInfoOkay_P, testToInfoOkay},
 		{class, testToInfoIdeal_P, testToInfoIdeal},
 		{class, testToInfoRich_P, testToInfoRich},
-		{class, testSetHeaterOn_P, testSetHeaterOn},
 		{class, testSetHeaterState_P, testSetHeaterState},
 		{class, testGetHeaterUptime_P, testGetHeaterUptime}
 };

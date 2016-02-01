@@ -17,7 +17,7 @@
 /* Module rules */
 
 extern uint8_t measCount;
-extern int8_t dir;
+extern int8_t state;
 extern uint8_t airgate;
 extern Rule rules[];
 
@@ -25,26 +25,18 @@ static bool testAirgate50(void) {
 
 	Measurement meas = {0, 0, 0, 0};
 
-	// prevent rule warmStart from kicking in
-	setHeaterState(heaterStateOn);
-
 	resetRules(true);
-	dir = burning_down;
+	state = burning_down;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
-	dir = firing_up;
-	reason(meas);
-	assertFalse(rules[0].fired);
-
-	resetRules(true);
-	dir = burning;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
@@ -52,30 +44,30 @@ static bool testAirgate50(void) {
 	meas.lambda = LAMBDA_TOO_LEAN;
 
 	resetRules(true);
-	dir = burning_down;
+	state = burning_down;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertTrue(rules[0].fired);
 	assertTrue(50 == airgate);
 
 	// should not fire if airgate == 50
 	resetRules(false);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[0].fired);
 	assertTrue(50 == airgate);
 
 	resetRules(true);
-	dir = burning;
+	// state = burning;
 	reason(meas);
 	assertTrue(rules[0].fired);
 	assertTrue(50 == airgate);
@@ -90,22 +82,17 @@ static bool testAirgate25(void) {
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
-	dir = burning_down;
-	reason(meas);
-	assertFalse(rules[1].fired);
-
-	resetRules(true);
-	dir = burning;
+	state = burning_down;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
@@ -113,22 +100,17 @@ static bool testAirgate25(void) {
 	meas.lambda = LAMBDA_TOO_LEAN;
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
-	dir = burning;
-	reason(meas);
-	assertFalse(rules[1].fired);
-
-	resetRules(true);
-	dir = burning_down;
+	state = burning_down;
 	reason(meas);
 	assertTrue(rules[1].fired);
 	assertTrue(25 == airgate);
@@ -143,22 +125,17 @@ static bool testAirgateClose(void) {
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
-	dir = burning_down;
-	reason(meas);
-	assertFalse(rules[2].fired);
-
-	resetRules(true);
-	dir = burning;
+	state = burning_down;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
@@ -166,22 +143,17 @@ static bool testAirgateClose(void) {
 	meas.lambda = LAMBDA_MAX;
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
-	dir = none;
+	state = undefined;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
-	dir = burning;
-	reason(meas);
-	assertFalse(rules[2].fired);
-
-	resetRules(true);
-	dir = burning_down;
+	state = burning_down;
 	reason(meas);
 	assertTrue(rules[2].fired);
 	assertTrue(0 == airgate);
@@ -194,7 +166,6 @@ static bool testAirgateClose(void) {
 static bool testTooRich(void) {
 
 	Measurement meas = {0, 0, 0, 0};
-	dir = none;
 
 	setHeaterState(heaterStateReady);
 
@@ -240,7 +211,6 @@ static bool testTooRich(void) {
 static bool testTooLean(void) {
 
 	Measurement meas = {0, 0, 0, 0};
-	dir = none;
 
 	setHeaterState(heaterStateReady);
 
@@ -282,7 +252,7 @@ static bool testFireOut(void) {
 	Measurement meas = {0, 0, 0, 0};
 
 	resetRules(true);
-	dir = firing_up;
+	state = firing_up;
 
 	meas.tempI = 50;
 	measCount = 10;
@@ -328,7 +298,7 @@ static bool testWarmStart(void) {
 
 	resetRules(true);
 	setHeaterState(heaterStateOff);
-	dir = firing_up;
+	state = firing_up;
 	reason(meas);
 	assertTrue(100 == airgate);
 	assertTrue(heaterStateOn == getHeaterState());
@@ -370,7 +340,7 @@ static bool testHeaterFaultNoconn(void) {
 	resetRules(true);
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
-	dir = firing_up;
+	state = firing_up;
 
 	setHeaterState(heaterStateOn);
 	meas.current = 0;
@@ -387,7 +357,7 @@ static bool testHeaterFaultShort(void) {
 	resetRules(true);
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
-	dir = firing_up;
+	state = firing_up;
 
 	setHeaterState(heaterStateOn);
 	meas.current = 8000;
@@ -404,7 +374,7 @@ static bool testHeaterFaultNoheat(void) {
 	resetRules(true);
 	resetTime();
 	Measurement meas = {0, 0, 0, 0};
-	dir = firing_up;
+	state = firing_up;
 
 	setHeaterState(heaterStateOn);
 

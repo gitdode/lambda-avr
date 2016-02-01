@@ -192,12 +192,7 @@ char* toInfo(uint16_t const lambda) {
 	}
 }
 
-// TODO merge with getHeaterState()
-bool isHeaterOn(void) {
-	return bit_is_set(PORTB, PB2);
-}
-
-void setHeaterState(int8_t const state) {
+void setHeaterState(HeaterState const state) {
 	if (state == heaterStateOn) {
 		PORTB |= (1 << PB2);
 		heaterOnTime = getTime();
@@ -208,7 +203,8 @@ void setHeaterState(int8_t const state) {
 	heaterState = state;
 }
 
-int8_t getHeaterState(void) {
+HeaterState getHeaterState(void) {
+	// bit_is_set(PORTB, PB2)
 	return heaterState;
 }
 

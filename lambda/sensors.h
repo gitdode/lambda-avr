@@ -19,9 +19,9 @@
  * Oxygen sensor heater current limits at certain states in milliamps.
  */
 typedef enum {
+	milliAmpsDisconn = 100,
 	milliAmpsReady = 1350,
-	milliAmpsShort = 7500,
-	milliAmpsDisconn = 100
+	milliAmpsShort = 7500
 } HeaterMilliAmps;
 
 /**
@@ -114,12 +114,6 @@ int32_t linADC(uint16_t mV);
  * a good value, below is rich and above is lean.
  */
 char* toInfo(uint16_t lambda);
-
-/**
- * Returns true if the heater of the oxygen sensor is turned on,
- * false otherwise.
- */
-bool isHeaterOn(void);
 
 /**
  * Sets the state of the heater of the oxygen sensor to the given value.

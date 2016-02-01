@@ -15,38 +15,47 @@
 
 #include "usart.h"
 
-FireDir dir = none;
+uint8_t measCount = MEAS_INT;
+FireState state = undefined;
 uint8_t airgate = 100;
-uint8_t measCount = 10;
 
-static int32_t tempIAvg = 0;
-static int16_t tempIMax = 0;
+static int32_t deltaAvg = 0;
+static int16_t tempIMax = TEMP_INIT;
 static int16_t tempIOldQueue[QUEUE_SIZE];
 
 /**
- * Pushes the given new value in the given fixed-size queue of old temperature
- * measurements and returns the oldest value being pushed off the queue.
+ * Pushes the given new value in the queue of old temperature measurements
+ * and returns the oldest value being pushed off the array.
  */
-static int16_t push(int16_t queue[], const size_t size, const int16_t value) {
-	int16_t last = queue[size - 1];
-	for (size_t i = size - 1; i > 0; i--) {
-		queue[i] = queue[i - 1];
+static int16_t pushQueue(const int16_t value) {
+	int16_t last = tempIOldQueue[QUEUE_SIZE - 1];
+	for (size_t i = QUEUE_SIZE - 1; i > 0; i--) {
+		tempIOldQueue[i] = tempIOldQueue[i - 1];
 	}
-	queue[0] = value;
+	tempIOldQueue[0] = value;
 
 	return last;
+}
+
+/**
+ * Initializes all elements in the queue of old temperature measurements
+ * to the given value.
+ */
+static void initQueue(const int16_t value) {
+	for (size_t i = 0; i < QUEUE_SIZE; i++) {
+		tempIOldQueue[i] = value;
+	}
 }
 
 /**
  * Reminds to set the air gate to 50% when the fire is still firing up
  * and the temperature has reached TEMP_AIRGATE_50.
  */
-static void airgate50(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if ((dir == firing_up || dir == burning) &&
-			meas.tempI >= TEMP_AIRGATE_50 && meas.lambda >= LAMBDA_TOO_LEAN &&
+static void airgate50(bool* const fired, Measurement const meas) {
+	if ((state == firing_up) &&
+			meas.tempI >= TEMP_AIRGATE_50 &&
+			meas.lambda >= LAMBDA_TOO_LEAN &&
 			airgate != 50) {
-
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -57,9 +66,9 @@ static void airgate50(bool* const fired, int8_t const dir,
  * Reminds to set the air gate to 25% when the fire is burning down and the
  * temperature went below TEMP_AIRGATE_25.
  */
-static void airgate25(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (dir == burning_down && meas.tempI < TEMP_AIRGATE_25 &&
+static void airgate25(bool* const fired, Measurement const meas) {
+	if (state == burning_down &&
+			meas.tempI < TEMP_AIRGATE_25 &&
 			meas.lambda >= LAMBDA_TOO_LEAN && airgate > 25) {
 		airgate = 25;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
@@ -71,9 +80,8 @@ static void airgate25(bool* const fired, int8_t const dir,
  * Reminds to close the air gate when the fire is burning down and the
  * temperature went below TEMP_AIRGATE_0 (no more flames).
  */
-static void airgateClose(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (dir == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
+static void airgateClose(bool* const fired, Measurement const meas) {
+	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX && airgate > 0) {
 		setHeaterState(heaterStateOff);
 		airgate = 0;
@@ -91,10 +99,8 @@ static void airgateClose(bool* const fired, int8_t const dir,
  * exhaust gas going into the chimney rises, more heat appears to be thrown
  * out of the chimney.
  */
-static void tooRich(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (meas.tempI > TEMP_FIRE_OUT &&
-			meas.lambda < LAMBDA_TOO_RICH &&
+static void tooRich(bool* const fired, Measurement const meas) {
+	if (meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
 			getHeaterState() == heaterStateReady && airgate < 50) {
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
@@ -106,10 +112,8 @@ static void tooRich(bool* const fired, int8_t const dir,
  * Notifies that the combustion is lean (again) and suggests to set the air
  * gate to 50%.
  */
-static void tooLean(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (meas.tempI > TEMP_AIRGATE_50 &&
-			meas.lambda > LAMBDA_TOO_LEAN &&
+static void tooLean(bool* const fired, Measurement const meas) {
+	if (meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
 			getHeaterState() == heaterStateReady && airgate > 50) {
 		airgate = 50;
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
@@ -120,10 +124,10 @@ static void tooLean(bool* const fired, int8_t const dir,
 /**
  * Notifies that the fire might have gone out at the beginning of firing up.
  */
-static void fireOut(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (! *fired && dir == firing_up && meas.tempI < TEMP_FIRE_OUT &&
-			tempIMax - meas.tempI > (TEMP_FIRE_OUT_RESET - TEMP_FIRE_OUT)) {
+static void fireOut(bool* const fired, Measurement const meas) {
+	if (! *fired && meas.tempI < TEMP_FIRE_OUT &&
+			tempIMax < TEMP_AIRGATE_50 &&
+			tempIMax >= TEMP_FIRE_OUT_RESET) {
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -136,26 +140,29 @@ static void fireOut(bool* const fired, int8_t const dir,
  * Resets rules and some state and switches on the heating if it seems that
  * wood was added or the oven was fired up without resetting.
  * TODO make a complete reset including time?
- * TODO come up with something better than using the state of the heater
  */
-static void warmStart(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (meas.tempI > TEMP_FIRE_OUT && (dir == firing_up || dir == burning) &&
-			! isHeaterOn() && (getHeaterState() != heaterStateFault)) {
+static void warmStart(bool* const fired, Measurement const meas) {
+	if (! *fired && (state == firing_up) &&
+			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
 		resetRules(false);
 		airgate = 100;
 		tempIMax = meas.tempI;
-		setHeaterState(heaterStateOn);
+		if (getHeaterState() != heaterStateFault) {
+			setHeaterState(heaterStateOn);
+		}
 		*fired = true;
+	}
+	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0) {
+		*fired = false;
 	}
 }
 
 /**
  * Notifies that the heater is ready and sets the corresponding state.
  */
-static void heaterReady(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (! isHeaterOn() || getHeaterState() == heaterStateReady) {
+static void heaterReady(bool* const fired, Measurement const meas) {
+	if (getHeaterState() == heaterStateOff ||
+			getHeaterState() == heaterStateReady) {
 		return;
 	}
 	if (meas.current <= milliAmpsReady && meas.current > milliAmpsDisconn) {
@@ -169,9 +176,9 @@ static void heaterReady(bool* const fired, int8_t const dir,
  * Notifies that the heater or its connection is faulty and sets the
  * corresponding state.
  */
-static void heaterFault(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (! isHeaterOn() || getHeaterState() == heaterStateFault) {
+static void heaterFault(bool* const fired, Measurement const meas) {
+	if (getHeaterState() == heaterStateOff ||
+			getHeaterState() == heaterStateFault) {
 		return;
 	}
 	if (meas.current > milliAmpsShort || meas.current < milliAmpsDisconn ||
@@ -187,9 +194,9 @@ static void heaterFault(bool* const fired, int8_t const dir,
  * Switches the heater off if it is on for 30 mins or more and there does
  * not seem to be a fire, and notifies that the fire is out.
  */
-static void heaterTimeout(bool* const fired, int8_t const dir,
-		Measurement const meas) {
-	if (! isHeaterOn() || getHeaterState() == heaterStateFault) {
+static void heaterTimeout(bool* const fired, Measurement const meas) {
+	if (getHeaterState() == heaterStateOff ||
+			getHeaterState() == heaterStateFault) {
 		return;
 	}
 	uint32_t heaterUptime = getHeaterUptime();
@@ -230,54 +237,47 @@ Rule rules[] = {
 		{false, tooRich},
 		{false, tooLean},
 		{false, fireOut},
-		{false, warmStart}
+		{true, warmStart}
 };
 
-int8_t getDir(void) {
-	return dir;
+int8_t getState(void) {
+	return state;
 }
 
 // called about every second
-void reason(Measurement const meas) {
+void reason(Measurement meas) {
 
-	// rules applied to each measurement
+	// rules applied at each measurement
 	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
 	for (size_t i = 0; i < heaterRulesSize; i++) {
-		heaterRules[i].cond(&(heaterRules[i].fired), dir, meas);
+		heaterRules[i].cond(&(heaterRules[i].fired), meas);
 	}
 
-	// rules applied to every 10th measurement
-	if (measCount == 10) {
+	// evaluation of the fire state and rules applied
+	// at every MEAS_INT'th measurement
+	if (measCount == MEAS_INT) {
 		measCount = 0;
 
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
 		for (size_t i = 0; i < rulesSize; i++) {
-			rules[i].cond(&(rules[i].fired), dir, meas);
+			rules[i].cond(&(rules[i].fired), meas);
 		}
 
-		tempIAvg = meas.tempI + tempIAvg - ((tempIAvg - 4) >> 3);
-		int16_t tempICur = tempIAvg >> 3;
-		int16_t tempIOld = push(tempIOldQueue, QUEUE_SIZE, tempICur);
+		// difference between current and previous temperature
+		int16_t tempIOld = pushQueue(meas.tempI);
+		int16_t delta = meas.tempI - tempIOld;
 
-		// simply skip if old temperature was 0°C - in practice it never goes
-		// below 3°C anyway.
-		if (tempIOld > 0) {
-			// try to figure out if the fire is building up, burning or burning
-			// down by comparing the current temperature value with one that is
-			// 3 minutes old
-			dir = none;
-			if ((tempICur - tempIOld) >= TEMP_DELTA_UP &&
-					tempICur < TEMP_MIN && meas.lambda >= LAMBDA_BURNING) {
-				dir = firing_up;
-			}
-			if (tempICur >= TEMP_MIN || meas.lambda < LAMBDA_BURNING) {
-				dir = burning;
-			}
-			if ((tempIOld - tempICur) >= TEMP_DELTA_DOWN &&
-					tempICur < TEMP_MIN && meas.lambda >= LAMBDA_BURNING &&
-					tempIMax >= TEMP_AIRGATE_50) {
-				dir = burning_down;
-			}
+		// extra smoothing of the temperature difference
+		deltaAvg = delta + deltaAvg - (deltaAvg >> TEMP_DELTA_SMOOTH);
+		int16_t deltaSmooth = deltaAvg >> TEMP_DELTA_SMOOTH;
+
+		// try to figure out if the fire is firing up or burning down
+		state = undefined;
+		if (deltaSmooth >= TEMP_DELTA_UP) {
+			state = firing_up;
+		}
+		if (deltaSmooth <= TEMP_DELTA_DOWN && tempIMax >= TEMP_AIRGATE_50) {
+			state = burning_down;
 		}
 	}
 
@@ -285,14 +285,13 @@ void reason(Measurement const meas) {
 	tempIMax = MAX(tempIMax, meas.tempI);
 }
 
-void resetRules(bool const state) {
-	if (state) {
-		tempIMax = 0;
-		measCount = 10;
-		for (size_t i = 0; i < QUEUE_SIZE; i++) {
-			tempIOldQueue[i] = 0;
-		}
-		dir = none;
+void resetRules(bool const intState) {
+	if (intState) {
+		deltaAvg = 0;
+		tempIMax = TEMP_INIT;
+		initQueue(TEMP_INIT);
+		measCount = MEAS_INT;
+		state = undefined;
 		airgate = 100;
 	}
 
@@ -300,6 +299,7 @@ void resetRules(bool const state) {
 	for (size_t i = 0; i < rulesSize; i++) {
 		rules[i].fired = false;
 	}
+	rules[6].fired = true;
 
 	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
 	for (size_t i = 0; i < heaterRulesSize; i++) {
