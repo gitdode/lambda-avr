@@ -142,7 +142,7 @@ static void fireOut(bool* const fired, Measurement const meas) {
  * TODO make a complete reset including time?
  */
 static void warmStart(bool* const fired, Measurement const meas) {
-	if (! *fired && (state == firing_up) &&
+	if (! *fired && state == firing_up &&
 			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
 		resetRules(false);
 		airgate = 100;
@@ -247,6 +247,8 @@ int8_t getState(void) {
 // called about every second
 void reason(Measurement meas) {
 
+	tempIMax = MAX(tempIMax, meas.tempI);
+
 	// rules applied at each measurement
 	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
 	for (size_t i = 0; i < heaterRulesSize; i++) {
@@ -282,7 +284,6 @@ void reason(Measurement meas) {
 	}
 
 	measCount++;
-	tempIMax = MAX(tempIMax, meas.tempI);
 }
 
 void resetRules(bool const intState) {

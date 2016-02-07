@@ -14,6 +14,6 @@
  * Splits the given string at the given delimiter and puts the split strings in
  * the given array with the given size.
  */
-void split(char* string, char* delim, char* fields[], uint8_t size);
+void split(char* string, char* delim, char* fields[], size_t size);
 
 #endif /* STRINGS_H_ */
