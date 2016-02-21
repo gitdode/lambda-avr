@@ -6,7 +6,6 @@
  */
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -17,10 +16,9 @@
 
 // TODO pins
 
-volatile static int8_t dir = 0;
-volatile static uint16_t pos = 100 << 2;
-volatile static uint16_t steps = 0;
-volatile static uint16_t stepsDone = 0;
+static int8_t dir = 0;
+static uint16_t pos = 0;
+static uint16_t steps = 0;
 static uint8_t speed = 255;
 
 static void start(void) {
@@ -48,8 +46,6 @@ static void stop(void) {
 	// stop timer2
 	TCCR2B = 0;
 	// GTCCR |= (1 << PSRASY);
-	// step pin low
-	// PORTB &= ~(1 << PB7);
 }
 
 void makeSteps(void) {
@@ -57,36 +53,25 @@ void makeSteps(void) {
 		PORTB ^= (1 << PB7);
 		pos += dir;
 		steps--;
-		stepsDone++;
 	} else {
 		stop();
-		// driver sleep mode
-		PORTC &= ~(1 << PC5);
-
-		char buf[64];
-		snprintf(buf, sizeof(buf), "stopp: pos: %d, steps: %d, done: %d\n", pos, steps, stepsDone);
-		printString(buf);
-
-		stepsDone = 0;
+		if (pos == 0) {
+			// driver sleep mode
+			PORTC &= ~(1 << PC5);
+		}
 	}
 }
 
 void setAirgate(uint8_t const position) {
 	stop();
-
-	int16_t diff = (((int16_t)position) << 2) - pos;
+	int16_t diff = (((int16_t)position) << 1) - pos;
 	if (diff != 0) {
 		dir = MAX(-1, MIN(diff, 1));
 		steps = abs(diff);
-
-		char buf[96];
-		snprintf(buf, sizeof(buf), "start: pos: %d, steps: %d\n", pos, steps);
-		printString(buf);
-
 		start();
 	}
 }
 
 uint8_t getAirgate(void) {
-	return pos >> 2;
+	return pos >> 1;
 }

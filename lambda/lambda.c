@@ -59,7 +59,7 @@ int main(void) {
 	// spend some time on being polite
 	while (getTime() < 3) {}
 	// TODO remember position before reset?
-	// setAirgate(100);
+	setAirgate(100);
 	setHeaterState(heaterStateOn);
 
 	uint32_t time = 0;

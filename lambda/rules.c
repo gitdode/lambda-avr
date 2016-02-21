@@ -146,7 +146,6 @@ static void warmStart(bool* const fired, Measurement const meas) {
 	if (! *fired && state == firing_up &&
 			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
 		resetRules(false);
-		setAirgate(100);
 		tempIMax = meas.tempI;
 		if (getHeaterState() != heaterStateFault) {
 			setHeaterState(heaterStateOn);
@@ -194,6 +193,8 @@ static void heaterFault(bool* const fired, Measurement const meas) {
 /**
  * Switches the heater off if it is on for 30 mins or more and there does
  * not seem to be a fire, and notifies that the fire is out.
+ * TODO check this rule, simplify?
+ * TODO set motor driver sleep mode as well?
  */
 static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (getHeaterState() == heaterStateOff ||
