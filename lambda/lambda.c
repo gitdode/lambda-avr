@@ -34,6 +34,7 @@
 #include "command.h"
 #include "rules.h"
 #include "messages.h"
+#include "airgate.h"
 
 /**
  * Does initialization, measures, displays and logs the measurements and
@@ -57,6 +58,8 @@ int main(void) {
 	alert_P(1, 1, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}
+	// TODO remember position before reset?
+	// setAirgate(100);
 	setHeaterState(heaterStateOn);
 
 	uint32_t time = 0;

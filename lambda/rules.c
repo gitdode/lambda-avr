@@ -12,12 +12,13 @@
 #include "interrupts.h"
 #include "rules.h"
 #include "messages.h"
+#include "airgate.h"
 
 #include "usart.h"
 
 uint8_t measCount = MEAS_INT;
 FireState state = undefined;
-uint8_t airgate = 100;
+// uint8_t airgate = 100;
 
 static int32_t deltaAvg = 0;
 static int16_t tempIMax = TEMP_INIT;
@@ -55,8 +56,8 @@ static void airgate50(bool* const fired, Measurement const meas) {
 	if ((state == firing_up) &&
 			meas.tempI >= TEMP_AIRGATE_50 &&
 			meas.lambda >= LAMBDA_TOO_LEAN &&
-			airgate != 50) {
-		airgate = 50;
+			getAirgate() != 50) {
+		setAirgate(50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -69,8 +70,8 @@ static void airgate50(bool* const fired, Measurement const meas) {
 static void airgate25(bool* const fired, Measurement const meas) {
 	if (state == burning_down &&
 			meas.tempI < TEMP_AIRGATE_25 &&
-			meas.lambda >= LAMBDA_TOO_LEAN && airgate > 25) {
-		airgate = 25;
+			meas.lambda >= LAMBDA_TOO_LEAN && getAirgate() > 25) {
+		setAirgate(25);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -82,9 +83,9 @@ static void airgate25(bool* const fired, Measurement const meas) {
  */
 static void airgateClose(bool* const fired, Measurement const meas) {
 	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
-			meas.lambda >= LAMBDA_MAX && airgate > 0) {
+			meas.lambda >= LAMBDA_MAX && getAirgate() > 0) {
 		setHeaterState(heaterStateOff);
-		airgate = 0;
+		setAirgate(0);
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
 		*fired = true;
@@ -101,8 +102,8 @@ static void airgateClose(bool* const fired, Measurement const meas) {
  */
 static void tooRich(bool* const fired, Measurement const meas) {
 	if (meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
-			getHeaterState() == heaterStateReady && airgate < 50) {
-		airgate = 50;
+			getHeaterState() == heaterStateReady && getAirgate() < 50) {
+		setAirgate(50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -114,8 +115,8 @@ static void tooRich(bool* const fired, Measurement const meas) {
  */
 static void tooLean(bool* const fired, Measurement const meas) {
 	if (meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
-			getHeaterState() == heaterStateReady && airgate > 50) {
-		airgate = 50;
+			getHeaterState() == heaterStateReady && getAirgate() > 50) {
+		setAirgate(50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -145,7 +146,7 @@ static void warmStart(bool* const fired, Measurement const meas) {
 	if (! *fired && state == firing_up &&
 			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
 		resetRules(false);
-		airgate = 100;
+		setAirgate(100);
 		tempIMax = meas.tempI;
 		if (getHeaterState() != heaterStateFault) {
 			setHeaterState(heaterStateOn);
@@ -208,7 +209,7 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
-		if (airgate > 0) {
+		if (getAirgate() > 0) {
 			alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""),
 					false);
 		} else {
@@ -293,7 +294,7 @@ void resetRules(bool const intState) {
 		initQueue(TEMP_INIT);
 		measCount = MEAS_INT;
 		state = undefined;
-		airgate = 100;
+		setAirgate(100);
 	}
 
 	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);

@@ -21,6 +21,7 @@
 #include "command.h"
 #include "strings.h"
 #include "rules.h"
+#include "airgate.h"
 
 static bool simulation = false;
 static bool logging = false;
@@ -87,15 +88,24 @@ void runCommand(char* const data) {
 	else if (strcmp_P(fields[0], PSTR("tb")) == 0) {
 		// test beep
 		uint8_t length = 2;
+		uint16_t tone = 31;
 		if (fields[1] != '\0') {
 			length = atoi(fields[1]);
 		}
-		uint16_t tone = 31;
 		if (fields[2] != '\0') {
 			tone = atoi(fields[2]);
 		}
 		beep(1, length, tone);
 	}
+	else if (strcmp_P(fields[0], PSTR("sa")) == 0) {
+		// set airgate
+		uint8_t position = 100;
+		if (fields[1] != '\0') {
+			position = atoi(fields[1]);
+		}
+		setAirgate(position);
+	}
+	//
 	else if (simulation) {
 		// add one second per measurement to the time,
 		// assuming one measurement was logged per second

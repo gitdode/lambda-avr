@@ -21,7 +21,7 @@ rules-test.c sensors-test.c strings-test.c usart-test.c
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = ../lambda/
 EXTRA_SOURCE_FILES = interrupts.c adc.c sensors.c integers.c \
-lcdroutines.c display.c alert.c command.c strings.c usart.c rules.c
+lcdroutines.c display.c alert.c command.c strings.c usart.c rules.c airgate.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
