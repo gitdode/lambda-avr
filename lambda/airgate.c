@@ -109,6 +109,9 @@ void makeSteps(void) {
 }
 
 void setAirgate(uint8_t const position) {
+	if (position == target) {
+		return;
+	}
 	target = position;
 	if (steps > 0) {
 		// motor busy - decelerate and move to target position when stopped
@@ -120,5 +123,5 @@ void setAirgate(uint8_t const position) {
 }
 
 uint8_t getAirgate(void) {
-	return 100; //pos >> SCALE;
+	return pos >> SCALE;
 }
