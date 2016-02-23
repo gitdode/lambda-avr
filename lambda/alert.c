@@ -9,18 +9,19 @@
  */
 
 #include <avr/io.h>
+#include <util/atomic.h>
 #include "integers.h"
 #include "alert.h"
 #include "sensors.h"
 #include "display.h"
 #include "pins.h"
 
-uint8_t beepCount = 0;
-uint16_t beepLength = 0;
-uint8_t oscCount = 0;
+volatile uint8_t beepCount = 0;
+volatile uint16_t beepLength = 0;
+volatile uint8_t oscCount = 0;
 
-static bool alertActive = false;
-static bool keepActive = false;
+volatile static bool alertActive = false;
+volatile static bool keepActive = false;
 
 void oscillateBeep(void) {
 	if (beepCount == 0) {
@@ -47,7 +48,9 @@ void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 	if (TCNT1 >= tone) TCNT1 = 0;
 	oscCount = 0;
 	beepCount = beeps;
-	beepLength = length;
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		beepLength = length;
+	}
 }
 
 void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
@@ -56,10 +59,12 @@ void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;
 	alertActive = true;
+	keepActive = keep;
 	oscCount = 0;
 	beepCount = beeps;
-	beepLength = length;
-	keepActive = keep;
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		beepLength = length;
+	}
 	displayText(line0, line1);
 }
 

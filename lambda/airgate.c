@@ -8,28 +8,27 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include <util/delay.h>
 #include "airgate.h"
 #include "integers.h"
 
-#include "usart.h"
-
 // TODO pins
 
 /* Direction */
-static int8_t dir = 0;
+volatile static int8_t dir = 0;
 /* Current position */
-static uint16_t pos = 0;
+volatile static uint16_t pos = 0;
 /* Target position */
-static int16_t target = 0;
+volatile static int16_t target = 0;
 /* Steps remaining */
-static uint16_t steps = 0;
+volatile static uint16_t steps = 0;
 /* Steps done */
-static uint16_t done = 0;
+volatile static uint16_t done = 0;
 /* Acceleration profile ramp */
-static uint16_t ramp = 0;
+volatile static uint16_t ramp = 0;
 /* Speed */
-static uint8_t speed = MIN_SPEED;
+volatile static uint8_t speed = MIN_SPEED;
 
 /**
  * Wakes up the driver if sleeping, sets the direction and initial speed and
@@ -71,14 +70,14 @@ static void stop(void) {
  * the motor.
  */
 static void set(void) {
-	done = 0;
 	int16_t diff = (target << SCALE) - pos;
 	if (diff != 0) {
-		target = -1;
 		dir = MAX(-1, MIN(diff, 1));
-		steps = abs(diff);
-		ramp = MIN(MIN_SPEED - MAX_SPEED, steps >> 1);
 		speed = MIN_SPEED;
+		ATOMIC_BLOCK(ATOMIC_FORCEON) {
+			steps = abs(diff);
+			ramp = MIN(MIN_SPEED - MAX_SPEED, steps >> 1);
+		}
 		start();
 	}
 }
@@ -87,8 +86,8 @@ void makeSteps(void) {
 	if (steps > 0) {
 		PORTB ^= (1 << PB7);
 		pos += dir;
-		steps--;
 		done++;
+		steps--;
 		// accelerate within ramp
 		if (done < ramp && speed > MAX_SPEED) speed--;
 		// decelerate within ramp
@@ -97,10 +96,9 @@ void makeSteps(void) {
 	} else {
 		done = 0;
 		stop();
-		if (target != -1) {
-			// move to target position
-			set();
-		} else if (pos == 0) {
+		// move to new target position if necessary
+		set();
+		if (pos == 0) {
 			// driver sleep mode
 			// TODO when is it best to do this?
 			PORTC &= ~(1 << PC5);
@@ -109,19 +107,21 @@ void makeSteps(void) {
 }
 
 void setAirgate(uint8_t const position) {
-	if (position == target) {
-		return;
-	}
-	target = position;
-	if (steps > 0) {
-		// motor busy - decelerate and move to target position when stopped
-		steps = MIN(ramp, steps);
-	} else {
-		// move to target position
-		set();
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		if (position == target) {
+			return;
+		}
+		target = position;
+		if (steps > 0) {
+			// motor busy - decelerate and move to target position when stopped
+			steps = MIN(ramp, steps);
+		} else {
+			// move to target position
+			set();
+		}
 	}
 }
 
 uint8_t getAirgate(void) {
-	return pos >> SCALE;
+	return target;
 }
