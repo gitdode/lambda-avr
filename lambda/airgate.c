@@ -6,21 +6,23 @@
  */
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 #include "airgate.h"
 #include "integers.h"
+#include "interrupts.h"
 
 // TODO pins
 
 /* Direction */
 volatile static int8_t dir = 0;
+/* Target position */
+volatile static uint8_t target = 0;
 /* Current position */
 volatile static uint16_t pos = 0;
-/* Target position */
-volatile static int16_t target = 0;
 /* Steps remaining */
 volatile static uint16_t steps = 0;
 /* Steps done */
@@ -52,7 +54,7 @@ static void start(void) {
 	// set start speed
 	OCR2A = speed;
 	// start timer2
-	TCCR2B |= (1 << CS22) | (1 << CS21);
+	TCCR2B |= TIMER2_PRESCALE;
 }
 
 /**
@@ -70,14 +72,13 @@ static void stop(void) {
  * the motor.
  */
 static void set(void) {
-	int16_t diff = (target << SCALE) - pos;
+	stop();
+	int16_t diff = (((int16_t)target) << SCALE) - pos;
 	if (diff != 0) {
 		dir = MAX(-1, MIN(diff, 1));
 		speed = MIN_SPEED;
-		ATOMIC_BLOCK(ATOMIC_FORCEON) {
-			steps = abs(diff);
-			ramp = MIN(MIN_SPEED - MAX_SPEED, steps >> 1);
-		}
+		steps = abs(diff);
+		ramp = MIN(MIN_SPEED - MAX_SPEED, steps >> 1);
 		start();
 	}
 }
@@ -95,33 +96,35 @@ void makeSteps(void) {
 		OCR2A = speed;
 	} else {
 		done = 0;
-		stop();
 		// move to new target position if necessary
 		set();
-		if (pos == 0) {
-			// driver sleep mode
-			// TODO when is it best to do this?
-			PORTC &= ~(1 << PC5);
-		}
 	}
 }
 
 void setAirgate(uint8_t const position) {
+	if (position == target) {
+		return;
+	}
+	target = position;
+	bool idle = false;
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		if (position == target) {
-			return;
-		}
-		target = position;
 		if (steps > 0) {
 			// motor busy - decelerate and move to target position when stopped
 			steps = MIN(ramp, steps);
 		} else {
 			// move to target position
-			set();
+			idle = true;
 		}
+	}
+	if (idle) {
+		set();
 	}
 }
 
 uint8_t getAirgate(void) {
 	return target;
+}
+
+void setSleepMode(void) {
+	PORTC &= ~(1 << PC5);
 }

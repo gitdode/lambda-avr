@@ -36,4 +36,9 @@ void setAirgate(uint8_t const position);
  */
 uint8_t getAirgate(void);
 
+/**
+ * Sets the driver in sleep mode.
+ */
+void setSleepMode(void);
+
 #endif /* AIRGATE_H_ */

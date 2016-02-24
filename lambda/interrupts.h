@@ -22,6 +22,8 @@
 	// #define TIMER1_CTC_TOP 15
 	// 2 kHz is less noisy on the small piezo beeper
 	#define TIMER1_COMP_MATCH 31
+	// timer2 clock prescaler/32 = 32.25 kHz @ 1MHz
+	#define TIMER2_PRESCALE (1 << CS21) | (1 << CS20)
 #elif F_CPU == 8000000
 	// timer0 clock prescaler/1024 = 7.812 kHz @ 8 MHz
 	#define TIMER0_PRESCALE (1 << CS02) | (1 << CS00)
@@ -33,6 +35,8 @@
 	// #define TIMER1_CTC_TOP 15
 	// 2 kHz is less noisy on the small piezo beeper
 	#define TIMER1_COMP_MATCH 31
+	// timer2 clock prescaler/256 = 32.25 kHz @ 8MHz
+	#define TIMER2_PRESCALE (1 << CS22) | (1 << CS21)
 #endif
 
 /**
