@@ -52,7 +52,7 @@ static void start(void) {
 	// setup time
 	_delay_us(1);
 	// set start speed
-	OCR2A = speed;
+	OCR2A = MIN_SPEED;
 	// start timer2
 	TCCR2B |= TIMER2_PRESCALE;
 }
@@ -76,9 +76,8 @@ static void set(void) {
 	int16_t diff = (((int16_t)target) << SCALE) - pos;
 	if (diff != 0) {
 		dir = MAX(-1, MIN(diff, 1));
-		speed = MIN_SPEED;
 		steps = abs(diff);
-		ramp = MIN(MIN_SPEED - MAX_SPEED, steps >> 1);
+		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
 		start();
 	}
 }
@@ -89,11 +88,15 @@ void makeSteps(void) {
 		pos += dir;
 		done++;
 		steps--;
-		// accelerate within ramp
-		if (done < ramp && speed > MAX_SPEED) speed--;
-		// decelerate within ramp
-		if (steps < ramp && speed < MIN_SPEED) speed++;
-		OCR2A = speed;
+		if (done < ramp && speed < MAX_SPEED) {
+			// accelerate within ramp
+			speed++;
+		} else if (steps < ramp && speed > MIN_SPEED) {
+			// decelerate within ramp
+			speed--;
+		}
+		// linearize an unfavourably increasing acceleration curve
+		OCR2A = (MIN_SPEED * MAX_SPEED) / speed;
 	} else {
 		done = 0;
 		// move to new target position if necessary

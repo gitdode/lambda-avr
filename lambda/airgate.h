@@ -8,8 +8,11 @@
 #ifndef AIRGATE_H_
 #define AIRGATE_H_
 
-#define MIN_SPEED 150
-#define MAX_SPEED 20
+/** Min value 1 */
+#define MIN_SPEED 20
+/** Max value 255 */
+#define MAX_SPEED 200
+
 /**
  * 1 = full step, 2 = half step, 3 = 1/4 step, 4 = 8 microsteps, ...
  * for 180°.
