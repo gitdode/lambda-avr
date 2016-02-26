@@ -10,7 +10,7 @@
 
 /** Min value 1 */
 #define MIN_SPEED 20
-/** Max value 255 */
+/** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
 #define MAX_SPEED 200
 
 /**

@@ -3,6 +3,13 @@
  *
  *  Created on: 19.02.2016
  *      Author: dode@luniks.net
+ *
+ *  Simple (maybe naive) stepper motor control using the DRV8825 with a linear
+ *  acceleration profile. An absolute position from 0 to 255 can be set which
+ *  relates to the actual number of degrees by the SCALE constant and the
+ *  stepping mode. If a new position is set while the motor is busy, it is
+ *  decelerated before it starts to move to the new position.
+ *  The idea is to be able to set the airgate position from 0 - 100%.
  */
 
 #include <stdlib.h>
@@ -109,17 +116,16 @@ void setAirgate(uint8_t const position) {
 		return;
 	}
 	target = position;
-	bool idle = false;
+	bool busy = false;
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		if (steps > 0) {
+		busy = steps > 0;
+		if (busy) {
 			// motor busy - decelerate and move to target position when stopped
 			steps = MIN(ramp, steps);
-		} else {
-			// move to target position
-			idle = true;
 		}
 	}
-	if (idle) {
+	if (! busy) {
+		// move to target position
 		set();
 	}
 }
