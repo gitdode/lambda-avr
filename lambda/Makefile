@@ -3,7 +3,7 @@
 
 MCU = atmega328p
 # Currently supported are 1 MHz and 8 MHz
-F_CPU = 1000000
+F_CPU = 8000000
 # Also try BAUD = 19200 or 38400 if you're feeling lucky.
 BAUD = 9600
 

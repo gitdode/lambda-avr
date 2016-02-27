@@ -92,7 +92,6 @@ static void set(void) {
 void makeSteps(void) {
 	if (steps > 0) {
 		PORTB ^= (1 << PB7);
-		pos += dir;
 		done++;
 		steps--;
 		if (done < ramp && speed < MAX_SPEED) {
@@ -105,6 +104,7 @@ void makeSteps(void) {
 		// linearize an unfavourably increasing acceleration curve
 		OCR2A = (MIN_SPEED * MAX_SPEED) / speed;
 	} else {
+		pos += (done * dir);
 		done = 0;
 		// move to new target position if necessary
 		set();
