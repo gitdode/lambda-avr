@@ -19,9 +19,10 @@
 typedef enum {
 	displayPosCurrent = 0,
 	displayPosMax = 1,
-	displayPosHeater = 2,
-	displayPosLastText = 3,
-	displayPosTime = 4
+	displayPosAirgate = 2,
+	displayPosHeater = 3,
+	displayPosLastText = 4,
+	displayPosTime = 5
 } DisplayPos;
 
 uint8_t getPosition(void);

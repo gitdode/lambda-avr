@@ -22,6 +22,7 @@
 #include "alert.h"
 #include "messages.h"
 #include "rules.h"
+#include "airgate.h"
 
 DisplayPos position = displayPosCurrent;
 bool updatePending = false;
@@ -79,6 +80,15 @@ static void displayCurrent(uint16_t const current) {
 }
 
 /**
+ * Displays the airgate position in %.
+ */
+static void displayAirgate(uint8_t const airgate) {
+	char line1[17];
+	snprintf(line1, sizeof(line1), "%d%%", airgate);
+	setText(MSG_AIRGATE, line1);
+}
+
+/**
  * Formats and displays the time since last start/reset.
  */
 static void displayTime(void) {
@@ -126,10 +136,12 @@ void updateDisplayIfPending() {
 
 		if (position == displayPosMax) {
 			displayMeas(measMax, " ^");
-		} else if (position == displayPosLastText) {
-			setText(lastLine0, lastLine1);
+		} else if (position == displayPosAirgate) {
+			displayAirgate(getAirgate());
 		} else if (position == displayPosHeater) {
 			displayCurrent(measLatest.current);
+		} else if (position == displayPosLastText) {
+			setText(lastLine0, lastLine1);
 		} else if (position == displayPosTime) {
 			displayTime();
 		} else {

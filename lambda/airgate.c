@@ -21,8 +21,7 @@
 #include "airgate.h"
 #include "integers.h"
 #include "interrupts.h"
-
-// TODO pins
+#include "pins.h"
 
 /* Direction */
 volatile static int8_t dir = 0;
@@ -44,17 +43,17 @@ volatile static uint8_t speed = MIN_SPEED;
  * starts the motor by starting the timer.
  */
 static void start(void) {
-	if (bit_is_clear(PORTC, PC5)) {
+	if (bit_is_clear(PORT, PIN_SLEEP)) {
 		// wake up driver
-		PORTC |= (1 << PC5);
+		PORT |= (1 << PIN_SLEEP);
 		// wakeup time
 		_delay_ms(2);
 	}
 	// set dir
 	if (dir == 1) {
-		PORTB &= ~(1 << PB6);
+		PORT &= ~(1 << PIN_DIR);
 	} else {
-		PORTB |= (1 << PB6);
+		PORT |= (1 << PIN_DIR);
 	}
 	// setup time
 	_delay_us(1);
@@ -79,19 +78,20 @@ static void stop(void) {
  * the motor.
  */
 static void set(void) {
-	stop();
 	int16_t diff = (((int16_t)target) << SCALE) - pos;
 	if (diff != 0) {
 		dir = MAX(-1, MIN(diff, 1));
 		steps = abs(diff);
 		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
 		start();
+	} else {
+		setSleepMode();
 	}
 }
 
 void makeSteps(void) {
 	if (steps > 0) {
-		PORTB ^= (1 << PB7);
+		PORT ^= (1 << PIN_STEP);
 		done++;
 		steps--;
 		if (done < ramp && speed < MAX_SPEED) {
@@ -104,6 +104,7 @@ void makeSteps(void) {
 		// linearize an unfavourably increasing acceleration curve
 		OCR2A = (MIN_SPEED * MAX_SPEED) / speed;
 	} else {
+		stop();
 		pos += (done * dir);
 		done = 0;
 		// move to new target position if necessary
@@ -135,5 +136,5 @@ uint8_t getAirgate(void) {
 }
 
 void setSleepMode(void) {
-	PORTC &= ~(1 << PC5);
+	PORT &= ~(1 << PIN_SLEEP);
 }

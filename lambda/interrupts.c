@@ -86,11 +86,9 @@ void setupPorts(void) {
 	DDR |= (1 << PIN_HEATER);
 
 	// enable dir and step pin for stepper motor driver
-	// TODO pins
-	DDR |= (1 << PB6);
-	DDR |= (1 << PB7);
-	// DDR |= (1 << PB3); // (OC2A)
-	DDRC |= (1 << PC5);
+	DDR |= (1 << PIN_SLEEP);
+	DDR |= (1 << PIN_STEP);
+	DDR |= (1 << PIN_DIR);
 }
 
 void setupSleepMode(void) {

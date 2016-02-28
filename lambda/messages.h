@@ -23,6 +23,9 @@
 	#define MSG_IDEAL "Ideal"
 	#define MSG_RICH "Rich!"
 
+	/* display.c */
+	#define MSG_AIRGATE "Air gate"
+
 	/* rules.c */
 	#define MSG_AIRGATE_50_0 "Air gate 50%"
 	#define MSG_AIRGATE_25_0 "Air gate 25%"
@@ -49,6 +52,9 @@
 	#define MSG_OKAY "Okay "
 	#define MSG_IDEAL "Ideal"
 	#define MSG_RICH "Fett!"
+
+	/* display.c */
+	#define MSG_AIRGATE "Luftschieber"
 
 	/* rules.c */
 	#define MSG_AIRGATE_50_0 "Luftschieber 50%"
