@@ -29,19 +29,19 @@ void makeSteps(void);
  * Sets the airgate position 0 - 100%. The actual number of degrees the motor
  * spins depends on the SCALE and the stepping mode. If the motor is currently
  * moving to a target position when this function is called, it is first
- * decelerated and then moves to the new target position.
+ * decelerated and then starts moving to the new target position.
  */
 void setAirgate(uint8_t const position);
 
 /**
- * Returns the current airgate position, assuming the motor did all the steps
+ * Returns the current airgate position, assuming the motor does all the steps
  * it was requested to do.
  */
 uint8_t getAirgate(void);
 
 /**
- * Sets the driver in sleep mode.
+ * Wakes up the driver or puts it in sleep mode.
  */
-void setSleepMode(void);
+void setSleepMode(bool const on);
 
 #endif /* AIRGATE_H_ */

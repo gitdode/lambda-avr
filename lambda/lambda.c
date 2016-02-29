@@ -55,6 +55,9 @@ int main(void) {
 	initInterrupts();
 	initTimers();
 
+	// wake up stepper motor driver
+	setSleepMode(true);
+
 	alert_P(1, 1, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}

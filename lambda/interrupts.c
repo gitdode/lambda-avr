@@ -85,10 +85,11 @@ void setupPorts(void) {
 	// enable oxygen sensor heater control output pin
 	DDR |= (1 << PIN_HEATER);
 
-	// enable dir and step pin for stepper motor driver
+	// enable output pins for stepper motor driver
 	DDR |= (1 << PIN_SLEEP);
 	DDR |= (1 << PIN_STEP);
 	DDR |= (1 << PIN_DIR);
+	DDR |= (1 << PIN_CURRENT);
 }
 
 void setupSleepMode(void) {

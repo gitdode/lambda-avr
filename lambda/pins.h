@@ -35,12 +35,14 @@
 #define PIN_BEEPER_TOGGLE COM1A0
 /** Pin for the oxygen sensor heater */
 #define PIN_HEATER PB2
-/** Pin for the stepper motor driver sleep mode **/
+/** Pin for stepper motor driver sleep mode **/
 #define PIN_SLEEP PB3
-/** Pin for the stepper motor driver step input */
+/** Pin for stepper motor driver step input */
 #define PIN_STEP PB4
-/** Pin for the stepper motor driver direction input */
+/** Pin for stepper motor driver direction input */
 #define PIN_DIR PB5
+/** Pin for stepper motor current control */
+#define PIN_CURRENT PB6
 
 /* Pins for the LCD */
 #define LCD_PORT PORTD

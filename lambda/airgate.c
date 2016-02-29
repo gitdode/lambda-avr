@@ -4,9 +4,9 @@
  *  Created on: 19.02.2016
  *      Author: dode@luniks.net
  *
- *  Simple (maybe naive) stepper motor control using the DRV8825 with a linear
- *  acceleration profile. An absolute position from 0 to 255 can be set which
- *  relates to the actual number of degrees by the SCALE constant and the
+ *  Simple (maybe naive) stepper motor control with a linear acceleration
+ *  profile using the DRV8825. An absolute position from 0 to 255 can be set
+ *  which relates to the actual number of degrees by the SCALE constant and the
  *  stepping mode. If a new position is set while the motor is busy, it is
  *  decelerated before it starts to move to the new position.
  *  The idea is to be able to set the airgate position from 0 - 100%.
@@ -43,12 +43,10 @@ volatile static uint8_t speed = MIN_SPEED;
  * starts the motor by starting the timer.
  */
 static void start(void) {
-	if (bit_is_clear(PORT, PIN_SLEEP)) {
-		// wake up driver
-		PORT |= (1 << PIN_SLEEP);
-		// wakeup time
-		_delay_ms(2);
-	}
+	// set rated current for max torque
+	PORT &= ~(1 << PIN_CURRENT);
+	// some time to stabilize?
+	_delay_us(3);
 	// set dir
 	if (dir == 1) {
 		PORT &= ~(1 << PIN_DIR);
@@ -56,7 +54,7 @@ static void start(void) {
 		PORT |= (1 << PIN_DIR);
 	}
 	// setup time
-	_delay_us(1);
+	_delay_us(3);
 	// set start speed
 	OCR2A = MIN_SPEED;
 	// start timer2
@@ -74,18 +72,18 @@ static void stop(void) {
 
 /**
  * Calculates the direction and steps to take to get to the target position,
- * the ramp length for the acceleration profile, sets the speed and starts
- * the motor.
+ * the ramp length for the acceleration profile and starts the motor.
  */
 static void set(void) {
 	int16_t diff = (((int16_t)target) << SCALE) - pos;
 	if (diff != 0) {
-		dir = MAX(-1, MIN(diff, 1));
+		dir = (diff > 0) - (diff < 0);
 		steps = abs(diff);
 		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
 		start();
 	} else {
-		setSleepMode();
+		// set reduced current to save power
+		PORT |= (1 << PIN_CURRENT);
 	}
 }
 
@@ -135,6 +133,15 @@ uint8_t getAirgate(void) {
 	return target;
 }
 
-void setSleepMode(void) {
-	PORT &= ~(1 << PIN_SLEEP);
+void setSleepMode(bool const on) {
+	if (on) {
+		// wake up driver
+		PORT |= (1 << PIN_SLEEP);
+		// wakeup time
+		// should not be woken up just before stepping anyway, the power supply
+		// might need much more time to stabilize
+		// _delay_ms(2);
+	} else {
+		PORT &= ~(1 << PIN_SLEEP);
+	}
 }
