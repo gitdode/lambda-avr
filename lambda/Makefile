@@ -14,7 +14,7 @@ MAIN = lambda.c
 LANG = 0
 
 LOCAL_SOURCE = usart.c interrupts.c adc.c sensors.c integers.c lcdroutines.c \
-display.c alert.c command.c strings.c rules.c airgate.c
+display.c alert.c command.c strings.c rules.c airgate.c scheduler.c
 
 EXTRA_SOURCE_DIR = 
 EXTRA_SOURCE_FILES = 
@@ -27,9 +27,10 @@ EXTRA_SOURCE_FILES =
 
 # PROGRAMMER_TYPE = avrisp
 PROGRAMMER_TYPE = avrispmkII
+# PROGRAMMER_TYPE = jtag2isp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
 # PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
-PROGRAMMER_ARGS = 
+PROGRAMMER_ARGS = -b 19200
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########

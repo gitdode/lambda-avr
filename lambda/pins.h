@@ -14,35 +14,51 @@
 
 /** ADC pin for the type K thermocouple signal */
 #define ADC_TEMPI PC2
+
 /** ADC pin for the PT1000 resistance thermometer signal */
 #define ADC_TEMPO PC0
+
 /** ADC pin for the LSM 11 oxygen sensor signal */
 #define ADC_LAMBDA PC1
+
 /** ADC pin for the LSM 11 oxygen sensor heater current */
 #define ADC_HEATER PC3
 
-/** Pin input register for menu button */
+/** Pin input register */
 #define PIN PINB
-/** Pin output register for menu button, beeper and oxygen sensor heater */
+
+/** Pin output register */
 #define PORT PORTB
-/** DDR for menu button, beeper and oxygen sensor heater */
+
+/** Data direction register */
 #define DDR DDRB
+
 /** Pin for the menu button */
 #define PIN_BUTTON PB0
+
 /** Pin for the beeper */
 #define PIN_BEEPER PB1
+
 /** Toggle beeper pin OC1A/PB1 */
 #define PIN_BEEPER_TOGGLE COM1A0
+
 /** Pin for the oxygen sensor heater */
 #define PIN_HEATER PB2
+
 /** Pin for stepper motor driver sleep mode **/
 #define PIN_SLEEP PB3
+
 /** Pin for stepper motor driver step input */
 #define PIN_STEP PB4
+
 /** Pin for stepper motor driver direction input */
 #define PIN_DIR PB5
+
 /** Pin for stepper motor current control */
 #define PIN_CURRENT PB6
+
+/** Pin for stepper motor fault status */
+#define PIN_FAULT PB7
 
 /* Pins for the LCD */
 #define LCD_PORT PORTD

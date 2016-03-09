@@ -13,6 +13,7 @@
 #include "rules.h"
 #include "messages.h"
 #include "airgate.h"
+#include "scheduler.h"
 
 #include "usart.h"
 
@@ -56,8 +57,8 @@ static void airgate50(bool* const fired, Measurement const meas) {
 	if ((state == firing_up) &&
 			meas.tempI >= TEMP_AIRGATE_50 &&
 			meas.lambda >= LAMBDA_TOO_LEAN &&
-			getAirgate() != 50) {
-		setAirgate(50);
+			getAirgate() != AIRGATE_50) {
+		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -70,8 +71,8 @@ static void airgate50(bool* const fired, Measurement const meas) {
 static void airgate25(bool* const fired, Measurement const meas) {
 	if (state == burning_down &&
 			meas.tempI < TEMP_AIRGATE_25 &&
-			meas.lambda >= LAMBDA_TOO_LEAN && getAirgate() > 25) {
-		setAirgate(25);
+			meas.lambda >= LAMBDA_TOO_LEAN && getAirgate() > AIRGATE_25) {
+		setAirgate(AIRGATE_25);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -83,9 +84,14 @@ static void airgate25(bool* const fired, Measurement const meas) {
  */
 static void airgateClose(bool* const fired, Measurement const meas) {
 	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
-			meas.lambda >= LAMBDA_MAX && getAirgate() > 0) {
+			meas.lambda >= LAMBDA_MAX && getAirgate() > AIRGATE_CLOSE) {
 		setHeaterState(heaterStateOff);
-		setAirgate(0);
+		setAirgate(AIRGATE_CLOSE);
+		void func(void) {
+			setSleepMode(true);
+		}
+		// put stepper motor driver in sleep mode in 60 seconds
+		scheduleTask(func, 60);
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
 		*fired = true;
@@ -102,8 +108,8 @@ static void airgateClose(bool* const fired, Measurement const meas) {
  */
 static void tooRich(bool* const fired, Measurement const meas) {
 	if (meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
-			getHeaterState() == heaterStateReady && getAirgate() < 50) {
-		setAirgate(50);
+			getHeaterState() == heaterStateReady && getAirgate() < AIRGATE_50) {
+		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -115,8 +121,8 @@ static void tooRich(bool* const fired, Measurement const meas) {
  */
 static void tooLean(bool* const fired, Measurement const meas) {
 	if (meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
-			getHeaterState() == heaterStateReady && getAirgate() > 50) {
-		setAirgate(50);
+			getHeaterState() == heaterStateReady && getAirgate() > AIRGATE_50) {
+		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
 	}
@@ -145,6 +151,8 @@ static void fireOut(bool* const fired, Measurement const meas) {
 static void warmStart(bool* const fired, Measurement const meas) {
 	if (! *fired && state == firing_up &&
 			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
+		// TODO wake up driver here?
+		setSleepMode(false);
 		resetRules(false);
 		tempIMax = meas.tempI;
 		if (getHeaterState() != heaterStateFault) {
@@ -191,10 +199,8 @@ static void heaterFault(bool* const fired, Measurement const meas) {
 }
 
 /**
- * Switches the heater off if it is on for 30 mins or more and there does
- * not seem to be a fire, and notifies that the fire is out.
- * TODO check this rule, simplify?
- * TODO set motor driver sleep mode as well?
+ * Switches the heater off if it is on for a while and there does not seem
+ * to be a fire.
  */
 static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (getHeaterState() == heaterStateOff ||
@@ -205,18 +211,12 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (heaterUptime >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
-		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_FIRE_OUT_0), PSTR(""), false);
+		setSleepMode(true);
 	}
 	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
-		if (getAirgate() > 0) {
-			alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""),
-					false);
-		} else {
-			alert_P(3, 5, TONE, PSTR(MSG_HEATER_OFF_0), PSTR(MSG_HEATER_OFF_1),
-					false);
-		}
+		setSleepMode(true);
 	}
 }
 
@@ -259,7 +259,7 @@ void reason(Measurement meas) {
 
 	// evaluation of the fire state and rules applied
 	// at every MEAS_INT'th measurement
-	if (measCount == MEAS_INT) {
+	if (measCount == MEAS_INT && ! isAirgateBusy()) {
 		measCount = 0;
 
 		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
@@ -295,7 +295,7 @@ void resetRules(bool const intState) {
 		initQueue(TEMP_INIT);
 		measCount = MEAS_INT;
 		state = undefined;
-		setAirgate(100);
+		setAirgate(AIRGATE_OPEN);
 	}
 
 	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);

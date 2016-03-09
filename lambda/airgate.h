@@ -9,9 +9,14 @@
 #define AIRGATE_H_
 
 /** Min value 1 */
-#define MIN_SPEED 20
+#define MIN_SPEED 50
 /** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
-#define MAX_SPEED 200
+#define MAX_SPEED 250
+
+#define AIRGATE_CLOSE  	0
+#define AIRGATE_25	 	25
+#define AIRGATE_50 		50
+#define AIRGATE_OPEN 	100
 
 /**
  * 1 = full step, 2 = half step, 3 = 1/4 step, 4 = 8 microsteps, ...
@@ -20,24 +25,33 @@
 #define SCALE 3
 
 /**
- * Called from the timer interrupt ISR and makes one step or stops the
+ * Called from the timer interrupt ISR and makes a half step or stops the
  * timer/motor if the target position is reached.
  */
 void makeSteps(void);
 
 /**
- * Sets the airgate position 0 - 100%. The actual number of degrees the motor
- * spins depends on the SCALE and the stepping mode. If the motor is currently
- * moving to a target position when this function is called, it is first
- * decelerated and then starts moving to the new target position.
+ * Sets the airgate position 0 - 255, where 200 units correspond to 360°
+ * rotation.
  */
 void setAirgate(uint8_t const position);
 
 /**
- * Returns the current airgate position, assuming the motor does all the steps
+ * Returns the current airgate position, assuming the motor did all the steps
  * it was requested to do.
  */
 uint8_t getAirgate(void);
+
+/**
+ * Returns the current airgate position translated to percent.
+ */
+uint8_t getAirgateInPercent(void);
+
+/**
+ * Returns true if the motor is currently busy setting an airgate position,
+ * false otherwise.
+ */
+bool isAirgateBusy(void);
 
 /**
  * Wakes up the driver or puts it in sleep mode.

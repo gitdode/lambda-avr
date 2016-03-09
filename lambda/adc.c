@@ -16,7 +16,7 @@
 /**
  * Returns to where sleep_mode() was called when ADC conversion is complete.
  */
-EMPTY_INTERRUPT(ADC_vect);
+// EMPTY_INTERRUPT(ADC_vect);
 
 void setupADC(void) {
 	// use AVCC as reference voltage
@@ -34,9 +34,12 @@ uint16_t getVoltage(uint8_t const pin) {
 
 	uint32_t overValue = 0;
 	for (uint8_t i = 0; i < 16; i++) {
-		sleep_mode();
+		ADCSRA |= (1 << ADSC);
+		// sleep_mode();
+		loop_until_bit_is_clear(ADCSRA, ADSC);
 		overValue += ADC;
 	}
+
 	int16_t mV = (((overValue >> 2) * AREF_MV) >> 12);
 
 	return mV;

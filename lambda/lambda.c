@@ -35,6 +35,7 @@
 #include "rules.h"
 #include "messages.h"
 #include "airgate.h"
+#include "scheduler.h"
 
 /**
  * Does initialization, measures, displays and logs the measurements and
@@ -56,13 +57,12 @@ int main(void) {
 	initTimers();
 
 	// wake up stepper motor driver
-	setSleepMode(true);
+	setSleepMode(false);
 
 	alert_P(1, 1, 31, PSTR(MSG_WELCOME), PSTR(""), false);
 	// spend some time on being polite
 	while (getTime() < 3) {}
-	// TODO remember position before reset?
-	setAirgate(100);
+	setAirgate(AIRGATE_OPEN);
 	setHeaterState(heaterStateOn);
 
 	uint32_t time = 0;
@@ -75,6 +75,7 @@ int main(void) {
 			meas = measure();
 			updateMeas(meas);
 			reason(meas);
+			runTasks();
 			if (isLogging()) {
 				logMeas(meas);
 			}

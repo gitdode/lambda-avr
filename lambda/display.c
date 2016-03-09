@@ -137,7 +137,7 @@ void updateDisplayIfPending() {
 		if (position == displayPosMax) {
 			displayMeas(measMax, " ^");
 		} else if (position == displayPosAirgate) {
-			displayAirgate(getAirgate());
+			displayAirgate(getAirgateInPercent());
 		} else if (position == displayPosHeater) {
 			displayCurrent(measLatest.current);
 		} else if (position == displayPosLastText) {

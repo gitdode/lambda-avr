@@ -22,6 +22,7 @@
 #include "strings.h"
 #include "rules.h"
 #include "airgate.h"
+#include "scheduler.h"
 
 static bool simulation = false;
 static bool logging = false;
@@ -45,6 +46,8 @@ void runCommand(char* const data) {
 		resetDisplay();
 		resetRules(true);
 		setHeaterState(heaterStateOn);
+		setSleepMode(false);
+		setAirgate(AIRGATE_OPEN);
 		beep(1, 1, 31);
 	}
 	else if (strcmp_P(fields[0], PSTR("sd")) == 0) {
@@ -119,6 +122,7 @@ void runCommand(char* const data) {
 			updateMeas(meas);
 		}
 		reason(meas);
+		runTasks();
 		setUpdatePending();
 	}
 

@@ -1,0 +1,2 @@
+Upload hex: avrdude -pm328p -cjtag2isp -B10 -Uflash:w:lambda.hex:a
+Start AVaRICE: avarice -2 -w -B10 -j usb :4242

@@ -14,8 +14,6 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 #include "airgate.h"
@@ -25,8 +23,6 @@
 
 /* Direction */
 volatile static int8_t dir = 0;
-/* Target position */
-volatile static uint8_t target = 0;
 /* Current position */
 volatile static uint16_t pos = 0;
 /* Steps remaining */
@@ -39,14 +35,15 @@ volatile static uint16_t ramp = 0;
 volatile static uint8_t speed = MIN_SPEED;
 
 /**
- * Wakes up the driver if sleeping, sets the direction and initial speed and
+ * Sets increased current for higher torque,
+ * sets the direction and initial speed and
  * starts the motor by starting the timer.
  */
 static void start(void) {
-	// set rated current for max torque
+	// set increased current for higher torque
 	PORT &= ~(1 << PIN_CURRENT);
-	// some time to stabilize?
-	_delay_us(3);
+	// some time for the power supply to stabilize?
+	_delay_ms(2);
 	// set dir
 	if (dir == 1) {
 		PORT &= ~(1 << PIN_DIR);
@@ -70,23 +67,6 @@ static void stop(void) {
 	// GTCCR |= (1 << PSRASY);
 }
 
-/**
- * Calculates the direction and steps to take to get to the target position,
- * the ramp length for the acceleration profile and starts the motor.
- */
-static void set(void) {
-	int16_t diff = (((int16_t)target) << SCALE) - pos;
-	if (diff != 0) {
-		dir = (diff > 0) - (diff < 0);
-		steps = abs(diff);
-		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
-		start();
-	} else {
-		// set reduced current to save power
-		PORT |= (1 << PIN_CURRENT);
-	}
-}
-
 void makeSteps(void) {
 	if (steps > 0) {
 		PORT ^= (1 << PIN_STEP);
@@ -100,48 +80,57 @@ void makeSteps(void) {
 			speed--;
 		}
 		// linearize an unfavourably increasing acceleration curve
-		OCR2A = (MIN_SPEED * MAX_SPEED) / speed;
+		OCR2A = ((uint16_t)MIN_SPEED * MAX_SPEED) / speed;
 	} else {
 		stop();
 		pos += (done * dir);
 		done = 0;
-		// move to new target position if necessary
-		set();
+		// set reduced current to save power
+		PORT |= (1 << PIN_CURRENT);
 	}
 }
 
-void setAirgate(uint8_t const position) {
-	if (position == target) {
+void setAirgate(uint8_t const target) {
+	if (target == getAirgate() || isAirgateBusy()) {
 		return;
 	}
-	target = position;
-	bool busy = false;
-	ATOMIC_BLOCK(ATOMIC_FORCEON) {
-		busy = steps > 0;
-		if (busy) {
-			// motor busy - decelerate and move to target position when stopped
-			steps = MIN(ramp, steps);
-		}
+	if (bit_is_clear(PORT, PIN_SLEEP)) {
+		setSleepMode(false);
 	}
-	if (! busy) {
-		// move to target position
-		set();
+	int16_t diff = (((int16_t)target) << SCALE) - pos;
+	if (diff != 0) {
+		dir = (diff > 0) - (diff < 0);
+		steps = abs(diff);
+		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
+		start();
 	}
 }
 
 uint8_t getAirgate(void) {
-	return target;
+	return pos >> SCALE;
+}
+
+uint8_t getAirgateInPercent(void) {
+	return 100 / (AIRGATE_OPEN / getAirgate());
+}
+
+bool isAirgateBusy(void) {
+	uint16_t steps_c;
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		steps_c = steps;
+	}
+	return steps_c > 0;
 }
 
 void setSleepMode(bool const on) {
 	if (on) {
+		PORT &= ~(1 << PIN_SLEEP);
+	} else {
 		// wake up driver
 		PORT |= (1 << PIN_SLEEP);
 		// wakeup time
 		// should not be woken up just before stepping anyway, the power supply
 		// might need much more time to stabilize
-		// _delay_ms(2);
-	} else {
-		PORT &= ~(1 << PIN_SLEEP);
+		_delay_ms(2);
 	}
 }

@@ -19,7 +19,7 @@
  * Oxygen sensor heater current limits at certain states in milliamps.
  */
 typedef enum {
-	milliAmpsDisconn = 100,
+	milliAmpsDisconn = 250,
 	milliAmpsReady = 1350,
 	milliAmpsShort = 7500
 } HeaterMilliAmps;
@@ -118,12 +118,12 @@ char* toInfo(uint16_t lambda);
 /**
  * Sets the state of the heater of the oxygen sensor to the given value.
  */
-void setHeaterState(int8_t state);
+void setHeaterState(HeaterState const state);
 
 /**
  * Returns the state of the heater of the oxygen sensor.
  */
-int8_t getHeaterState(void);
+HeaterState getHeaterState(void);
 
 /**
  * Returns the time in seconds passed since that the heater was switched on.

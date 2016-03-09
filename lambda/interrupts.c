@@ -99,7 +99,7 @@ void setupSleepMode(void) {
 
 void initInterrupts(void) {
 	// enable ADC interrupt
-	ADCSRA |= (1 << ADIE);
+	// ADCSRA |= (1 << ADIE);
 
 	// enable timer0 compare match A interrupt
 	TIMSK0 |= (1 << OCIE0A);
@@ -129,6 +129,8 @@ void initTimers(void) {
 
 	// timer2 is for the step of the stepper motor using the DRV8825
 	// timer2 clear timer on compare match mode, TOP OCR2A
+	// should use the 16 bit timer for the stepper motor, but here only very low
+	// velocity is needed so no need for a long acceleration ramp
 	TCCR2A |= (1 << WGM21);
 	TCCR2B = 0;
 }

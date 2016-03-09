@@ -8,8 +8,8 @@
 #include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/setbaud.h>
 #include "usart.h"
+#include <util/setbaud.h>
 
 static volatile bool usartReceived = false;
 
