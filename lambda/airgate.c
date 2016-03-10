@@ -4,12 +4,9 @@
  *  Created on: 19.02.2016
  *      Author: dode@luniks.net
  *
- *  Simple (maybe naive) stepper motor control with a linear acceleration
- *  profile using the DRV8825. An absolute position from 0 to 255 can be set
- *  which relates to the actual number of degrees by the SCALE constant and the
- *  stepping mode. If a new position is set while the motor is busy, it is
- *  decelerated before it starts to move to the new position.
- *  The idea is to be able to set the airgate position from 0 - 100%.
+ *  Simple stepper motor control with a linear acceleration profile using the
+ *  DRV8825. An absolute position from 0 to 255 can be set where 200 units
+ *  correspond to 360° rotation.
  */
 
 #include <stdlib.h>
@@ -22,22 +19,21 @@
 #include "pins.h"
 
 /* Direction */
-volatile static int8_t dir = 0;
+static volatile int8_t dir = 0;
 /* Current position */
-volatile static uint16_t pos = 0;
+static volatile uint16_t pos = 0;
 /* Steps remaining */
-volatile static uint16_t steps = 0;
+static volatile uint16_t steps = 0;
 /* Steps done */
-volatile static uint16_t done = 0;
+static volatile uint16_t done = 0;
 /* Acceleration profile ramp */
-volatile static uint16_t ramp = 0;
+static volatile uint16_t ramp = 0;
 /* Speed */
-volatile static uint8_t speed = MIN_SPEED;
+static volatile uint8_t speed = MIN_SPEED;
 
 /**
- * Sets increased current for higher torque,
- * sets the direction and initial speed and
- * starts the motor by starting the timer.
+ * Sets increased current for higher torque,sets the direction and initial
+ * speed and starts the motor by starting the timer.
  */
 static void start(void) {
 	// set increased current for higher torque

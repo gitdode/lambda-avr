@@ -258,8 +258,7 @@ void reason(Measurement const meas) {
 	tempIMax = MAX(tempIMax, meas.tempI);
 
 	// rules applied at each measurement
-	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
-	for (size_t i = 0; i < heaterRulesSize; i++) {
+	for (size_t i = 0; i < ARRAY_LENGTH(heaterRules); i++) {
 		heaterRules[i].cond(&(heaterRules[i].fired), meas);
 	}
 
@@ -268,8 +267,7 @@ void reason(Measurement const meas) {
 	if (measCount == MEAS_INT && ! isAirgateBusy()) {
 		measCount = 0;
 
-		size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
-		for (size_t i = 0; i < rulesSize; i++) {
+		for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {
 			rules[i].cond(&(rules[i].fired), meas);
 		}
 
@@ -304,15 +302,13 @@ void resetRules(bool const intState) {
 		setAirgate(AIRGATE_OPEN);
 	}
 
-	size_t rulesSize = sizeof(rules) / sizeof(rules[0]);
-	for (size_t i = 0; i < rulesSize; i++) {
+	for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {
 		rules[i].fired = false;
 	}
 	// default for warmStart should be true
 	rules[6].fired = true;
 
-	size_t heaterRulesSize = sizeof(heaterRules) / sizeof(heaterRules[0]);
-	for (size_t i = 0; i < heaterRulesSize; i++) {
+	for (size_t i = 0; i < ARRAY_LENGTH(heaterRules); i++) {
 		heaterRules[i].fired = false;
 	}
 }

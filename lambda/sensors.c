@@ -131,15 +131,13 @@ int16_t toTempI(uint16_t const mV) {
 }
 
 int16_t toTempO(uint16_t const mV) {
-	size_t size = sizeof(tempOTable) / sizeof(tempOTable[0]);
-	int16_t temp = lookupLinInter(mV, tempOTable, size);
+	int16_t temp = lookupLinInter(mV, tempOTable, ARRAY_LENGTH(tempOTable));
 
 	return temp;
 }
 
 uint16_t toLambda(uint16_t const mV) {
-	size_t size = sizeof(lambdaTable) / sizeof(lambdaTable[0]);
-	int16_t lambda = lookupLinInter(mV, lambdaTable, size);
+	int16_t lambda = lookupLinInter(mV, lambdaTable, ARRAY_LENGTH(lambdaTable));
 
 	return lambda;
 }
@@ -174,8 +172,7 @@ int16_t lookupLinInter(uint16_t const mV, TableEntry const table[],
 }
 
 int32_t linADC(uint16_t const mV) {
-	size_t size = sizeof(linADCTable) / sizeof(linADCTable[0]);
-	int16_t dev = lookupLinInter(mV, linADCTable, size);
+	int16_t dev = lookupLinInter(mV, linADCTable, ARRAY_LENGTH(linADCTable));
 
 	return (int32_t)mV == 0 ? 0 : mV - dev;
 }
