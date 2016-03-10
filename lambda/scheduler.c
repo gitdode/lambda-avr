@@ -1,6 +1,11 @@
 /*
  * scheduler.c
  *
+ * Very basic task scheduler allowing to schedule up to three functions at a
+ * time to be executed when a given delay in seconds has passed. When a function
+ * was executed the task is set to done, freeing up a slot for another task to
+ * be scheduled.
+ *
  *  Created on: 09.03.2016
  *      Author: dode@luniks.net
  */

@@ -37,6 +37,14 @@ typedef struct {
  * Schedules the given function for execution after the given delay in seconds.
  * Returns false if the function could not be scheduled because there were
  * no free slots available, true otherwise.
+ * The function must have no return value and take no arguments. Arbitrary code
+ * can be passed for execution by wrapping it in such a function:
+ *
+ * void task(void) {
+ *     // some code here
+ * }
+ * // run task in 30 seconds
+ * scheduleTask(task, 30);
  */
 bool scheduleTask(void (*func)(void), uint16_t const delay);
 

@@ -19,7 +19,6 @@
 
 uint8_t measCount = MEAS_INT;
 FireState state = undefined;
-// uint8_t airgate = 100;
 
 static int32_t deltaAvg = 0;
 static int16_t tempIMax = TEMP_INIT;
@@ -29,7 +28,7 @@ static int16_t tempIDiffQueue[QUEUE_SIZE];
  * Pushes the given new value in the queue of temperature differences
  * and returns the oldest value being pushed off the array.
  */
-static int16_t pushQueue(const int16_t value) {
+static int16_t pushQueue(int16_t const value) {
 	int16_t last = tempIDiffQueue[QUEUE_SIZE - 1];
 	for (size_t i = QUEUE_SIZE - 1; i > 0; i--) {
 		tempIDiffQueue[i] = tempIDiffQueue[i - 1];
@@ -43,10 +42,23 @@ static int16_t pushQueue(const int16_t value) {
  * Initializes all elements in the queue of temperature differences
  * to the given value.
  */
-static void initQueue(const int16_t value) {
+static void initQueue(int16_t const value) {
 	for (size_t i = 0; i < QUEUE_SIZE; i++) {
 		tempIDiffQueue[i] = value;
 	}
+}
+
+/**
+ * Closes the airgate and puts the motor driver in sleep mode after a delay,
+ * giving the motor sufficient time.
+ */
+static void closeAirgateAndSleep(void) {
+	setAirgate(AIRGATE_CLOSE);
+	void func(void) {
+		setSleepMode(true);
+	}
+	// put stepper motor driver in sleep mode in 60 seconds
+	scheduleTask(func, 60);
 }
 
 /**
@@ -86,12 +98,7 @@ static void airgateClose(bool* const fired, Measurement const meas) {
 	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX && getAirgate() > AIRGATE_CLOSE) {
 		setHeaterState(heaterStateOff);
-		setAirgate(AIRGATE_CLOSE);
-		void func(void) {
-			setSleepMode(true);
-		}
-		// put stepper motor driver in sleep mode in 60 seconds
-		scheduleTask(func, 60);
+		closeAirgateAndSleep();
 		alert_P(BEEPS, LENGTH, TONE,
 				PSTR(MSG_AIRGATE_CLOSE_0), PSTR(""), false);
 		*fired = true;
@@ -151,7 +158,6 @@ static void fireOut(bool* const fired, Measurement const meas) {
 static void warmStart(bool* const fired, Measurement const meas) {
 	if (! *fired && state == firing_up &&
 			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
-		// TODO wake up driver here?
 		setSleepMode(false);
 		resetRules(false);
 		tempIMax = meas.tempI;
@@ -211,12 +217,12 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (heaterUptime >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
-		setSleepMode(true);
+		closeAirgateAndSleep();
 	}
 	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
-		setSleepMode(true);
+		closeAirgateAndSleep();
 	}
 }
 
@@ -247,7 +253,7 @@ int8_t getState(void) {
 }
 
 // called about every second
-void reason(Measurement meas) {
+void reason(Measurement const meas) {
 
 	tempIMax = MAX(tempIMax, meas.tempI);
 
