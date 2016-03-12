@@ -16,9 +16,9 @@
 #include "interrupts.h"
 
 static Task tasks[] = {
-		{0, 0, 0, true},
-		{0, 0, 0, true},
-		{0, 0, 0, true}
+		{0, 0, true},
+		{0, 0, true},
+		{0, 0, true}
 };
 
 bool scheduleTask(void (*func)(void), uint16_t const delay) {
@@ -26,8 +26,7 @@ bool scheduleTask(void (*func)(void), uint16_t const delay) {
 	for (int i = 0; i < ARRAY_LENGTH(tasks); i++) {
 		if (tasks[i].done) {
 			tasks[i].func = func;
-			tasks[i].delay = delay;
-			tasks[i].time = getTime();
+			tasks[i].time = getTime() + delay;
 			tasks[i].done = false;
 			scheduled = true;
 			break;
@@ -39,7 +38,7 @@ bool scheduleTask(void (*func)(void), uint16_t const delay) {
 
 void runTasks(void) {
 	for (int i = 0; i < ARRAY_LENGTH(tasks); i++) {
-		if (! tasks[i].done && getTime() - tasks[i].time >= tasks[i].delay) {
+		if (! tasks[i].done && getTime() >= tasks[i].time) {
 			tasks[i].func();
 			tasks[i].done = true;
 		}

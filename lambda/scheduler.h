@@ -28,7 +28,6 @@
  */
 typedef struct {
 	void (*func)(void);
-	uint16_t delay;
 	uint32_t time;
 	bool done;
 } Task;
