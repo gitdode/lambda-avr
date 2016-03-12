@@ -1,8 +1,30 @@
-Compile: avr-gcc -Wall -g2 -gstabs -O0 -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=1000000UL
-Create hex: avr-objcopy -R .eeprom -O ihex lambda.elf lambda.hex
-Upload hex: avrdude -pm328p -cjtag2isp -B10 -Uflash:w:lambda.hex:a
-Start AVaRICE: avarice -2 -w -B10 -j usb :4242
-Start avr-gdb: avr-gdb lambda.elf
-Connect to remote: target remote localhost:4242
-Set breakpoint: break lambda.c:74
-Continue: continue
+Compile: 
+avr-gcc -Wall -g2 -gstabs -O0 -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=1000000UL
+
+Create hex: 
+avr-objcopy -R .eeprom -O ihex lambda.elf lambda.hex
+
+Debug info:
+avr-objdump -g lambda.elf > debug.txt
+
+Upload hex: 
+avrdude -pm328p -cjtag2isp -B10 -Uflash:w:lambda.hex:a
+
+Start AVaRICE: 
+avarice -2 -w -B10 -j usb :4242
+
+Start avr-gdb: 
+avr-gdb lambda.elf
+
+Connect to remote: 
+target remote localhost:4242
+
+Set breakpoint: 
+break lambda.c:74
+
+Continue: 
+continue
+
+Show variables, eval code: 
+p time
+p getTime()

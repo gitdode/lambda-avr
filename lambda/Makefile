@@ -26,11 +26,11 @@ EXTRA_SOURCE_FILES =
 ##########------------------------------------------------------##########
 
 # PROGRAMMER_TYPE = avrisp
-PROGRAMMER_TYPE = avrispmkII
-# PROGRAMMER_TYPE = jtag2isp
+# PROGRAMMER_TYPE = avrispmkII
+PROGRAMMER_TYPE = jtag2isp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
 # PROGRAMMER_ARGS = -b 19200 -P /dev/ttyACM3
-PROGRAMMER_ARGS = -b 19200
+PROGRAMMER_ARGS = 
 
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########

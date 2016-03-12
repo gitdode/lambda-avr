@@ -107,6 +107,10 @@ uint8_t getAirgate(void) {
 }
 
 uint8_t getAirgateInPercent(void) {
+	if (getAirgate() == 0) {
+		return 0;
+	}
+
 	return 100 / (AIRGATE_OPEN / getAirgate());
 }
 
