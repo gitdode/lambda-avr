@@ -40,6 +40,8 @@ static bool testCycle(void) {
 	assertTrue(beepLength == 1);
 
 	cycleDisplay();
+	assertTrue(position == displayPosAirgate);
+	cycleDisplay();
 	assertTrue(position == displayPosHeater);
 	cycleDisplay();
 	assertTrue(position == displayPosLastText);

@@ -45,10 +45,13 @@ static bool testInitInterrupts(void) {
 	initInterrupts();
 
 	// ADC interrupt enabled
-	assertTrue(bit_is_set(ADCSRA, ADIE));
+	// assertTrue(bit_is_set(ADCSRA, ADIE));
 
 	// timer0 compare match A interrupt enabled
 	assertTrue(bit_is_set(TIMSK0, OCIE0A));
+
+	// timer2 compare match A interrupt enabled
+	assertTrue(bit_is_set(TIMSK2, OCIE2A));
 
 	// USART RX complete interrupt 0 enabled
 	assertTrue(bit_is_set(UCSR0B, RXCIE0));

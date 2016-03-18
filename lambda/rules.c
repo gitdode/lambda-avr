@@ -66,7 +66,7 @@ static void closeAirgateAndSleep(void) {
  * and the temperature has reached TEMP_AIRGATE_50.
  */
 static void airgate50(bool* const fired, Measurement const meas) {
-	if ((state == firing_up) &&
+	if ((state == firing_up) && ! isAirgateBusy() &&
 			meas.tempI >= TEMP_AIRGATE_50 &&
 			meas.lambda >= LAMBDA_TOO_LEAN &&
 			getAirgate() != AIRGATE_50) {
@@ -81,7 +81,7 @@ static void airgate50(bool* const fired, Measurement const meas) {
  * temperature went below TEMP_AIRGATE_25.
  */
 static void airgate25(bool* const fired, Measurement const meas) {
-	if (state == burning_down &&
+	if (state == burning_down && ! isAirgateBusy() &&
 			meas.tempI < TEMP_AIRGATE_25 &&
 			meas.lambda >= LAMBDA_TOO_LEAN && getAirgate() > AIRGATE_25) {
 		setAirgate(AIRGATE_25);
@@ -95,7 +95,8 @@ static void airgate25(bool* const fired, Measurement const meas) {
  * temperature went below TEMP_AIRGATE_0 (no more flames).
  */
 static void airgateClose(bool* const fired, Measurement const meas) {
-	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0 &&
+	if (state == burning_down && ! isAirgateBusy() &&
+			meas.tempI < TEMP_AIRGATE_0 &&
 			meas.lambda >= LAMBDA_MAX && getAirgate() > AIRGATE_CLOSE) {
 		setHeaterState(heaterStateOff);
 		closeAirgateAndSleep();
@@ -114,7 +115,8 @@ static void airgateClose(bool* const fired, Measurement const meas) {
  * out of the chimney.
  */
 static void tooRich(bool* const fired, Measurement const meas) {
-	if (meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
+	if (! isAirgateBusy() &&
+			meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
 			getHeaterState() == heaterStateReady && getAirgate() < AIRGATE_50) {
 		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
@@ -127,7 +129,8 @@ static void tooRich(bool* const fired, Measurement const meas) {
  * gate to 50%.
  */
 static void tooLean(bool* const fired, Measurement const meas) {
-	if (meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
+	if (! isAirgateBusy() &&
+			meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
 			getHeaterState() == heaterStateReady && getAirgate() > AIRGATE_50) {
 		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
@@ -265,7 +268,7 @@ void reason(Measurement const meas) {
 
 	// evaluation of the fire state and rules applied
 	// at every MEAS_INT'th measurement
-	if (measCount == MEAS_INT && ! isAirgateBusy()) {
+	if (measCount == MEAS_INT) {
 		measCount = 0;
 
 		for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {
@@ -300,7 +303,6 @@ void resetRules(bool const intState) {
 		initQueue(TEMP_INIT);
 		measCount = MEAS_INT;
 		state = undefined;
-		setAirgate(AIRGATE_OPEN);
 	}
 
 	for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {

@@ -25,4 +25,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>de.innot.avreclipse.core.avrnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>lambda</name>
+			<type>2</type>
+			<location>/data/Job/git/lambda-avr/lambda</location>
+		</link>
+	</linkedResources>
 </projectDescription>

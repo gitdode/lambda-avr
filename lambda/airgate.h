@@ -58,4 +58,9 @@ bool isAirgateBusy(void);
  */
 void setSleepMode(bool const on);
 
+/**
+ * Resets to initial state and the given position. For unit tests.
+ */
+void resetAirgate(uint16_t const position);
+
 #endif /* AIRGATE_H_ */

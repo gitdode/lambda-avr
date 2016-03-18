@@ -8,9 +8,9 @@
  *
  */
 
+#include "usart.h"
 #include <util/setbaud.h>
 #include "avrjunit.h"
-#include "usart.h"
 
 /* Module usart */
 

@@ -21,21 +21,31 @@ extern uint8_t measCount;
 extern int8_t state;
 extern Rule rules[];
 
+static void stepUntilDone(void) {
+	while (isAirgateBusy()) {
+		makeSteps();
+	}
+	makeSteps();
+}
+
 static bool testAirgate50(void) {
 
 	Measurement meas = {0, 0, 0, 0};
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
 	assertFalse(rules[0].fired);
@@ -44,27 +54,32 @@ static bool testAirgate50(void) {
 	meas.lambda = LAMBDA_TOO_LEAN;
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[0].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_50);
 	state = firing_up;
 	reason(meas);
-	assertTrue(rules[0].fired);
-	assertTrue(50 == getAirgate());
-
-	// should not fire if airgate == 50
-	resetRules(false);
-	state = firing_up;
-	reason(meas);
+	stepUntilDone();
 	assertFalse(rules[0].fired);
-	assertTrue(50 == getAirgate());
+	assertTrue(AIRGATE_50 == getAirgate());
+
+	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
+	state = firing_up;
+	reason(meas);
+	stepUntilDone();
+	assertTrue(rules[0].fired);
+	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
 
@@ -76,16 +91,19 @@ static bool testAirgate25(void) {
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
 	assertFalse(rules[1].fired);
@@ -94,20 +112,32 @@ static bool testAirgate25(void) {
 	meas.lambda = LAMBDA_TOO_LEAN;
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[1].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_25);
 	state = burning_down;
 	reason(meas);
+	stepUntilDone();
+	assertFalse(rules[1].fired);
+	assertTrue(AIRGATE_25 == getAirgate());
+
+	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
+	state = burning_down;
+	reason(meas);
+	stepUntilDone();
 	assertTrue(rules[1].fired);
-	assertTrue(25 == getAirgate());
+	assertTrue(AIRGATE_25 == getAirgate());
 
 	cancelAlert();
 
@@ -119,16 +149,19 @@ static bool testAirgateClose(void) {
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
 	assertFalse(rules[2].fired);
@@ -137,20 +170,42 @@ static bool testAirgateClose(void) {
 	meas.lambda = LAMBDA_MAX;
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
 	assertFalse(rules[2].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_CLOSE);
 	state = burning_down;
 	reason(meas);
+	stepUntilDone();
+	assertFalse(rules[2].fired);
+	assertTrue(AIRGATE_CLOSE == getAirgate());
+
+	// airgate25 kicks in first and prevents airgateClose from running
+	// (airgate busy)
+	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
+	state = burning_down;
+	reason(meas);
+	stepUntilDone();
+	assertFalse(rules[2].fired);
+	assertFalse(AIRGATE_CLOSE == getAirgate());
+
+	// now airgateClose kicks in
+	resetRules(true);
+	state = burning_down;
+	reason(meas);
+	stepUntilDone();
 	assertTrue(rules[2].fired);
-	assertTrue(0 == getAirgate());
+	assertTrue(AIRGATE_CLOSE == getAirgate());
 
 	cancelAlert();
 
@@ -166,36 +221,41 @@ static bool testTooRich(void) {
 	meas.tempI = TEMP_FIRE_OUT;
 	meas.lambda = LAMBDA_MAX;
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	assertFalse(rules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
 	meas.lambda = LAMBDA_MAX;
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	assertFalse(rules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT;
 	meas.lambda = LAMBDA_TOO_RICH - 1;
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	assertFalse(rules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
 	meas.lambda = LAMBDA_TOO_RICH - 1;
 	resetRules(true);
-	setAirgate(50);
+	resetAirgate(AIRGATE_50);
 	reason(meas);
+	stepUntilDone();
 	assertFalse(rules[3].fired);
-	assertTrue(50 == getAirgate());
+	assertTrue(AIRGATE_50 == getAirgate());
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
 	meas.lambda = LAMBDA_TOO_RICH - 1;
 	resetRules(true);
-	setAirgate(25);
+	resetAirgate(AIRGATE_25);
 	reason(meas);
+	stepUntilDone();
 	assertTrue(rules[3].fired);
-	assertTrue(50 == getAirgate());
+	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
 
@@ -211,30 +271,34 @@ static bool testTooLean(void) {
 	meas.tempI = TEMP_AIRGATE_50;
 	meas.lambda = LAMBDA_TOO_LEAN + 1;
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	assertFalse(rules[4].fired);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = 1300;
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	assertFalse(rules[4].fired);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = LAMBDA_TOO_LEAN + 1;
 	resetRules(true);
-	setAirgate(50);
+	resetAirgate(AIRGATE_50);
 	reason(meas);
+	stepUntilDone();
 	assertFalse(rules[4].fired);
-	assertTrue(50 == getAirgate());
+	assertTrue(AIRGATE_50 == getAirgate());
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = LAMBDA_TOO_LEAN + 1;
 	resetRules(true);
-	setAirgate(100);
+	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
+	stepUntilDone();
 	assertTrue(rules[4].fired);
-	assertTrue(50 == getAirgate());
+	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
 
@@ -246,6 +310,7 @@ static bool testFireOut(void) {
 	Measurement meas = {0, 0, 0, 0};
 
 	resetRules(true);
+	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 
 	meas.tempI = 50;
@@ -285,18 +350,21 @@ static bool testWarmStart(void) {
 	setHeaterState(heaterStateOff);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_50);
 	rules[6].fired = false;
-	setAirgate(50);
 	reason(meas);
-	assertTrue(50 == getAirgate());
+	stepUntilDone();
+	assertTrue(AIRGATE_50 == getAirgate());
 	assertTrue(heaterStateOff == getHeaterState());
 	assertFalse(rules[6].fired);
 
 	resetRules(true);
+	resetAirgate(AIRGATE_50);
 	rules[6].fired = false;
 	state = firing_up;
 	reason(meas);
-	assertTrue(100 == getAirgate());
+	stepUntilDone();
+	assertTrue(AIRGATE_OPEN == getAirgate());
 	assertTrue(heaterStateOn == getHeaterState());
 	assertTrue(rules[6].fired);
 

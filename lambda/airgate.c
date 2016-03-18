@@ -134,3 +134,12 @@ void setSleepMode(bool const on) {
 		_delay_ms(2);
 	}
 }
+
+void resetAirgate(uint16_t const position) {
+	dir = 0;
+	pos = position << SCALE;
+	steps = 0;
+	done = 0;
+	ramp = 0;
+	speed = MIN_SPEED;
+}

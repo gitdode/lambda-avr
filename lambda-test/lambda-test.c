@@ -42,11 +42,12 @@ int main(void) {
 	runClass(commandClass);
 	runClass(displayClass);
 	runClass(integersClass);
-	runClass(interruptsClass);
 	runClass(rulesClass);
 	runClass(sensorsClass);
 	runClass(stringsClass);
 	runClass(usartClass);
+	// run this one last since the timers interfere with some tests
+	runClass(interruptsClass);
 	endSuite();
 
 	while (1) {
