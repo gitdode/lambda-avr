@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include "avrjunit.h"
+#include "integers.h"
 #include "strings.h"
 
 /* Module strings */
@@ -50,4 +51,4 @@ static TestCase const tests[] = {
 		{class, testSplitSizeTooSmall_P, testSplitSizeTooSmall}
 };
 
-TestClass stringsClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass stringsClass = {tests, ARRAY_LENGTH(tests)};

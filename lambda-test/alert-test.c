@@ -9,6 +9,7 @@
  */
 
 #include "avrjunit.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "alert.h"
 
@@ -135,4 +136,4 @@ static TestCase const tests[] = {
 		{class, testCancelAlert_P, testCancelAlert}
 };
 
-TestClass alertClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass alertClass = {tests, ARRAY_LENGTH(tests)};

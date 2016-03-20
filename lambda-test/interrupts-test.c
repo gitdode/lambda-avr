@@ -11,6 +11,7 @@
 #include <string.h>
 #include <util/delay.h>
 #include "avrjunit.h"
+#include "integers.h"
 #include "interrupts.h"
 
 /* Module interrupts */
@@ -122,4 +123,4 @@ static TestCase const tests[] = {
 		{class, testTime_P, testTime}
 };
 
-TestClass interruptsClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass interruptsClass = {tests, ARRAY_LENGTH(tests)};

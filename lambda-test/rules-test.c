@@ -12,6 +12,7 @@
 #include "avrjunit.h"
 #include "rules.h"
 #include "alert.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "airgate.h"
 
@@ -533,4 +534,4 @@ static TestCase const tests[] = {
 		{class, testHeaterTimeout1_P, testHeaterTimeout1}
 };
 
-TestClass rulesClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass rulesClass = {tests, ARRAY_LENGTH(tests)};

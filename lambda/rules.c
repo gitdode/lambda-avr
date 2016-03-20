@@ -167,7 +167,7 @@ static void warmStart(bool* const fired, Measurement const meas) {
 		if (getHeaterState() != heaterStateFault) {
 			setHeaterState(heaterStateOn);
 		}
-		setAirgate(100);
+		setAirgate(AIRGATE_OPEN);
 		*fired = true;
 	}
 	if (state == burning_down && meas.tempI < TEMP_AIRGATE_0) {

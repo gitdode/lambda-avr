@@ -31,23 +31,25 @@ int main(void) {
 	extern TestClass integersClass;
 	extern TestClass interruptsClass;
 	extern TestClass rulesClass;
+	extern TestClass schedulerClass;
 	extern TestClass sensorsClass;
 	extern TestClass stringsClass;
 	extern TestClass usartClass;
 
 	beginSuite("lambda");
 	runClass(releaseClass);
+	// run these before interrupts are initialized to avoid interference
+	runClass(rulesClass);
 	runClass(adcClass);
 	runClass(alertClass);
 	runClass(commandClass);
 	runClass(displayClass);
 	runClass(integersClass);
-	runClass(rulesClass);
+	runClass(interruptsClass);
+	runClass(schedulerClass);
 	runClass(sensorsClass);
 	runClass(stringsClass);
 	runClass(usartClass);
-	// run this one last since the timers interfere with some tests
-	runClass(interruptsClass);
 	endSuite();
 
 	while (1) {

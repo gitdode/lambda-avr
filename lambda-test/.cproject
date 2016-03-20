@@ -62,7 +62,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="lambda/lambda.c|adc-test.c|alert-test.c|command-test.c|display-test.c|integers-test.c|interrupts-test.c|release-test.c|sensors-test.c|strings-test.c|usart-test.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="lambda/lambda.c|adc-test.c|alert-test.c|command-test.c|display-test.c|integers-test.c|interrupts-test.c|release-test.c|sensors-test.c|strings-test.c|usart-test.c|rules-test.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

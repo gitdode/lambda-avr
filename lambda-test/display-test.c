@@ -11,6 +11,7 @@
 #include <string.h>
 #include "avrjunit.h"
 #include "display.h"
+#include "integers.h"
 #include "sensors.h"
 #include "alert.h"
 
@@ -164,4 +165,4 @@ static TestCase const tests[] = {
 		{class, testDisplayText_P, testDisplayText}
 };
 
-TestClass displayClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass displayClass = {tests, ARRAY_LENGTH(tests)};

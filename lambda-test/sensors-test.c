@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "avrjunit.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "adc.h"
 #include "sensors.h"
@@ -267,4 +268,4 @@ static TestCase const tests[] = {
 		{class, testGetHeaterUptime_P, testGetHeaterUptime}
 };
 
-TestClass sensorsClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass sensorsClass = {tests, ARRAY_LENGTH(tests)};

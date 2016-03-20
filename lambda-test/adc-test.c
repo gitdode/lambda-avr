@@ -9,6 +9,7 @@
  */
 
 #include "avrjunit.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "adc.h"
 #include "pins.h"
@@ -58,4 +59,4 @@ static TestCase const tests[] = {
 		{class, testGetVoltage_P, testGetVoltage}
 };
 
-TestClass adcClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass adcClass = {tests, ARRAY_LENGTH(tests)};

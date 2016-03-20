@@ -11,6 +11,7 @@
 #include "usart.h"
 #include <util/setbaud.h>
 #include "avrjunit.h"
+#include "integers.h"
 
 /* Module usart */
 
@@ -51,4 +52,4 @@ static TestCase const tests[] = {
 		{class, testInitUSART_P, testInitUSART}
 };
 
-TestClass usartClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass usartClass = {tests, ARRAY_LENGTH(tests)};

@@ -9,6 +9,7 @@
  */
 
 #include "avrjunit.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "messages.h"
 #include "pins.h"
@@ -48,4 +49,4 @@ static TestCase const tests[] = {
 		{class, testRelease_P, testRelease}
 };
 
-TestClass releaseClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass releaseClass = {tests, ARRAY_LENGTH(tests)};

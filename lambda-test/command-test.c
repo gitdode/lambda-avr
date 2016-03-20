@@ -12,6 +12,7 @@
 #include "alert.h"
 #include "command.h"
 #include "display.h"
+#include "integers.h"
 #include "interrupts.h"
 #include "sensors.h"
 
@@ -86,4 +87,4 @@ static TestCase const tests[] = {
 		{class, testCycleDisplay_P, testCycleDisplay}
 };
 
-TestClass commandClass = {tests, sizeof(tests) / sizeof(tests[0])};
+TestClass commandClass = {tests, ARRAY_LENGTH(tests)};
