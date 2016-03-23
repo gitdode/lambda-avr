@@ -111,7 +111,7 @@ uint8_t getAirgateInPercent(void) {
 		return 0;
 	}
 
-	return 100 / (AIRGATE_OPEN / getAirgate());
+	return 100000 / ((AIRGATE_OPEN * 1000UL) / getAirgate());
 }
 
 bool isAirgateBusy(void) {

@@ -210,20 +210,14 @@ static void heaterFault(bool* const fired, Measurement const meas) {
 
 /**
  * Switches the heater off if it is on for a while and there does not seem
- * to be a fire.
+ * to be a fire. Also closes the airgate.
  */
 static void heaterTimeout(bool* const fired, Measurement const meas) {
 	if (getHeaterState() == heaterStateOff ||
 			getHeaterState() == heaterStateFault) {
 		return;
 	}
-	uint32_t heaterUptime = getHeaterUptime();
-	if (heaterUptime >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
-			meas.lambda >= LAMBDA_MAX) {
-		setHeaterState(heaterStateOff);
-		closeAirgateAndSleep();
-	}
-	if (heaterUptime >= 10800 && meas.tempI < TEMP_AIRGATE_0 &&
+	if (getHeaterUptime() >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
 		closeAirgateAndSleep();

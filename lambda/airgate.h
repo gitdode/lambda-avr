@@ -9,14 +9,14 @@
 #define AIRGATE_H_
 
 /** Min value 1 */
-#define MIN_SPEED 50
+#define MIN_SPEED 200
 /** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
 #define MAX_SPEED 250
 
 #define AIRGATE_CLOSE  	0
-#define AIRGATE_25	 	25
-#define AIRGATE_50 		50
-#define AIRGATE_OPEN 	100
+#define AIRGATE_25	 	15
+#define AIRGATE_50 		30
+#define AIRGATE_OPEN 	60
 
 /**
  * 1 = full step, 2 = half step, 3 = 1/4 step, 4 = 8 microsteps, ...
