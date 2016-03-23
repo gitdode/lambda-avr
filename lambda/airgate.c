@@ -129,8 +129,6 @@ void setSleepMode(bool const on) {
 		// wake up driver
 		PORT |= (1 << PIN_SLEEP);
 		// wakeup time
-		// should not be woken up just before stepping anyway, the power supply
-		// might need much more time to stabilize
 		_delay_ms(2);
 	}
 }
