@@ -14,8 +14,8 @@ LANG = 0
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
-LOCAL_SOURCE = avrjunit.c adc-test.c alert-test.c command-test.c \
-display-test.c integers-test.c interrupts-test.c release-test.c \
+LOCAL_SOURCE = avrjunit.c utils.c adc-test.c airgate-test.c alert-test.c \
+command-test.c display-test.c integers-test.c interrupts-test.c release-test.c \
 rules-test.c scheduler-test.c sensors-test.c strings-test.c usart-test.c
 
 ## Here you can link to one more directory (and multiple .c files)

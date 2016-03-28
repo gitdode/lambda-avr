@@ -11,7 +11,6 @@
 #include <string.h>
 #include <util/delay.h>
 #include "avrjunit.h"
-#include "integers.h"
 #include "interrupts.h"
 
 /* Module interrupts */

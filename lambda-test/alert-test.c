@@ -9,7 +9,6 @@
  */
 
 #include "avrjunit.h"
-#include "integers.h"
 #include "interrupts.h"
 #include "alert.h"
 

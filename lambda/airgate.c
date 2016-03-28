@@ -6,17 +6,18 @@
  *
  *  Simple stepper motor control with a linear acceleration profile using the
  *  DRV8825. An absolute position from 0 to 255 can be set where 200 units
- *  correspond to 360° rotation.
+ *  correspond to 360° rotation (with 1.8 ° step angle).
  */
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 #include "airgate.h"
 #include "integers.h"
 #include "interrupts.h"
 #include "pins.h"
+
+static const uint16_t SPEED_PROD = (uint16_t)MIN_SPEED * MAX_SPEED;
 
 /* Direction */
 static volatile int8_t dir = 0;
@@ -49,6 +50,7 @@ static void start(void) {
 	// setup time
 	_delay_us(3);
 	// set start speed
+	speed = MIN_SPEED;
 	OCR2A = MIN_SPEED;
 	// start timer2
 	TCCR2B |= TIMER2_PRESCALE;
@@ -66,18 +68,21 @@ static void stop(void) {
 void makeSteps(void) {
 	if (steps > 0) {
 		PORT ^= (1 << PIN_STEP);
-		done++;
-		steps--;
-		if (done < ramp && speed < MAX_SPEED) {
-			// accelerate within ramp
-			speed++;
-		} else if (steps < ramp && speed > MIN_SPEED) {
-			// decelerate within ramp
-			speed--;
+		if (bit_is_set(PORT, PIN_STEP)) {
+			done++;
+			steps--;
+			if (done < ramp && speed < MAX_SPEED) {
+				// accelerate within ramp
+				speed++;
+			} else if (steps < ramp && speed > MIN_SPEED) {
+				// decelerate within ramp
+				speed--;
+			}
+			// linearize an unfavourably increasing acceleration curve
+			OCR2A = SPEED_PROD / speed;
 		}
-		// linearize an unfavourably increasing acceleration curve
-		OCR2A = ((uint16_t)MIN_SPEED * MAX_SPEED) / speed;
 	} else {
+		PORT &= ~(1 << PIN_STEP);
 		stop();
 		pos += (done * dir);
 		done = 0;
@@ -93,7 +98,7 @@ void setAirgate(uint8_t const target) {
 	if (bit_is_clear(PORT, PIN_SLEEP)) {
 		setSleepMode(false);
 	}
-	int16_t diff = (((int16_t)target) << SCALE) - pos;
+	int16_t diff = (((int16_t)target) << STEPPING_MODE) - pos;
 	if (diff != 0) {
 		dir = (diff > 0) - (diff < 0);
 		steps = abs(diff);
@@ -103,15 +108,7 @@ void setAirgate(uint8_t const target) {
 }
 
 uint8_t getAirgate(void) {
-	return pos >> SCALE;
-}
-
-uint8_t getAirgateInPercent(void) {
-	if (getAirgate() == 0) {
-		return 0;
-	}
-
-	return 100000 / ((AIRGATE_OPEN * 1000UL) / getAirgate());
+	return pos >> STEPPING_MODE;
 }
 
 bool isAirgateBusy(void) {
@@ -135,7 +132,7 @@ void setSleepMode(bool const on) {
 
 void resetAirgate(uint16_t const position) {
 	dir = 0;
-	pos = position << SCALE;
+	pos = position << STEPPING_MODE;
 	steps = 0;
 	done = 0;
 	ramp = 0;

@@ -11,7 +11,6 @@
 #include "usart.h"
 #include <util/setbaud.h>
 #include "avrjunit.h"
-#include "integers.h"
 
 /* Module usart */
 

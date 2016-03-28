@@ -11,7 +11,6 @@
 #include <string.h>
 #include "avrjunit.h"
 #include "display.h"
-#include "integers.h"
 #include "sensors.h"
 #include "alert.h"
 

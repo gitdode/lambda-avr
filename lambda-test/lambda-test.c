@@ -25,6 +25,7 @@ int main(void) {
 
 	extern TestClass releaseClass;
 	extern TestClass adcClass;
+	extern TestClass airgateClass;
 	extern TestClass alertClass;
 	extern TestClass commandClass;
 	extern TestClass displayClass;
@@ -41,6 +42,7 @@ int main(void) {
 	// run these before interrupts are initialized to avoid interference
 	runClass(rulesClass);
 	runClass(adcClass);
+	runClass(airgateClass);
 	runClass(alertClass);
 	runClass(commandClass);
 	runClass(displayClass);

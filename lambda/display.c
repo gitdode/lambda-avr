@@ -83,8 +83,12 @@ static void displayCurrent(uint16_t const current) {
  * Displays the airgate position in %.
  */
 static void displayAirgate(uint8_t const airgate) {
+	uint16_t airgateInPercent = 0;
+	if (airgate > 0) {
+		airgateInPercent = 100000UL / ((AIRGATE_OPEN * 1000UL) / airgate);
+	}
 	char line1[17];
-	snprintf(line1, sizeof(line1), "%d%%", airgate);
+	snprintf(line1, sizeof(line1), "%d%%", airgateInPercent);
 	setText(MSG_AIRGATE, line1);
 }
 
@@ -137,7 +141,7 @@ void updateDisplayIfPending() {
 		if (position == displayPosMax) {
 			displayMeas(measMax, " ^");
 		} else if (position == displayPosAirgate) {
-			displayAirgate(getAirgateInPercent());
+			displayAirgate(getAirgate());
 		} else if (position == displayPosHeater) {
 			displayCurrent(measLatest.current);
 		} else if (position == displayPosLastText) {

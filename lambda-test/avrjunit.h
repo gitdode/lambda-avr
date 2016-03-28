@@ -35,6 +35,11 @@
 #define assertNotNull(exp) if ((exp) == NULL) return false
 
 /**
+ * Computes the length of the given array.
+ */
+#define ARRAY_LENGTH(array) (sizeof(array) / sizeof(array[0]))
+
+/**
  * Function pointer for test functions taking no parameters and returning
  * true on success and false on failure.
  */

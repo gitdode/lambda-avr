@@ -5,6 +5,9 @@
  *      Author: dode@luniks.net
  */
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #ifndef AIRGATE_H_
 #define AIRGATE_H_
 
@@ -19,10 +22,9 @@
 #define AIRGATE_OPEN 	60
 
 /**
- * 1 = full step, 2 = half step, 3 = 1/4 step, 4 = 8 microsteps, ...
- * for 180°.
+ * 0 = full step, 1 = half step, 2 = 1/4 step, 3 = 8 microsteps, ...
  */
-#define SCALE 3
+#define STEPPING_MODE 2
 
 /**
  * Called from the timer interrupt ISR and makes a half step or stops the
@@ -32,7 +34,7 @@ void makeSteps(void);
 
 /**
  * Sets the airgate position 0 - 255, where 200 units correspond to 360°
- * rotation.
+ * rotation (with 1.8 ° step angle).
  */
 void setAirgate(uint8_t const position);
 
@@ -41,11 +43,6 @@ void setAirgate(uint8_t const position);
  * it was requested to do.
  */
 uint8_t getAirgate(void);
-
-/**
- * Returns the current airgate position translated to percent.
- */
-uint8_t getAirgateInPercent(void);
 
 /**
  * Returns true if the motor is currently busy setting an airgate position,

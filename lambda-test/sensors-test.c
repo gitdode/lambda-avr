@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "avrjunit.h"
-#include "integers.h"
 #include "interrupts.h"
 #include "adc.h"
 #include "sensors.h"

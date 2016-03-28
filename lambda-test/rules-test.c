@@ -12,22 +12,15 @@
 #include "avrjunit.h"
 #include "rules.h"
 #include "alert.h"
-#include "integers.h"
 #include "interrupts.h"
 #include "airgate.h"
+#include "utils.h"
 
 /* Module rules */
 
 extern uint8_t measCount;
 extern int8_t state;
 extern Rule rules[];
-
-static void stepUntilDone(void) {
-	while (isAirgateBusy()) {
-		makeSteps();
-	}
-	makeSteps();
-}
 
 static bool testAirgate50(void) {
 
@@ -455,7 +448,7 @@ static bool testHeaterFaultNoheat(void) {
 	return true;
 }
 
-static bool testHeaterTimeout0(void) {
+static bool testHeaterTimeout(void) {
 
 	resetRules(true);
 	resetTime();
@@ -467,28 +460,6 @@ static bool testHeaterTimeout0(void) {
 	addTime(1800);
 
 	meas.tempI = TEMP_FIRE_OUT - 1;
-	meas.lambda = LAMBDA_MAX;
-	meas.current = milliAmpsReady;
-	reason(meas);
-	assertTrue(heaterStateOff == getHeaterState());
-
-	cancelAlert();
-
-	return true;
-}
-
-static bool testHeaterTimeout1(void) {
-
-	resetRules(true);
-	resetTime();
-	Measurement meas = {0, 0, 0, 0};
-
-	setHeaterState(heaterStateOn);
-
-	// equal or more than 3 hours below TEMP_AIRGATE_0
-	addTime(10800UL);
-
-	meas.tempI = TEMP_AIRGATE_0 - 1;
 	meas.lambda = LAMBDA_MAX;
 	meas.current = milliAmpsReady;
 	reason(meas);
@@ -514,8 +485,7 @@ static const char testHeaterReady_P[] PROGMEM = "testHeaterReady";
 static const char testHeaterFaultNoconn_P[] PROGMEM = "testHeaterFaultNoconn";
 static const char testHeaterFaultShort_P[] PROGMEM = "testHeaterFaultShort";
 static const char testHeaterFaultNoheat_P[] PROGMEM = "testHeaterFaultNoheat";
-static const char testHeaterTimeout0_P[] PROGMEM = "testHeaterTimeout0";
-static const char testHeaterTimeout1_P[] PROGMEM = "testHeaterTimeout1";
+static const char testHeaterTimeout_P[] PROGMEM = "testHeaterTimeout";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -530,8 +500,7 @@ static TestCase const tests[] = {
 		{class, testHeaterFaultNoconn_P, testHeaterFaultNoconn},
 		{class, testHeaterFaultShort_P, testHeaterFaultShort},
 		{class, testHeaterFaultNoheat_P, testHeaterFaultNoheat},
-		{class, testHeaterTimeout0_P, testHeaterTimeout0},
-		{class, testHeaterTimeout1_P, testHeaterTimeout1}
+		{class, testHeaterTimeout_P, testHeaterTimeout}
 };
 
 TestClass rulesClass = {tests, ARRAY_LENGTH(tests)};

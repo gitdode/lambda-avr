@@ -3,6 +3,7 @@
 * AVR
 
 * Functionality
+- Evaluate driver fault pin value (rule)
   
 * Circuit
 - AVCC should be connected to VCC via an LC network

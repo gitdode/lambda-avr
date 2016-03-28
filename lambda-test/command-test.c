@@ -12,9 +12,10 @@
 #include "alert.h"
 #include "command.h"
 #include "display.h"
-#include "integers.h"
 #include "interrupts.h"
 #include "sensors.h"
+#include "airgate.h"
+#include "utils.h"
 
 /* Module command */
 
@@ -70,6 +71,18 @@ static bool testCycleDisplay(void) {
 	return true;
 }
 
+static bool testSetAirgate(void) {
+
+	resetAirgate(0);
+
+	runCommand("sa 100");
+	stepUntilDone();
+
+	assertTrue(100 == getAirgate());
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "command";
 
@@ -78,13 +91,15 @@ static const char testIsSimulation_P[] PROGMEM = "testIsSimulation";
 static const char testIsLogging_P[] PROGMEM = "testIsLogging";
 static const char testHeater_P[] PROGMEM = "testHeater";
 static const char testCycleDisplay_P[] PROGMEM = "testCycleDisplay";
+static const char testSetAirgate_P[] PROGMEM = "testSetAirgate";
 
 /* Tests */
 static TestCase const tests[] = {
 		{class, testIsSimulation_P, testIsSimulation},
 		{class, testIsLogging_P, testIsLogging},
 		{class, testHeater_P, testHeater},
-		{class, testCycleDisplay_P, testCycleDisplay}
+		{class, testCycleDisplay_P, testCycleDisplay},
+		{class, testSetAirgate_P, testSetAirgate}
 };
 
 TestClass commandClass = {tests, ARRAY_LENGTH(tests)};

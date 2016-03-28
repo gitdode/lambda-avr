@@ -10,7 +10,6 @@
 
 #include <string.h>
 #include "avrjunit.h"
-#include "integers.h"
 #include "strings.h"
 
 /* Module strings */
