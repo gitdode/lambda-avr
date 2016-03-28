@@ -39,7 +39,7 @@ int main(void) {
 
 	beginSuite("lambda");
 	runClass(releaseClass);
-	// run these before interrupts are initialized to avoid interference
+	// run rules tests before interrupts are initialized to avoid interference
 	runClass(rulesClass);
 	runClass(adcClass);
 	runClass(airgateClass);
