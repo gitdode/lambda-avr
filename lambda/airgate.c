@@ -6,7 +6,7 @@
  *
  *  Simple stepper motor control with a linear acceleration profile using the
  *  DRV8825. An absolute position from 0 to 255 can be set where 200 units
- *  correspond to 360° rotation (with 1.8 ° step angle).
+ *  correspond to 360° rotation (with 1.8° step angle).
  */
 
 #include <stdlib.h>
@@ -33,7 +33,7 @@ static volatile uint16_t ramp = 0;
 static volatile uint8_t speed = MIN_SPEED;
 
 /**
- * Sets increased current for higher torque,sets the direction and initial
+ * Sets increased current for higher torque, sets the direction and initial
  * speed and starts the motor by starting the timer.
  */
 static void start(void) {

@@ -12,8 +12,11 @@
 #ifndef ADC_H_
 #define ADC_H_
 
+/** ADC ref voltage */
 #define AREF_MV 5000
+/** ADC nonlinearity offset at 0 mV voltage */
 #define ADC_NONLIN_0 -8
+/** ADC nonlinearity offset at ref voltage */
 #define ADC_NONLIN_AREF 12
 
 #if F_CPU == 1000000

@@ -16,6 +16,10 @@
 /** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
 #define MAX_SPEED 250
 
+/*
+ * Mapping of airgate position to absolute motor position in (full) steps
+ * (1.8° step angle)
+ */
 #define AIRGATE_CLOSE  	0
 #define AIRGATE_25	 	15
 #define AIRGATE_50 		30
@@ -34,7 +38,7 @@ void makeSteps(void);
 
 /**
  * Sets the airgate position 0 - 255, where 200 units correspond to 360°
- * rotation (with 1.8 ° step angle).
+ * rotation (with 1.8° step angle).
  */
 void setAirgate(uint8_t const position);
 
