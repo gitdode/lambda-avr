@@ -31,7 +31,7 @@ ISR(TIMER0_COMPA_vect) {
 	if (! isSimulation()) {
 		ints++;
 	}
-	oscillateBeep();
+	makeBeeps();
 	if (bit_is_clear(PIN, PIN_BUTTON) && ! buttonPressed) {
 		buttonPressed = true;
 		cycleDisplay();

@@ -108,7 +108,6 @@ void runCommand(char* const data) {
 		}
 		setAirgate(position);
 	}
-	//
 	else if (simulation) {
 		// add one second per measurement to the time,
 		// assuming one measurement was logged per second

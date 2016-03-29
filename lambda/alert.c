@@ -23,7 +23,7 @@ volatile uint8_t oscCount = 0;
 volatile static bool alertActive = false;
 volatile static bool keepActive = false;
 
-void oscillateBeep(void) {
+void makeBeeps(void) {
 	if (beepCount == 0) {
 		oscCount = 0;
 		return;

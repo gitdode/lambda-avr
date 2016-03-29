@@ -15,7 +15,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-void oscillateBeep(void);
+/**
+ * Turns the beep on and off for as long and as many times as an alert
+ * wants it.
+ */
+void makeBeeps(void);
 
 /**
  * Beeps the given number of beeps with the given length and tone.
