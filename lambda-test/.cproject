@@ -25,7 +25,6 @@
 							<tool id="de.innot.avreclipse.tool.assembler.winavr.app.debug.890726331" name="AVR Assembler" superClass="de.innot.avreclipse.tool.assembler.winavr.app.debug">
 								<option id="de.innot.avreclipse.assembler.option.debug.level.1445746190" name="Generate Debugging Info" superClass="de.innot.avreclipse.assembler.option.debug.level"/>
 								<option id="de.innot.avreclipse.asm.option.include.paths.119939717" name="#include paths for preprocessor(-I)" superClass="de.innot.avreclipse.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/data/Work/AVR/AVR-Programming-master/AVR-Programming-Library"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lambda}&quot;"/>
 								</option>
 								<inputType id="de.innot.avreclipse.tool.assembler.input.1691955639" superClass="de.innot.avreclipse.tool.assembler.input"/>

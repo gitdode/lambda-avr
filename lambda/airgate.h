@@ -12,9 +12,11 @@
 #define AIRGATE_H_
 
 /** Min value 1 */
-#define MIN_SPEED 200
+#define MIN_SPEED 200U
 /** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
-#define MAX_SPEED 250
+#define MAX_SPEED 250U
+/** Used to linearize the acceleration curve */
+#define SPEED_PROD (MIN_SPEED * MAX_SPEED)
 
 #define AIRGATE_CLOSE  	0
 #define AIRGATE_25	 	15

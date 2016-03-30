@@ -17,8 +17,6 @@
 #include "interrupts.h"
 #include "pins.h"
 
-static const uint16_t SPEED_PROD = (uint16_t)MIN_SPEED * MAX_SPEED;
-
 /* Direction */
 static volatile int8_t dir = 0;
 /* Current position */
@@ -30,10 +28,10 @@ static volatile uint16_t done = 0;
 /* Acceleration profile ramp */
 static volatile uint16_t ramp = 0;
 /* Speed */
-static volatile uint8_t speed = MIN_SPEED;
+static volatile uint16_t speed = MIN_SPEED;
 
 /**
- * Sets increased current for higher torque,sets the direction and initial
+ * Sets increased current for higher torque, sets the direction and initial
  * speed and starts the motor by starting the timer.
  */
 static void start(void) {
@@ -79,7 +77,7 @@ void makeSteps(void) {
 				speed--;
 			}
 			// linearize an unfavourably increasing acceleration curve
-			OCR2A = SPEED_PROD / speed;
+			OCR2A = MIN(UINT16_MAX, SPEED_PROD / speed);
 		}
 	} else {
 		PORT &= ~(1 << PIN_STEP);
