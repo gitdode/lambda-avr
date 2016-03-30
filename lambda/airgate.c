@@ -90,7 +90,7 @@ void makeSteps(void) {
 }
 
 void setAirgate(uint8_t const target) {
-	if (target == getAirgate() || isAirgateBusy()) {
+	if (target == getAirgate() || isAirgateBusy() || isDriverFault()) {
 		return;
 	}
 	if (bit_is_clear(PORT, PIN_SLEEP)) {
@@ -115,6 +115,10 @@ bool isAirgateBusy(void) {
 		steps_c = steps;
 	}
 	return steps_c > 0;
+}
+
+bool isDriverFault(void) {
+	return bit_is_clear(PORT, PIN_FAULT);
 }
 
 void setSleepMode(bool const on) {

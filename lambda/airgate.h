@@ -53,6 +53,11 @@ uint8_t getAirgate(void);
 bool isAirgateBusy(void);
 
 /**
+ * Returns true if the driver signals fault condition, false otherwise.
+ */
+bool isDriverFault(void);
+
+/**
  * Wakes up the driver or puts it in sleep mode.
  */
 void setSleepMode(bool const on);
