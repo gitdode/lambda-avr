@@ -77,7 +77,7 @@ void makeSteps(void) {
 				speed--;
 			}
 			// linearize an unfavourably increasing acceleration curve
-			OCR2A = MIN(UINT16_MAX, SPEED_PROD / speed);
+			OCR2A = SPEED_PROD / speed;
 		}
 	} else {
 		PORT &= ~(1 << PIN_STEP);
