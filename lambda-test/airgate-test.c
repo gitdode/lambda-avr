@@ -17,6 +17,7 @@
 
 static bool testSetAirgate(void) {
 
+	setDriverFault(false);
 	resetAirgate(0);
 	setAirgate(100);
 
@@ -45,10 +46,10 @@ static bool testSetAirgate(void) {
 
 static bool testMakeSteps(void) {
 
-	const uint16_t SPEED_PROD = (uint16_t)MIN_SPEED * MAX_SPEED;
 	const uint16_t ramp = MIN(abs(MAX_SPEED - MIN_SPEED), (100 << STEPPING_MODE) >> 1);
 	uint8_t speed = MIN_SPEED;
 
+	setDriverFault(false);
 	resetAirgate(0);
 	setAirgate(100);
 
@@ -111,6 +112,32 @@ static bool testSetSleepMode(void) {
 	return true;
 }
 
+static bool testIsDriverFault(void) {
+
+	setDriverFault(true);
+
+	assertTrue(isDriverFault());
+
+	setDriverFault(false);
+
+	assertFalse(isDriverFault());
+
+	return true;
+}
+
+static bool testRememberAirgate(void) {
+
+	resetAirgate(0);
+	setAirgate(100);
+
+	resetAirgate(0);
+	initAirgate();
+
+	assertTrue(100 == getAirgate());
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "airgate";
 
@@ -118,12 +145,16 @@ static const char class[] PROGMEM = "airgate";
 static const char testSetAirgate_P[] PROGMEM = "testSetAirgate";
 static const char testMakeSteps_P[] PROGMEM = "testMakeSteps";
 static const char testSetSleepMode_P[] PROGMEM = "testSetSleepMode";
+static const char testIsDriverFault_P[] PROGMEM = "testIsDriverFault";
+static const char testRememberAirgate_P[] PROGMEM = "testRememberAirgate";
 
 /* Tests */
 static TestCase const tests[] = {
 		{class, testSetAirgate_P, testSetAirgate},
 		{class, testMakeSteps_P, testMakeSteps},
-		{class, testSetSleepMode_P, testSetSleepMode}
+		{class, testSetSleepMode_P, testSetSleepMode},
+		{class, testIsDriverFault_P, testIsDriverFault},
+		{class, testRememberAirgate_P, testRememberAirgate}
 };
 
 TestClass airgateClass = {tests, ARRAY_LENGTH(tests)};

@@ -18,14 +18,14 @@ extern uint8_t beepCount;
 extern uint16_t beepLength;
 extern uint8_t oscCount;
 
-static bool testOscillateBeep(void) {
+static bool testMakeBeeps(void) {
 	beepCount = 0;
 	oscCount = 0;
 
 	// alert with two beeps with a length of 2 and tone 31
 	alert(2, 2, 31, "a", "b", false);
-	oscillateBeep();
-	oscillateBeep();
+	makeBeeps();
+	makeBeeps();
 
 	// beep on, alertActive true
 	assertTrue(beepCount == 2);
@@ -34,8 +34,8 @@ static bool testOscillateBeep(void) {
 	assertTrue(bit_is_set(TCCR1A, COM1A0));
 	assertTrue(isAlertActive());
 
-	oscillateBeep();
-	oscillateBeep();
+	makeBeeps();
+	makeBeeps();
 
 	// beep off, alertActive still true
 	assertTrue(beepCount == 1);
@@ -43,8 +43,8 @@ static bool testOscillateBeep(void) {
 	assertTrue(bit_is_clear(TCCR1A, COM1A0));
 	assertTrue(isAlertActive());
 
-	oscillateBeep();
-	oscillateBeep();
+	makeBeeps();
+	makeBeeps();
 
 	// beep on, alertActive still true
 	assertTrue(beepCount == 1);
@@ -52,8 +52,8 @@ static bool testOscillateBeep(void) {
 	assertTrue(bit_is_set(TCCR1A, COM1A0));
 	assertTrue(isAlertActive());
 
-	oscillateBeep();
-	oscillateBeep();
+	makeBeeps();
+	makeBeeps();
 
 	// beep off, alertActive false
 	assertTrue(beepCount == 0);
@@ -122,14 +122,14 @@ static bool testCancelAlert(void) {
 static const char class[] PROGMEM = "alert";
 
 /* Test names */
-static const char testOscillateBeep_P[] PROGMEM = "testOscillateBeep";
+static const char testMakeBeeps_P[] PROGMEM = "testMakeBeeps";
 static const char testBeep_P[] PROGMEM = "testBeep";
 static const char testAlert_P[] PROGMEM = "testAlert";
 static const char testCancelAlert_P[] PROGMEM = "testCancelAlert";
 
 /* Tests */
 static TestCase const tests[] = {
-		{class, testOscillateBeep_P, testOscillateBeep},
+		{class, testMakeBeeps_P, testMakeBeeps},
 		{class, testBeep_P, testBeep},
 		{class, testAlert_P, testAlert},
 		{class, testCancelAlert_P, testCancelAlert}

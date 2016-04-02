@@ -20,29 +20,31 @@
 
 extern uint8_t measCount;
 extern int8_t state;
-extern Rule rules[];
+extern Rule fastRules[];
+extern Rule slowRules[];
 
 static bool testAirgate50(void) {
 
+	setDriverFault(false);
 	Measurement meas = {0, 0, 0, 0};
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 
 	meas.tempI = TEMP_AIRGATE_50;
 	meas.lambda = LAMBDA_TOO_LEAN;
@@ -51,20 +53,20 @@ static bool testAirgate50(void) {
 	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_50);
 	state = firing_up;
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[0].fired);
+	assertFalse(slowRules[0].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	resetRules(true);
@@ -72,7 +74,7 @@ static bool testAirgate50(void) {
 	state = firing_up;
 	reason(meas);
 	stepUntilDone();
-	assertTrue(rules[0].fired);
+	assertTrue(slowRules[0].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
@@ -82,25 +84,26 @@ static bool testAirgate50(void) {
 
 static bool testAirgate25(void) {
 
+	setDriverFault(false);
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 
 	meas.tempI = TEMP_AIRGATE_25 - 1;
 	meas.lambda = LAMBDA_TOO_LEAN;
@@ -109,20 +112,20 @@ static bool testAirgate25(void) {
 	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_25);
 	state = burning_down;
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[1].fired);
+	assertFalse(slowRules[1].fired);
 	assertTrue(AIRGATE_25 == getAirgate());
 
 	resetRules(true);
@@ -130,7 +133,7 @@ static bool testAirgate25(void) {
 	state = burning_down;
 	reason(meas);
 	stepUntilDone();
-	assertTrue(rules[1].fired);
+	assertTrue(slowRules[1].fired);
 	assertTrue(AIRGATE_25 == getAirgate());
 
 	cancelAlert();
@@ -140,25 +143,26 @@ static bool testAirgate25(void) {
 
 static bool testAirgateClose(void) {
 
+	setDriverFault(false);
 	Measurement meas = {999, 0, 0, 0};
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = burning_down;
 	reason(meas);
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 
 	meas.tempI = TEMP_AIRGATE_0 - 1;
 	meas.lambda = LAMBDA_MAX;
@@ -167,20 +171,20 @@ static bool testAirgateClose(void) {
 	resetAirgate(AIRGATE_OPEN);
 	state = firing_up;
 	reason(meas);
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	state = undefined;
 	reason(meas);
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_CLOSE);
 	state = burning_down;
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 	assertTrue(AIRGATE_CLOSE == getAirgate());
 
 	// airgate25 kicks in first and prevents airgateClose from running
@@ -190,7 +194,7 @@ static bool testAirgateClose(void) {
 	state = burning_down;
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[2].fired);
+	assertFalse(slowRules[2].fired);
 	assertFalse(AIRGATE_CLOSE == getAirgate());
 
 	// now airgateClose kicks in
@@ -198,7 +202,7 @@ static bool testAirgateClose(void) {
 	state = burning_down;
 	reason(meas);
 	stepUntilDone();
-	assertTrue(rules[2].fired);
+	assertTrue(slowRules[2].fired);
 	assertTrue(AIRGATE_CLOSE == getAirgate());
 
 	cancelAlert();
@@ -208,6 +212,7 @@ static bool testAirgateClose(void) {
 
 static bool testTooRich(void) {
 
+	setDriverFault(false);
 	Measurement meas = {0, 0, 0, 1000};
 
 	setHeaterState(heaterStateOn);
@@ -217,21 +222,21 @@ static bool testTooRich(void) {
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
-	assertFalse(rules[3].fired);
+	assertFalse(slowRules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
 	meas.lambda = LAMBDA_MAX;
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
-	assertFalse(rules[3].fired);
+	assertFalse(slowRules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT;
 	meas.lambda = LAMBDA_TOO_RICH - 1;
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
-	assertFalse(rules[3].fired);
+	assertFalse(slowRules[3].fired);
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
 	meas.lambda = LAMBDA_TOO_RICH - 1;
@@ -239,7 +244,7 @@ static bool testTooRich(void) {
 	resetAirgate(AIRGATE_50);
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[3].fired);
+	assertFalse(slowRules[3].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	meas.tempI = TEMP_FIRE_OUT + 1;
@@ -248,7 +253,7 @@ static bool testTooRich(void) {
 	resetAirgate(AIRGATE_25);
 	reason(meas);
 	stepUntilDone();
-	assertTrue(rules[3].fired);
+	assertTrue(slowRules[3].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
@@ -258,6 +263,7 @@ static bool testTooRich(void) {
 
 static bool testTooLean(void) {
 
+	setDriverFault(false);
 	Measurement meas = {0, 0, 0, 1000};
 
 	setHeaterState(heaterStateOn);
@@ -267,14 +273,14 @@ static bool testTooLean(void) {
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(slowRules[4].fired);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = 1300;
 	resetRules(true);
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
-	assertFalse(rules[4].fired);
+	assertFalse(slowRules[4].fired);
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
 	meas.lambda = LAMBDA_TOO_LEAN + 1;
@@ -282,7 +288,7 @@ static bool testTooLean(void) {
 	resetAirgate(AIRGATE_50);
 	reason(meas);
 	stepUntilDone();
-	assertFalse(rules[4].fired);
+	assertFalse(slowRules[4].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	meas.tempI = TEMP_AIRGATE_50 + 1;
@@ -291,7 +297,7 @@ static bool testTooLean(void) {
 	resetAirgate(AIRGATE_OPEN);
 	reason(meas);
 	stepUntilDone();
-	assertTrue(rules[4].fired);
+	assertTrue(slowRules[4].fired);
 	assertTrue(AIRGATE_50 == getAirgate());
 
 	cancelAlert();
@@ -301,6 +307,7 @@ static bool testTooLean(void) {
 
 static bool testFireOut(void) {
 
+	setDriverFault(false);
 	Measurement meas = {0, 0, 0, 0};
 
 	resetRules(true);
@@ -310,27 +317,27 @@ static bool testFireOut(void) {
 	meas.tempI = 50;
 	measCount = 10;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(slowRules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT;
 	measCount = 10;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(slowRules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
 	measCount = 10;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(slowRules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT - 1;
 	measCount = 10;
 	reason(meas);
-	assertTrue(rules[5].fired);
+	assertTrue(slowRules[5].fired);
 
 	meas.tempI = TEMP_FIRE_OUT_RESET;
 	measCount = 10;
 	reason(meas);
-	assertFalse(rules[5].fired);
+	assertFalse(slowRules[5].fired);
 
 	cancelAlert();
 
@@ -339,28 +346,29 @@ static bool testFireOut(void) {
 
 static bool testWarmStart(void) {
 
+	setDriverFault(false);
 	Measurement meas = {TEMP_AIRGATE_50, 0, 0, 0};
 
 	setHeaterState(heaterStateOff);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_50);
-	rules[6].fired = false;
+	slowRules[6].fired = false;
 	reason(meas);
 	stepUntilDone();
 	assertTrue(AIRGATE_50 == getAirgate());
 	assertTrue(heaterStateOff == getHeaterState());
-	assertFalse(rules[6].fired);
+	assertFalse(slowRules[6].fired);
 
 	resetRules(true);
 	resetAirgate(AIRGATE_50);
-	rules[6].fired = false;
+	slowRules[6].fired = false;
 	state = firing_up;
 	reason(meas);
 	stepUntilDone();
 	assertTrue(AIRGATE_OPEN == getAirgate());
 	assertTrue(heaterStateOn == getHeaterState());
-	assertTrue(rules[6].fired);
+	assertTrue(slowRules[6].fired);
 
 	cancelAlert();
 
@@ -470,6 +478,27 @@ static bool testHeaterTimeout(void) {
 	return true;
 }
 
+static bool testDriverFault(void) {
+
+	resetRules(true);
+	resetTime();
+	Measurement meas = {0, 0, 0, 0};
+
+	setDriverFault(true);
+	reason(meas);
+
+	assertTrue(fastRules[3].fired);
+
+	setDriverFault(false);
+	reason(meas);
+
+	assertFalse(fastRules[3].fired);
+
+	cancelAlert();
+
+	return true;
+}
+
 /* Test "class" */
 static const char class[] PROGMEM = "rules";
 
@@ -486,6 +515,7 @@ static const char testHeaterFaultNoconn_P[] PROGMEM = "testHeaterFaultNoconn";
 static const char testHeaterFaultShort_P[] PROGMEM = "testHeaterFaultShort";
 static const char testHeaterFaultNoheat_P[] PROGMEM = "testHeaterFaultNoheat";
 static const char testHeaterTimeout_P[] PROGMEM = "testHeaterTimeout";
+static const char testDriverFault_P[] PROGMEM = "testDriverFault";
 
 /* Tests */
 static TestCase const tests[] = {
@@ -500,7 +530,8 @@ static TestCase const tests[] = {
 		{class, testHeaterFaultNoconn_P, testHeaterFaultNoconn},
 		{class, testHeaterFaultShort_P, testHeaterFaultShort},
 		{class, testHeaterFaultNoheat_P, testHeaterFaultNoheat},
-		{class, testHeaterTimeout_P, testHeaterTimeout}
+		{class, testHeaterTimeout_P, testHeaterTimeout},
+		{class, testDriverFault_P, testDriverFault}
 };
 
 TestClass rulesClass = {tests, ARRAY_LENGTH(tests)};

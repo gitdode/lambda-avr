@@ -191,17 +191,17 @@ char* toInfo(uint16_t const lambda) {
 
 void setHeaterState(HeaterState const state) {
 	if (state == heaterStateOn) {
-		PORTB |= (1 << PB2);
+		PORT |= (1 << PB2);
 		heaterOnTime = getTime();
 		alert_P(1, 1, 31, PSTR(MSG_HEATER_UP_0), PSTR(MSG_HEATER_UP_1), true);
 	} else if (state == heaterStateOff || state == heaterStateFault) {
-		PORTB &= ~(1 << PB2);
+		PORT &= ~(1 << PB2);
 	}
 	heaterState = state;
 }
 
 HeaterState getHeaterState(void) {
-	// bit_is_set(PORTB, PB2)
+	// bit_is_set(PORT, PB2)
 	return heaterState;
 }
 

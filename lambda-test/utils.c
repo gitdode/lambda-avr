@@ -7,10 +7,21 @@
 
 #include "utils.h"
 #include "airgate.h"
+#include "pins.h"
 
 void stepUntilDone(void) {
 	while (isAirgateBusy()) {
 		makeSteps();
 	}
 	makeSteps();
+}
+
+void setDriverFault(bool const fault) {
+	if (fault) {
+		// disable pull-up resistor
+		PORT &= ~(1 << PIN_FAULT);
+	} else {
+		// enable pull-up resistor
+		PORT |= (1 << PIN_FAULT);
+	}
 }

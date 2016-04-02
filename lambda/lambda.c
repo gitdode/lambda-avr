@@ -55,6 +55,7 @@ int main(void) {
 	setupSleepMode();
 	initInterrupts();
 	initTimers();
+	initAirgate();
 
 	// wake up stepper motor driver
 	setSleepMode(false);

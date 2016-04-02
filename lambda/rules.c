@@ -3,6 +3,11 @@
  *
  *  Created on: 22.05.2015
  *      Author: dode@luniks.net
+ *
+ * Evaluates the fire state like burning up and burning down and applies
+ * rules to control the airgate and issue notifications about certain
+ * operating and fault conditions.
+ * TODO door switch to be aware when the door of the firebox is open
  */
 
 #include <string.h>
@@ -58,6 +63,8 @@ static void closeAirgateAndSleep(void) {
 		setSleepMode(true);
 	}
 	// put stepper motor driver in sleep mode in 60 seconds
+	// TODO could pass callback to setAirgate() and call it when position
+	// reached, or call from limit switch once there is one
 	scheduleTask(func, 60);
 }
 
@@ -228,9 +235,13 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
  * Notifies that the stepper motor driver signals fault condition.
  */
 static void driverFault(bool* const fired, Measurement const meas) {
-	if (isDriverFault()) {
+	if (! *fired && isDriverFault()) {
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_DRIVER_FAULT_0),
 				PSTR(MSG_DRIVER_FAULT_1), true);
+		*fired = true;
+	}
+	if (*fired && ! isDriverFault()) {
+		*fired = false;
 	}
 }
 

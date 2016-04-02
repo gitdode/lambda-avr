@@ -7,12 +7,15 @@
  *  Simple stepper motor control with a linear acceleration profile using the
  *  DRV8825. An absolute position from 0 to 255 can be set where 200 units
  *  correspond to 360° rotation (with 1.8° step angle).
+ *  TODO limit switch for AIRGATE_CLOSE position
  */
 
 #include <stdlib.h>
 #include <util/atomic.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 #include "airgate.h"
+#include "eeprom.h"
 #include "integers.h"
 #include "interrupts.h"
 #include "pins.h"
@@ -89,19 +92,23 @@ void makeSteps(void) {
 	}
 }
 
+void initAirgate(void) {
+	uint16_t val = eeprom_read_byte(ADDR_AIRGATE_POS);
+	pos = (val << STEPPING_MODE);
+}
+
 void setAirgate(uint8_t const target) {
 	if (target == getAirgate() || isAirgateBusy() || isDriverFault()) {
 		return;
 	}
-	if (bit_is_clear(PORT, PIN_SLEEP)) {
-		setSleepMode(false);
-	}
+	setSleepMode(false);
 	int16_t diff = (((int16_t)target) << STEPPING_MODE) - pos;
 	if (diff != 0) {
 		dir = (diff > 0) - (diff < 0);
 		steps = abs(diff);
 		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
 		start();
+		eeprom_update_byte(ADDR_AIRGATE_POS, target);
 	}
 }
 
@@ -118,14 +125,14 @@ bool isAirgateBusy(void) {
 }
 
 bool isDriverFault(void) {
-	return bit_is_clear(PORT, PIN_FAULT);
+	return bit_is_clear(PIN, PIN_FAULT);
 }
 
 void setSleepMode(bool const on) {
 	if (on) {
 		PORT &= ~(1 << PIN_SLEEP);
-	} else {
-		// wake up driver
+	} else if (bit_is_clear(PORT, PIN_SLEEP)) {
+		// wake up driver if sleeping
 		PORT |= (1 << PIN_SLEEP);
 		// wakeup time
 		_delay_ms(2);
