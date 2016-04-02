@@ -125,19 +125,6 @@ static bool testIsDriverFault(void) {
 	return true;
 }
 
-static bool testRememberAirgate(void) {
-
-	resetAirgate(0);
-	setAirgate(100);
-
-	resetAirgate(0);
-	initAirgate();
-
-	assertTrue(100 == getAirgate());
-
-	return true;
-}
-
 /* Test "class" */
 static const char class[] PROGMEM = "airgate";
 
@@ -146,15 +133,13 @@ static const char testSetAirgate_P[] PROGMEM = "testSetAirgate";
 static const char testMakeSteps_P[] PROGMEM = "testMakeSteps";
 static const char testSetSleepMode_P[] PROGMEM = "testSetSleepMode";
 static const char testIsDriverFault_P[] PROGMEM = "testIsDriverFault";
-static const char testRememberAirgate_P[] PROGMEM = "testRememberAirgate";
 
 /* Tests */
 static TestCase const tests[] = {
 		{class, testSetAirgate_P, testSetAirgate},
 		{class, testMakeSteps_P, testMakeSteps},
 		{class, testSetSleepMode_P, testSetSleepMode},
-		{class, testIsDriverFault_P, testIsDriverFault},
-		{class, testRememberAirgate_P, testRememberAirgate}
+		{class, testIsDriverFault_P, testIsDriverFault}
 };
 
 TestClass airgateClass = {tests, ARRAY_LENGTH(tests)};

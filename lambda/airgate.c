@@ -15,7 +15,6 @@
 #include <util/delay.h>
 #include <avr/eeprom.h>
 #include "airgate.h"
-#include "eeprom.h"
 #include "integers.h"
 #include "interrupts.h"
 #include "pins.h"
@@ -23,7 +22,7 @@
 /* Direction */
 static volatile int8_t dir = 0;
 /* Current position */
-static volatile uint16_t pos = 0;
+static volatile int16_t pos = 0;
 /* Steps remaining */
 static volatile uint16_t steps = 0;
 /* Steps done */
@@ -92,11 +91,6 @@ void makeSteps(void) {
 	}
 }
 
-void initAirgate(void) {
-	uint16_t val = eeprom_read_byte(ADDR_AIRGATE_POS);
-	pos = (val << STEPPING_MODE);
-}
-
 void setAirgate(uint8_t const target) {
 	if (target == getAirgate() || isAirgateBusy() || isDriverFault()) {
 		return;
@@ -108,7 +102,6 @@ void setAirgate(uint8_t const target) {
 		steps = abs(diff);
 		ramp = MIN(abs(MAX_SPEED - MIN_SPEED), steps >> 1);
 		start();
-		eeprom_update_byte(ADDR_AIRGATE_POS, target);
 	}
 }
 
@@ -139,9 +132,9 @@ void setSleepMode(bool const on) {
 	}
 }
 
-void resetAirgate(uint16_t const position) {
+void resetAirgate(uint8_t const position) {
 	dir = 0;
-	pos = position << STEPPING_MODE;
+	pos = ((int16_t)position) << STEPPING_MODE;
 	steps = 0;
 	done = 0;
 	ramp = 0;

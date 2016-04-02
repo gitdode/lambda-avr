@@ -39,11 +39,6 @@
 void makeSteps(void);
 
 /**
- * Gets the airgate position stored in EEPROM.
- */
-void initAirgate(void);
-
-/**
  * Sets the airgate position 0 - 255, where 200 units correspond to 360°
  * rotation (with 1.8° step angle). Stores the position in EEPROM.
  */
@@ -74,6 +69,6 @@ void setSleepMode(bool const on);
 /**
  * Resets to initial state and the given position. For unit tests.
  */
-void resetAirgate(uint16_t const position);
+void resetAirgate(uint8_t const position);
 
 #endif /* AIRGATE_H_ */
