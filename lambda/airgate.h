@@ -12,9 +12,11 @@
 #define AIRGATE_H_
 
 /** Min value 1 */
-#define MIN_SPEED 200
+#define MIN_SPEED 200U
 /** Max value 255 for 8 bit timer and 65535 for 16 bit timer */
-#define MAX_SPEED 250
+#define MAX_SPEED 250U
+/** Used to linearize the acceleration curve */
+#define SPEED_PROD (MIN_SPEED * MAX_SPEED)
 
 /*
  * Mapping of airgate position to absolute motor position in (full) steps
@@ -53,6 +55,11 @@ uint8_t getAirgate(void);
  * false otherwise.
  */
 bool isAirgateBusy(void);
+
+/**
+ * Returns true if the driver signals fault condition, false otherwise.
+ */
+bool isDriverFault(void);
 
 /**
  * Wakes up the driver or puts it in sleep mode.

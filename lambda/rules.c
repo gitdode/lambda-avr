@@ -225,18 +225,29 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
 }
 
 /**
- * Heater rules applied to each not averaged measured heater current value.
+ * Notifies that the stepper motor driver signals fault condition.
  */
-Rule heaterRules[] = {
+static void driverFault(bool* const fired, Measurement const meas) {
+	if (isDriverFault()) {
+		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_DRIVER_FAULT_0),
+				PSTR(MSG_DRIVER_FAULT_1), true);
+	}
+}
+
+/**
+ * Rules applied to each measurement.
+ */
+Rule fastRules[] = {
 		{false, heaterReady},
 		{false, heaterFault},
-		{false, heaterTimeout}
+		{false, heaterTimeout},
+		{false, driverFault}
 };
 
 /**
  * Rules applied to every nth averaged measurement.
  */
-Rule rules[] = {
+Rule slowRules[] = {
 		{false, airgate50},
 		{false, airgate25},
 		{false, airgateClose},
@@ -256,8 +267,8 @@ void reason(Measurement const meas) {
 	tempIMax = MAX(tempIMax, meas.tempI);
 
 	// rules applied at each measurement
-	for (size_t i = 0; i < ARRAY_LENGTH(heaterRules); i++) {
-		heaterRules[i].cond(&(heaterRules[i].fired), meas);
+	for (size_t i = 0; i < ARRAY_LENGTH(fastRules); i++) {
+		fastRules[i].cond(&(fastRules[i].fired), meas);
 	}
 
 	// evaluation of the fire state and rules applied
@@ -265,8 +276,8 @@ void reason(Measurement const meas) {
 	if (measCount == MEAS_INT) {
 		measCount = 0;
 
-		for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {
-			rules[i].cond(&(rules[i].fired), meas);
+		for (size_t i = 0; i < ARRAY_LENGTH(slowRules); i++) {
+			slowRules[i].cond(&(slowRules[i].fired), meas);
 		}
 
 		// difference between current and previous temperature
@@ -299,13 +310,13 @@ void resetRules(bool const intState) {
 		state = undefined;
 	}
 
-	for (size_t i = 0; i < ARRAY_LENGTH(rules); i++) {
-		rules[i].fired = false;
+	for (size_t i = 0; i < ARRAY_LENGTH(slowRules); i++) {
+		slowRules[i].fired = false;
 	}
 	// default for warmStart should be true
-	rules[6].fired = true;
+	slowRules[6].fired = true;
 
-	for (size_t i = 0; i < ARRAY_LENGTH(heaterRules); i++) {
-		heaterRules[i].fired = false;
+	for (size_t i = 0; i < ARRAY_LENGTH(fastRules); i++) {
+		fastRules[i].fired = false;
 	}
 }

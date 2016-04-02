@@ -40,6 +40,8 @@
 	#define MSG_HEATER_OFF_0 "Oxygen sensor"
 	#define MSG_HEATER_OFF_1 "off"
 	#define MSG_HEATER_CURRENT "Heater current"
+	#define MSG_DRIVER_FAULT_0 "Airgate motor"
+	#define MSG_DRIVER_FAULT_1 "driver fault!"
 	#define MSG_TIME_SINCE_START "Time since start"
 
 #elif LANG == 1
@@ -70,6 +72,8 @@
 	#define MSG_HEATER_OFF_0 "Lambdasonde"
 	#define MSG_HEATER_OFF_1 "aus"
 	#define MSG_HEATER_CURRENT "Heizstrom"
+	#define MSG_DRIVER_FAULT_0 "Luftschieber-"
+	#define MSG_DRIVER_FAULT_1 "antrieb Fehler!"
 	#define MSG_TIME_SINCE_START "Zeit seit Start"
 
 #endif
