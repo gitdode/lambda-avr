@@ -115,6 +115,11 @@ static bool testSetSleepMode(void) {
 static bool testIsDriverFault(void) {
 
 	setDriverFault(true);
+	setSleepMode(true);
+
+	assertFalse(isDriverFault());
+
+	setSleepMode(false);
 
 	assertTrue(isDriverFault());
 

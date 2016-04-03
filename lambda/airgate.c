@@ -118,7 +118,7 @@ bool isAirgateBusy(void) {
 }
 
 bool isDriverFault(void) {
-	return bit_is_clear(PIN, PIN_FAULT);
+	return bit_is_clear(PIN, PIN_FAULT) && bit_is_set(PORT, PIN_SLEEP);
 }
 
 void setSleepMode(bool const on) {
