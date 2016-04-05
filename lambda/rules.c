@@ -90,7 +90,8 @@ static void airgate50(bool* const fired, Measurement const meas) {
 static void airgate25(bool* const fired, Measurement const meas) {
 	if (state == burning_down && ! isAirgateBusy() &&
 			meas.tempI < TEMP_AIRGATE_25 &&
-			meas.lambda >= LAMBDA_TOO_LEAN && getAirgate() > AIRGATE_25) {
+			meas.lambda >= LAMBDA_TOO_LEAN &&
+			getAirgate() > AIRGATE_25) {
 		setAirgate(AIRGATE_25);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_25_0), PSTR(""), false);
 		*fired = true;
@@ -104,7 +105,8 @@ static void airgate25(bool* const fired, Measurement const meas) {
 static void airgateClose(bool* const fired, Measurement const meas) {
 	if (state == burning_down && ! isAirgateBusy() &&
 			meas.tempI < TEMP_AIRGATE_0 &&
-			meas.lambda >= LAMBDA_MAX && getAirgate() > AIRGATE_CLOSE) {
+			meas.lambda >= LAMBDA_MAX &&
+			getAirgate() > AIRGATE_CLOSE) {
 		setHeaterState(heaterStateOff);
 		closeAirgateAndSleep();
 		alert_P(BEEPS, LENGTH, TONE,
@@ -123,8 +125,10 @@ static void airgateClose(bool* const fired, Measurement const meas) {
  */
 static void tooRich(bool* const fired, Measurement const meas) {
 	if (! isAirgateBusy() &&
-			meas.tempI > TEMP_FIRE_OUT && meas.lambda < LAMBDA_TOO_RICH &&
-			getHeaterState() == heaterStateReady && getAirgate() < AIRGATE_50) {
+			meas.tempI > TEMP_FIRE_OUT &&
+			meas.lambda < LAMBDA_TOO_RICH &&
+			getAirgate() < AIRGATE_50 &&
+			getHeaterState() == heaterStateReady) {
 		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -137,8 +141,10 @@ static void tooRich(bool* const fired, Measurement const meas) {
  */
 static void tooLean(bool* const fired, Measurement const meas) {
 	if (! isAirgateBusy() &&
-			meas.tempI > TEMP_AIRGATE_50 &&	meas.lambda > LAMBDA_TOO_LEAN &&
-			getHeaterState() == heaterStateReady && getAirgate() > AIRGATE_50) {
+			meas.tempI > TEMP_AIRGATE_50 &&
+			meas.lambda > LAMBDA_TOO_LEAN &&
+			getAirgate() > AIRGATE_50 &&
+			getHeaterState() == heaterStateReady) {
 		setAirgate(AIRGATE_50);
 		alert_P(BEEPS, LENGTH, TONE, PSTR(MSG_AIRGATE_50_0), PSTR(""), false);
 		*fired = true;
@@ -167,7 +173,8 @@ static void fireOut(bool* const fired, Measurement const meas) {
  */
 static void warmStart(bool* const fired, Measurement const meas) {
 	if (! *fired && state == firing_up &&
-			meas.tempI > TEMP_FIRE_OUT && tempIMax >= TEMP_AIRGATE_50) {
+			meas.tempI > TEMP_FIRE_OUT &&
+			tempIMax >= TEMP_AIRGATE_50) {
 		setSleepMode(false);
 		resetRules(false);
 		tempIMax = meas.tempI;
@@ -224,7 +231,7 @@ static void heaterTimeout(bool* const fired, Measurement const meas) {
 			getHeaterState() == heaterStateFault) {
 		return;
 	}
-	if (getHeaterUptime() >= 1800 && meas.tempI < TEMP_FIRE_OUT &&
+	if (getHeaterUptime() >= 1800 && meas.tempI < TEMP_HEATER_TIMEOUT &&
 			meas.lambda >= LAMBDA_MAX) {
 		setHeaterState(heaterStateOff);
 		closeAirgateAndSleep();

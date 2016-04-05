@@ -17,8 +17,8 @@
 #include "pins.h"
 
 volatile uint8_t beepCount = 0;
-volatile uint16_t beepLength = 0;
-volatile uint8_t oscCount = 0;
+volatile uint8_t beepLength = 0;
+volatile uint16_t oscCount = 0;
 
 volatile static bool alertActive = false;
 volatile static bool keepActive = false;
@@ -46,10 +46,10 @@ void makeBeeps(void) {
 void beep(uint8_t const beeps, uint8_t const length, uint16_t const tone) {
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;
-	oscCount = 0;
-	beepCount = beeps;
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
 		beepLength = length;
+		oscCount = 0;
+		beepCount = beeps;
 	}
 }
 
@@ -58,12 +58,12 @@ void alert(uint8_t const beeps, uint8_t const length, uint16_t const tone,
 		bool const keep) {
 	OCR1A = tone;
 	if (TCNT1 >= tone) TCNT1 = 0;
-	alertActive = true;
-	keepActive = keep;
-	oscCount = 0;
-	beepCount = beeps;
 	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		alertActive = true;
+		keepActive = keep;
 		beepLength = length;
+		oscCount = 0;
+		beepCount = beeps;
 	}
 	displayText(line0, line1);
 }

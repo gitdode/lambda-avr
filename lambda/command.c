@@ -98,7 +98,7 @@ void runCommand(char* const data) {
 		if (fields[2] != '\0') {
 			tone = atoi(fields[2]);
 		}
-		beep(1, length, tone);
+		beep(3, length, tone);
 	}
 	else if (strcmp_P(fields[0], PSTR("sa")) == 0) {
 		// set airgate

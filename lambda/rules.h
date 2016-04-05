@@ -40,9 +40,11 @@
  */
 #define TEMP_AIRGATE_0 450
 /** Temperature at which to consider the fire to have gone out */
-#define TEMP_FIRE_OUT 90
+#define TEMP_FIRE_OUT 70
 /** Min. temperature at which to consider the fire to fire up again */
-#define TEMP_FIRE_OUT_RESET 100
+#define TEMP_FIRE_OUT_RESET 80
+/** If the temp. is below this value, switch off the heater after a timeout */
+#define TEMP_HEATER_TIMEOUT 100
 /** Max. lambda value that can be measured */
 #define LAMBDA_MAX 2000
 /** Combustion is considered too rich if lambda is below this value */
